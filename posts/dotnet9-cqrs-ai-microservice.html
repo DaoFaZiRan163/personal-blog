@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="为什么选择 .NET 9 + CQRS 做 AI 微服务：从团队能力、业务边界、可维护性、可观测性到上线后的架构取舍。">
+  <title>为什么我选择 .NET 9 + CQRS 做 AI 微服务 · 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .post-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 56px;
+      align-items: start;
+      padding-bottom: 56px;
+    }
+    .post-body { max-width: 720px; }
+    .post-header {
+      padding: 0 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .post-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .post-header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -.8px;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .post-header .post-lead {
+      font-size: 18px;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+    .prose { font-size: 16px; line-height: 1.85; color: var(--text); }
+    .prose h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+      margin: 8px 0 16px;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .prose h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 32px 0 12px;
+      color: var(--text);
+    }
+    .prose p { margin-bottom: 20px; }
+    .prose strong { font-weight: 700; color: var(--text); }
+    .prose ul, .prose ol {
+      margin: 0 0 20px 0;
+      padding-left: 20px;
+    }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin-bottom: 8px; }
+    .prose a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(37,99,235,.3); }
+    .prose blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 20px;
+      margin: 28px 0;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+    .prose code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--purple);
+    }
+    .prose pre {
+      background: #0f172a;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 24px 0;
+    }
+    .prose pre code {
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 13px;
+      padding: 0;
+    }
+    .prose hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+    .callout {
+      background: var(--accent-dim);
+      border: 1px solid #bfdbfe;
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 28px 0;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .callout-title {
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .arch-map {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin: 28px 0;
+      display: grid;
+      gap: 12px;
+    }
+    .arch-step {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .arch-step:last-child { border-bottom: none; }
+    .arch-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--purple);
+    }
+    .arch-desc {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.65;
+    }
+    .decision-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .decision-table th,
+    .decision-table td {
+      border-bottom: 1px solid var(--border-soft);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .decision-table th {
+      background: var(--bg-subtle);
+      color: var(--text-3);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .decision-table tr:last-child td { border-bottom: none; }
+    .post-sidebar {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .toc {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .toc-title,
+    .sidebar-card-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text-3);
+      margin-bottom: 12px;
+    }
+    .toc-list { display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a {
+      font-size: 13px;
+      color: var(--text-2);
+      transition: color .15s;
+      padding: 2px 0 2px 10px;
+      border-left: 2px solid transparent;
+    }
+    .toc-list a:hover { color: var(--accent); border-left-color: var(--accent); }
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .metric-line {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .metric-line:last-child { border-bottom: none; }
+    .metric-line strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .metric-line span { font-size: 12px; color: var(--text-3); }
+    .related-post {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-soft);
+      text-decoration: none;
+      color: inherit;
+    }
+    .related-post > div { flex: 1; min-width: 0; }
+    .related-post:last-child { border-bottom: none; }
+    .related-post:hover .related-post-title { color: var(--accent); }
+    .related-post-title { font-size: 13px; font-weight: 600; line-height: 1.4; transition: color .15s; }
+    .related-post-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .related-post-cat { font-size: 11px; color: var(--text-3); }
+    .related-post-date {
+      min-width: 70px;
+      flex: 0 0 70px;
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .author-mini {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .author-mini img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .author-mini strong { display: block; font-size: 14px; }
+    .author-mini span { display: block; font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+    @media (max-width: 900px) {
+      .post-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding-bottom: 24px;
+      }
+      .post-sidebar {
+        position: static;
+        margin-top: 0;
+      }
+      .post-header h1 { font-size: 28px; }
+      .post-sidebar .toc,
+      .post-sidebar .results-card,
+      .post-sidebar .author-card { display: none; }
+      .post-body .prose > p:last-child { margin-bottom: 0; }
+      .prose hr { margin: 24px 0; }
+      .related-card {
+        border-radius: 14px;
+        padding: 10px 14px;
+        margin: 0;
+      }
+      .related-card .sidebar-card-title {
+        margin-bottom: 4px;
+        font-size: 11px;
+      }
+      .related-post { padding: 10px 0; }
+      .related-post-title {
+        font-size: 15px;
+        line-height: 1.35;
+      }
+      .related-post-meta {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .related-post-cat,
+      .related-post-date { font-size: 12px; }
+      .related-post-date {
+        min-width: 74px;
+        flex: 0 0 74px;
+        justify-self: end;
+        text-align: right;
+      }
+    }
+    @media (max-width: 600px) {
+      .arch-step { grid-template-columns: 1fr; gap: 4px; }
+      .decision-table { font-size: 13px; }
+      .decision-table th,
+      .decision-table td { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">
+      <span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>
+      邵炎炎
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-header">
+    <div class="post-meta-row">
+      <a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a>
+      <span style="color:var(--border);">|</span>
+      <span class="tag tag-purple">软件架构</span>
+      <span class="blog-date" style="font-size:12px;color:var(--text-3);">2026年4月20日 · 约 10 分钟阅读</span>
+    </div>
+    <h1>为什么我选择 .NET 9 + CQRS 做 AI 微服务</h1>
+    <p class="post-lead">
+      技术选型不是追热点，而是匹配团队、业务边界和未来维护成本。AI 服务看起来很新，但真正决定它能不能长期跑起来的，仍然是工程结构是否清楚、问题是否可定位、团队是否能接住。
+    </p>
+  </div>
+
+  <div class="post-layout">
+    <article class="post-body">
+      <div class="prose">
+        <h2 id="context">选型背景</h2>
+        <p>
+          我们在做企业 AI 智能问答和 Multi-Agent 编排时，最早遇到的问题不是模型调用，而是工程边界。一个 AI 请求可能要经过用户鉴权、知识库检索、Prompt 组装、模型调用、工具执行、结果评估、日志追踪和人工兜底。每一步看起来都不复杂，但串起来之后，系统很容易变成一条难以维护的长链路。
+        </p>
+        <p>
+          这也是我没有把 AI 能力简单塞进原有业务系统的原因。AI 服务需要独立演进，同时又不能脱离现有会员、订单、客服、权限这些业务能力。它更像一个“业务中台旁边的智能决策层”，既要能快速实验，也要能稳定上线。
+        </p>
+        <blockquote>
+          AI 微服务的核心不是“调用大模型”，而是把不确定的智能能力放进可控的工程结构里。
+        </blockquote>
+
+        <h2 id="why-dotnet">为什么是 .NET 9</h2>
+        <p>
+          我选择 .NET 9，首先不是因为它新，而是因为它和团队能力匹配。团队长期使用 C# 和 .NET 技术栈，业务系统、后台管理、数据接口都已经围绕这套生态沉淀了很多经验。AI 服务如果强行换一套完全陌生的技术栈，短期看很“先进”，长期看会增加招聘、排障、交接和运维成本。
+        </p>
+        <p>
+          对企业内部系统来说，工程稳定性比语言流行度更重要。.NET 9 在 Web API、依赖注入、配置管理、异步编程、日志、OpenTelemetry、容器化部署等方面已经非常成熟，足够支撑 AI 服务的核心需求。
+        </p>
+        <ul>
+          <li><strong>性能足够：</strong>AI 服务的瓶颈通常不在 Web 框架，而在模型响应、检索、外部工具调用和网络延迟。</li>
+          <li><strong>类型系统清晰：</strong>对复杂请求、工具参数、评估结果、审计日志非常友好。</li>
+          <li><strong>团队接得住：</strong>线上问题出现时，不需要先跨过技术栈理解成本。</li>
+          <li><strong>生态完整：</strong>认证、配置、日志、监控、消息队列、数据库访问都有稳定方案。</li>
+        </ul>
+
+        <h2 id="why-cqrs">为什么加 CQRS</h2>
+        <p>
+          CQRS 的价值，在这个项目里不是为了“架构好看”，而是为了把读和写的复杂度分开。AI 系统里有大量查询型操作：查知识库、查会员信息、查订单、查历史对话、查规则。也有一些写入型操作：保存会话、记录评估、创建工单、写入反馈、沉淀样本。
+        </p>
+        <p>
+          如果所有逻辑都堆在一个服务类里，很快就会出现三类问题：查询越来越重，写入副作用越来越多，测试越来越难写。CQRS 帮我把“我要读取什么”和“我要改变什么”拆成两个方向，代码结构更容易被团队理解。
+        </p>
+        <div class="arch-map">
+          <div class="arch-step">
+            <div class="arch-label">Query</div>
+            <div class="arch-desc">负责读取知识、会话、会员、订单、配置等上下文，尽量做到无副作用、可缓存、可追踪。</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-label">Command</div>
+            <div class="arch-desc">负责保存会话、写入反馈、创建工单、记录评估结果，每个动作都有明确业务含义。</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-label">Handler</div>
+            <div class="arch-desc">把每个请求收敛到独立处理器里，减少大 Service 类，便于单元测试和灰度替换。</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-label">Pipeline</div>
+            <div class="arch-desc">统一处理日志、鉴权、参数校验、异常、耗时统计和链路追踪，避免横切逻辑散落各处。</div>
+          </div>
+        </div>
+
+        <h2 id="boundary">AI 微服务的边界</h2>
+        <p>
+          我不建议把 AI 微服务设计成一个什么都管的“超级智能层”。它的职责应该很清楚：负责智能问答、意图识别、RAG 编排、工具选择、结果评估和对话记忆。至于订单状态、会员等级、售后流程这些核心业务事实，仍然由原有业务系统提供。
+        </p>
+        <p>
+          这样做有两个好处。第一，AI 服务不会复制业务系统的数据和规则，避免出现“两个真相源”。第二，业务系统也不会被 AI 实验节奏拖着走，双方通过稳定 API 协作。
+        </p>
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>能力</th>
+              <th>归属</th>
+              <th>原因</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>会员、订单、工单数据</td>
+              <td>业务系统</td>
+              <td>这些是核心事实源，不能由 AI 服务维护副本。</td>
+            </tr>
+            <tr>
+              <td>知识检索与 Prompt 组装</td>
+              <td>AI 微服务</td>
+              <td>变化频繁，适合独立实验、调参和灰度。</td>
+            </tr>
+            <tr>
+              <td>工具调用编排</td>
+              <td>AI 微服务</td>
+              <td>需要根据意图动态选择工具，并记录完整调用链。</td>
+            </tr>
+            <tr>
+              <td>权限与审计</td>
+              <td>双方协同</td>
+              <td>业务系统提供权限边界，AI 服务负责请求级审计。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="implementation">落地结构</h2>
+        <p>
+          第一版我会把项目拆成几个清楚的模块，而不是一开始就上很重的分布式架构。微服务不是文件夹越多越好，而是边界越清楚越好。
+        </p>
+        <pre><code>AiService.Api
+AiService.Application
+AiService.Domain
+AiService.Infrastructure
+AiService.Workers</code></pre>
+        <p>
+          <code>Api</code> 负责对外接口，<code>Application</code> 放 CQRS Handler 和业务用例，<code>Domain</code> 放领域对象和规则，<code>Infrastructure</code> 接数据库、向量库、模型供应商和外部业务 API，<code>Workers</code> 处理异步评估、对话摘要、样本沉淀等后台任务。
+        </p>
+        <p>
+          这个拆法的关键是：让每个模块知道自己负责什么，也知道自己不负责什么。尤其 AI 项目很容易把 Prompt、检索、业务规则和异常处理混在一起，越早建立边界，后面越少返工。
+        </p>
+
+        <h2 id="observability">可观测性比想象中重要</h2>
+        <p>
+          AI 服务上线后，最难排查的问题往往不是“接口报错”，而是“回答不对”。这类问题必须能回放完整链路：用户问了什么，识别到什么意图，召回了哪些文档，拼出了什么 Prompt，调用了哪个模型，工具返回了什么，最终为什么这样回答。
+        </p>
+        <p>
+          所以我会把可观测性放到第一版，而不是等线上出问题再补。
+        </p>
+        <ul>
+          <li><strong>TraceId：</strong>贯穿一次 AI 请求的所有步骤。</li>
+          <li><strong>Prompt 版本：</strong>每次回答都记录使用的 Prompt 模板和版本。</li>
+          <li><strong>检索证据：</strong>记录召回文档、分数、来源和截断后的上下文。</li>
+          <li><strong>工具调用：</strong>记录工具名、参数、耗时、结果和失败原因。</li>
+          <li><strong>评估结果：</strong>把用户反馈、自动评分、转人工状态沉淀下来。</li>
+        </ul>
+        <div class="callout">
+          <div class="callout-title">架构取舍</div>
+          AI 服务不是越智能越好，而是越可解释、可回滚、可定位越好。企业系统里，黑盒能力必须被工程日志和流程边界包住。
+        </div>
+
+        <h2 id="tradeoff">没有选择的方案</h2>
+        <p>
+          技术选型的另一半，是说清楚为什么没有选别的方案。我并不是认为 Python、Node.js 或 Go 不适合 AI 服务，而是它们在这个具体场景下不是最优解。
+        </p>
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>方案</th>
+              <th>优点</th>
+              <th>没有选择的原因</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Python FastAPI</td>
+              <td>AI 生态丰富，原型速度快。</td>
+              <td>团队主力不是 Python，长期维护和业务系统整合成本更高。</td>
+            </tr>
+            <tr>
+              <td>Node.js</td>
+              <td>接口开发快，前后端协作轻。</td>
+              <td>强类型和复杂业务建模不是团队最熟悉的路径。</td>
+            </tr>
+            <tr>
+              <td>直接写进主业务系统</td>
+              <td>短期接入最快。</td>
+              <td>AI 迭代频率高，容易污染主系统边界，灰度和回滚成本高。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="summary">总结</h2>
+        <p>
+          我选择 .NET 9 + CQRS，不是为了证明某个技术栈更高级，而是因为它在这个场景里能平衡三件事：团队能维护、业务边界清楚、AI 能力可以独立演进。
+        </p>
+        <p>
+          对 AI 微服务来说，模型只是系统的一部分。真正决定项目能不能走远的，是工程结构、日志、评估、回滚、权限和团队协作方式。技术选型最终要回答的不是“流不流行”，而是“半年后线上出问题时，团队能不能快速定位并修好”。
+        </p>
+        <p>
+          欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a>
+        </p>
+        <hr>
+        <p style="font-size:13px;color:var(--text-3);">本文首发于邵炎炎个人博客。转载请注明出处。</p>
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#context">选型背景</a>
+          <a href="#why-dotnet">为什么是 .NET 9</a>
+          <a href="#why-cqrs">为什么加 CQRS</a>
+          <a href="#boundary">AI 微服务的边界</a>
+          <a href="#implementation">落地结构</a>
+          <a href="#observability">可观测性</a>
+          <a href="#tradeoff">没有选择的方案</a>
+          <a href="#summary">总结</a>
+        </div>
+      </div>
+
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">架构关键词</div>
+        <div class="metric-line">
+          <strong>.NET 9</strong>
+          <span>Web API 与工程生态</span>
+        </div>
+        <div class="metric-line">
+          <strong>CQRS</strong>
+          <span>读写职责拆分</span>
+        </div>
+        <div class="metric-line">
+          <strong>Trace</strong>
+          <span>AI 链路可回放</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini">
+          <img src="../avatar.jpg" alt="邵炎炎">
+          <div>
+            <strong>邵炎炎</strong>
+            <span>CIO · AI 产品经理</span>
+          </div>
+        </div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="llm-memory-architecture.html">
+          <div>
+            <div class="related-post-title">LLM 记忆分层架构：解决多轮对话体验断裂的工程实践</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">AI 实践</div>
+              <div class="related-post-date">2026.05.12</div>
+            </div>
+          </div>
+        </a>
+        <a class="related-post" href="ai-quality-evaluation.html">
+          <div>
+            <div class="related-post-title">AI 产品的质量评估体系怎么建？</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">产品经理</div>
+              <div class="related-post-date">2026.05.05</div>
+            </div>
+          </div>
+        </a>
+        <a class="related-post" href="high-concurrency-architecture.html">
+          <div>
+            <div class="related-post-title">500万用户电商平台的高并发架构复盘</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">软件架构</div>
+              <div class="related-post-date">2026.01.30</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="../about.html">关于</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html">博客</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+<script src="../nav.js"></script>
+</body>
+</html>

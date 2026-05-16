@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AI 时代的第二大脑，重点不是更勤快地整理笔记，而是把知识沉淀成 AI 能读、能引用、能发布、能结构化复用的语义内容。">
+  <title>Obsidian + AI：我为什么重新理解“第二大脑” — 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-layout">
+    <article class="post-body">
+      <header class="post-header">
+        <div class="post-meta-row">
+          <span class="post-meta-tag">AI 实践</span>
+          <time class="post-meta-date" datetime="2026-05-14">2026.05.14</time>
+        </div>
+        <h1>Obsidian + AI：我为什么重新理解“第二大脑”</h1>
+        <p class="post-lead">AI 时代的笔记系统，重点不再是把笔记整理得多漂亮，而是让知识从个人草稿，升级成 AI 能读、能引用、能发布、能结构化复用的语义内容。</p>
+      </header>
+
+      <div class="prose">
+        <p>AI 让我重新理解了笔记系统。过去我理解“第二大脑”，更多会想到文件夹、标签、双向链接、模板和图谱。</p>
+        <p>但如果 AI 已经能帮我们搜索、关联、改写、归档，问题就变了：不是我要不要成为一个更自律的笔记达人，而是我的知识库能不能被 AI 顺畅地维护、调用和发布。</p>
+        <p>我现在更倾向于把个人知识分成两层：Markdown 仍然适合做草稿、输入和轻量协作；但面向公开发布、AI 抓取、搜索理解和跨系统复用，语义化 HTML 会越来越像最终形态。</p>
+
+        <h2 id="graveyard">信息坟场的问题，不是记录太少</h2>
+        <p>很多人的笔记软件里并不缺内容。缺的是复用。会议记录、项目复盘、读书摘录、产品想法、技术方案都写过，但几个月后找不到、连不上、用不起来。</p>
+        <p>这和我做 AI 产品、架构和企业数字化项目时的感受很像。很多经验不是没有发生，而是没有沉淀成下一次可调用的上下文。结果每个项目都像重新开始，每次讨论都在重复解释。</p>
+        <p>所以我现在更愿意把博客、项目文档和个人知识库放在一起看。它们本质上都在做一件事：把一次性经验变成可复用资产。</p>
+
+        <h2 id="markdown">Markdown 是输入层，HTML 会成为知识交付层</h2>
+        <p>Obsidian 最朴素也最重要的设计，是 vault 本质上就是一个本地 Markdown 文件夹。过去这意味着开放、可迁移、容易备份；到了 AI Agent 时代，它又多了一层意义：AI 可以直接读、直接写、直接搜索、直接重组。</p>
+        <p>但我不再认为 Markdown 会一直是知识系统的最终形态。近期很多面向 Agent 的基础设施都在处理同一个问题：Web 原生是 HTML，Agent 为了节省 token 和降低解析成本，会把 HTML 转成 Markdown；但内容的权威来源、结构语义、可访问性树、JSON-LD 元数据和发布形态，仍然在 HTML 这一侧。</p>
+        <p>换句话说，Markdown 很适合让人和 AI 快速写作；HTML 更适合让知识进入网页、搜索、Agent 抓取、结构化索引和长期发布。以后真正重要的不是“Markdown 还是 HTML”二选一，而是：个人写作可以从 Markdown 开始，但最终要沉淀成语义清晰的 HTML 知识资产。</p>
+        <div class="post-panel">
+          <div class="panel-row"><div class="panel-label">Markdown</div><div class="panel-desc">适合草稿、Prompt、会议纪要、项目备忘和个人知识库，因为它轻、快、容易被 AI 改写。</div></div>
+          <div class="panel-row"><div class="panel-label">HTML</div><div class="panel-desc">适合发布、引用、SEO / AEO、可访问性、结构化数据和长期归档，因为它能承载更明确的语义。</div></div>
+          <div class="panel-row"><div class="panel-label">我的判断</div><div class="panel-desc">未来 Markdown 不会消失，但会更像输入格式；HTML 会成为个人知识对外表达和被 Agent 消费的主格式。</div></div>
+        </div>
+
+        <h2 id="admin">AI 更适合做管理员，而不是替我思考</h2>
+        <p>我不太喜欢把 AI 笔记系统描述成“自动产生洞察”。这个说法很诱人，但容易让人忽略人的判断。</p>
+        <p>在我的工作里，更合适的分工是：人负责提出问题、形成观点、做产品取舍和业务判断；AI 负责整理材料、发现关联、补全索引、生成初稿和提醒遗漏。</p>
+        <p>比如做一个会员客服 AI 问答系统，真正关键的判断仍然是业务口径、风险边界、转人工策略和效果指标。AI 可以帮我整理历史工单、归纳常见问题、对齐知识库，但最终产品策略不能交给它自动决定。</p>
+
+        <h2 id="blog">对这个博客系统的启发</h2>
+        <p>这也让我反过来审视自己的个人博客。它不应该只是一个展示页面，而应该逐渐成为我的公开知识层：把 AI 落地、产品方法、架构经验和行业观察沉淀下来。</p>
+        <p>如果以后 HTML 会取代 Markdown 成为更重要的知识交付格式，那这个博客就不只是“把 Markdown 渲染成网页”。每一篇文章都应该是一个语义清楚的知识节点：有标题层级、有摘要、有作者、有发布时间、有主题分类、有相关文章，未来还可以补 JSON-LD，让搜索引擎和 Agent 都更容易理解。</p>
+        <p>首页展示的是结果，博客列表承载的是主题，文章页沉淀的是判断。下一步我更想把文章页当成“可被人读，也可被 AI 解析”的知识单元，而不是单纯的静态页面。</p>
+        <p>这样做的好处不只是让读者更容易阅读，也让 AI 更容易理解我的知识结构。下一次写新文章、准备面试、整理项目案例时，AI 能从这些公开内容里找到上下文，而不是每次从零开始。</p>
+
+        <h2 id="against-perfect">不要迷信完美知识系统</h2>
+        <p>Obsidian 社区很容易让人想追求完美模板、复杂标签和漂亮图谱。但我现在更相信低摩擦系统：先让真实工作留下痕迹，再让 AI 帮忙整理。</p>
+        <p>对我来说，一个好的第二大脑不是看起来复杂，而是在需要的时候能把东西递回来。它应该帮我复用经验，而不是制造新的维护负担。</p>
+
+        <h2 id="summary">总结</h2>
+        <p>AI 时代的知识管理，不是让人更勤奋地整理，而是让知识以 AI 可操作、可发布、可引用的格式存在。</p>
+        <p>Markdown 仍然适合作为个人输入层，因为它足够轻；但如果把视角放到公开表达、Agent 访问和长期知识资产，HTML 会越来越重要，甚至会逐渐取代 Markdown 成为更核心的交付格式。</p>
+        <p>这也解释了为什么我越来越重视静态博客、语义 HTML、项目文档和 AI 工作流之间的连接。它们看起来是不同工具，最终都在处理同一个问题：如何把经验从一次性消耗，变成下一次可以复用的上下文。</p>
+        <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+        <hr>
+        <p style="font-size:13px;color:var(--text-3);">本文结合 AI 知识管理、语义 HTML、Markdown 工作流与个人博客系统建设经验整理。</p>
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#graveyard">信息坟场</a>
+          <a href="#markdown">Markdown 与 HTML</a>
+          <a href="#admin">AI 管理员</a>
+          <a href="#blog">博客系统启发</a>
+          <a href="#against-perfect">不要迷信完美系统</a>
+          <a href="#summary">总结</a>
+        </div>
+      </div>
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">关键词</div>
+        <div class="metric-line"><strong>Markdown</strong><span>轻量输入与协作格式</span></div>
+        <div class="metric-line"><strong>HTML</strong><span>语义发布与 Agent 消费格式</span></div>
+        <div class="metric-line"><strong>复用</strong><span>让经验变成下一次上下文</span></div>
+      </div>
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>CIO · AI 产品经理</span></div></div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="hermes-agent-harness.html"><div><div class="related-post-title">Hermes Agent：从“会聊天的工具”到“会长大的工作系统”</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.14</div></div></div></a>
+        <a class="related-post" href="llm-memory-architecture.html"><div><div class="related-post-title">LLM 记忆分层架构：解决多轮对话体验断裂的工程实践</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.12</div></div></div></a>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="../about.html">关于</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html">博客</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+<script src="../nav.js"></script>
+</body>
+</html>

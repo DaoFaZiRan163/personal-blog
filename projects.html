@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="邵炎炎项目案例 — AI 智能问答平台、千万用户电商系统、Multi-Agent 编排平台等核心项目。">
+  <title>项目案例 — 邵炎炎</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Page header ─────────────────────────────────────── */
+    .projects-header {
+      padding: 10px 24px 32px;
+    }
+    .projects-header h1 {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 14px;
+    }
+    .projects-header .lead {
+      font-size: 16px;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+
+    /* ── Projects grid spacing ───────────────────────────── */
+    .projects-section { padding-bottom: 72px; }
+    .projects-grid { gap: 24px !important; }
+
+    /* ── Card structural overrides ───────────────────────── */
+    .project-card-header {
+      padding: 28px 32px 24px !important;
+      display: block !important;
+      gap: 0 !important;
+    }
+    .project-head-top {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .project-card-header h3 {
+      font-size: 24px !important;
+      margin-bottom: 10px !important;
+    }
+    .project-card-header .project-subtitle {
+      font-size: 14.5px !important;
+      line-height: 1.7 !important;
+      color: var(--text-2);
+    }
+    .project-role-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    /* ── Metrics: horizontal strip below header ──────────── */
+    .project-metrics {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0 !important;
+      min-width: 0 !important;
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-subtle);
+      overflow: hidden;
+    }
+    .project-metrics.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .project-metrics .metric {
+      background: transparent !important;
+      border: 0 !important;
+      border-right: 1px solid var(--border) !important;
+      padding: 16px 18px !important;
+      border-radius: 0 !important;
+      gap: 4px !important;
+      min-width: 0;
+    }
+    .project-metrics .metric:last-child { border-right: 0 !important; }
+    .project-metrics .metric-val { font-size: 22px !important; }
+    .project-metrics .metric-label {
+      font-size: 11px !important;
+      line-height: 1.35;
+      letter-spacing: .2px;
+    }
+
+    /* ── Card body: single column with footer info ───────── */
+    .project-card-body {
+      padding: 28px 32px 28px !important;
+      display: block !important;
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+      background: #fcfcfd;
+    }
+    .project-detail-title {
+      font-size: 11px !important;
+      letter-spacing: 1px !important;
+      color: var(--accent) !important;
+      margin-bottom: 12px !important;
+    }
+    .project-points {
+      gap: 10px !important;
+      display: table;
+      border-collapse: separate;
+      border-spacing: 6px 10px;
+      margin: -10px -6px;
+    }
+    .project-point {
+      font-size: 14px;
+      line-height: 1.7;
+      display: table-row;
+    }
+    .project-point strong {
+      display: table-cell;
+      white-space: nowrap;
+      vertical-align: baseline;
+    }
+    .project-point > span {
+      display: table-cell;
+      vertical-align: baseline;
+    }
+    /* 3-column aligned points: role | bold term | description */
+    .project-points-grid {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      column-gap: 16px;
+      row-gap: 10px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-2);
+    }
+    .project-points-grid .pp-role {
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+    .project-points-grid .pp-term {
+      color: var(--text);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .project-points-grid .pp-desc {
+      min-width: 0;
+    }
+    @media (max-width: 720px) {
+      .project-points-grid {
+        grid-template-columns: 1fr;
+        row-gap: 4px;
+      }
+      .project-points-grid .pp-role,
+      .project-points-grid .pp-term { white-space: normal; }
+      .project-points-grid .pp-desc { margin-bottom: 6px; }
+    }
+    /* Footer info block (技术栈 + 我的角色) below main content */
+    .project-footer-info {
+      display: grid;
+      grid-template-columns: minmax(0, 220px) 1fr;
+      gap: 36px;
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 1px dashed var(--border);
+    }
+    .project-footer-info .project-detail-title {
+      color: var(--text-3) !important;
+      margin-bottom: 10px !important;
+    }
+    /* Narrow tech column variant for project footers */
+    .project-footer-info--narrow {
+      grid-template-columns: minmax(0, 0.55fr) 1fr;
+      gap: 32px;
+    }
+    .project-tech {
+      gap: 6px !important;
+      margin-bottom: 0 !important;
+    }
+
+    /* ── CTA ─────────────────────────────────────────────── */
+    .projects-cta {
+      padding-top: 16px;
+      padding-bottom: 64px;
+    }
+    .projects-cta-inner {
+      text-align: center;
+      padding: 48px 32px;
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .projects-cta-inner h2 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      margin-bottom: 12px;
+    }
+    .projects-cta-inner p.cta-desc {
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.75;
+      margin: 0 auto 28px;
+      max-width: 480px;
+    }
+    .projects-cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── Lab / Experiment card ───────────────────────────── */
+    .project-card--lab {
+      border-style: dashed !important;
+      border-color: #c4b5fd !important;
+      background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 100%);
+    }
+    .project-card--lab:hover {
+      border-color: var(--purple) !important;
+      box-shadow: 0 0 0 4px #ede9fe44, var(--shadow) !important;
+    }
+    .project-card--lab .project-card-header {
+      background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%);
+      border-bottom: 1px dashed #c4b5fd !important;
+    }
+    .project-card--lab .project-card-body {
+      background: #fdfcff !important;
+    }
+    .project-card--lab .project-number { display: none; }
+    .project-card--lab .project-metrics {
+      border-color: #ddd6fe !important;
+      background: #f5f3ff !important;
+    }
+    .project-card--lab .project-metrics .metric {
+      border-right-color: #ddd6fe !important;
+    }
+    .project-card--lab .project-footer-info {
+      border-top-color: #ddd6fe !important;
+    }
+    .lab-eyebrow-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--purple);
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      padding: 4px 12px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 720px) {
+      .projects-header { padding: 10px 16px 28px; }
+      .projects-header h1 { font-size: 30px; }
+      .project-card-header { padding: 22px 22px 20px !important; }
+      .project-card-header h3 { font-size: 20px !important; }
+      .project-metrics { grid-template-columns: repeat(2, 1fr) !important; }
+      .project-metrics .metric { border-right: 0 !important; border-bottom: 1px solid var(--border) !important; }
+      .project-metrics .metric:nth-last-child(-n+2) { border-bottom: 0 !important; }
+      .project-metrics .metric:nth-child(odd) { border-right: 1px solid var(--border) !important; }
+      .project-metrics.cols-3 .metric:nth-child(3) { border-bottom: 0 !important; }
+      .project-card-body { padding: 24px 22px 26px !important; }
+      .project-footer-info { grid-template-columns: 1fr; gap: 22px; }
+      .projects-cta { padding-top: 8px; padding-bottom: 40px; }
+      .projects-cta-inner { padding: 32px 22px; }
+      .projects-cta-inner h2 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <span class="dot"><img src="avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>
+      邵炎炎
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于我</a>
+      <a href="projects.html" class="active">项目</a>
+      <a href="blog.html">博客</a>
+      <a href="/cdn-cgi/l/email-protection#215249404e58404f58404f1810611017120f424e4c" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ── Page header ────────────────────────────────────────── -->
+<section class="container projects-header">
+  <p class="eyebrow">Projects</p>
+  <h1>项目案例</h1>
+  <p class="lead">
+    以下是我主导或深度参与的代表性项目。每个项目我会说清楚：
+    <strong>解决什么问题、我的角色是什么、带来了什么可量化的成果</strong>。
+  </p>
+</section>
+
+<!-- ── Projects ───────────────────────────────────────────── -->
+<section class="container projects-section">
+  <div class="projects-grid" data-reveal-stagger data-reveal-step="100">
+
+    <!-- Lab: CommiNav -->
+    <article class="project-card project-card--lab" data-reveal>
+      <div class="project-card-header">
+        <div class="project-head-top">
+          <div>
+            <div class="project-number"></div>
+            <span class="lab-eyebrow-tag">🧪 周末实验项目 · Build in Public</span>
+            <h3>CommiNav · 佣金导航 SaaS</h3>
+            <p class="project-subtitle">
+              一人从零到一独立完成的 AI-native SaaS——从战略规划、PRD 到全栈实现，
+              核心命题是<strong>把 LLM 当作有 SLA 的服务来运维</strong>：
+              评估、路由、本地推理、护栏、可观测性五层 harness 全部做到生产标准，而非原型级实现。
+            </p>
+            <div class="project-role-tags">
+              <span class="tag tag-purple">独立设计 & 开发</span>
+              <span class="tag tag-purple">AI-native SaaS</span>
+              <span class="tag tag-purple">FDE 能力练习</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-metrics">
+          <div class="metric">
+            <div class="metric-val green">↓42%</div>
+            <div class="metric-label">LLM 调用成本降低（多模型路由 + Prompt Cache）</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val blue">58%</div>
+            <div class="metric-label">本地推理占比（Ollama 处理低敏感度查询）</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val orange">94%</div>
+            <div class="metric-label">Eval CI 套件通过率（PR 合并门控）</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val" style="font-size:16px;letter-spacing:-.3px;">Flutter<br>三端</div>
+            <div class="metric-label">单库 Web / Android / iOS</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card-body">
+        <div class="project-main">
+          <div class="project-detail-title">核心技术设计决策</div>
+          <div class="project-points-grid">
+            <span class="pp-role">核心创新</span>
+            <strong class="pp-term">LLM 五层 Harness 体系</strong>
+            <span class="pp-desc">把"接入 LLM"拆成五个独立工程层：Eval（质量评估）→ Multi-Model Router（成本/能力路由）→ 本地推理（Ollama / MLC LLM 边缘部署）→ Guardrail（输出护栏）→ Observability（Langfuse 全链路追踪），每层均以生产 SLA 为目标设计。</span>
+
+            <span class="pp-role">成本控制</span>
+            <strong class="pp-term">多模型动态路由</strong>
+            <span class="pp-desc">根据查询复杂度、数据敏感度、单次成本预算三维评分，动态路由至 Claude API（高复杂度）/ Ollama 本地（低敏感度常规查询）/ MLC LLM 边缘（离线场景），LLM 调用成本降低 42%，58% 请求由本地模型处理、零 API 费用。</span>
+
+            <span class="pp-role">质量门控</span>
+            <strong class="pp-term">Eval-as-CI-gate</strong>
+            <span class="pp-desc">用 Inspect AI 构建覆盖意图识别、数值计算、幻觉检测三类场景的评估套件，接入 GitHub Actions，每个 PR 自动触发 eval 运行；Eval 分数低于阈值则阻断合并，确保 LLM 行为变更有质量保障。</span>
+
+            <span class="pp-role">AI 集成</span>
+            <strong class="pp-term">MCP Server 暴露核心引擎</strong>
+            <span class="pp-desc">为核心计算引擎设计并实现 MCP Server 接口，AI 可直接调用"查询本月收益"、"预测下月收入"等工具，实现真正 AI-native 的数据交互，无需用户手动导出报表。</span>
+
+            <span class="pp-role">安全加固</span>
+            <strong class="pp-term">Prompt Injection 红队测试</strong>
+            <span class="pp-desc">对所有 LLM 入口（用户问题输入、Mailgun 邮件解析、MCP 工具调用结果）系统性实施红队测试，发现并修复 3 类注入路径；同步接入 Langfuse 实时 trace，异常 prompt 模式 30 秒内可告警。</span>
+
+            <span class="pp-role">HITL 设计</span>
+            <strong class="pp-term">长任务 + 人工介入节点</strong>
+            <span class="pp-desc">异常申诉、高风险核查等场景采用 HITL（Human-in-the-Loop）设计：AI 完成初步分析 → 挂起等待人工确认 → 确认后继续执行，通过 Hangfire 后台任务 + WebSocket 实时推送状态，保证长任务可中断可追踪。</span>
+          </div>
+        </div>
+
+        <div class="project-footer-info project-footer-info--narrow">
+          <div>
+            <div class="project-detail-title">技术栈</div>
+            <div class="project-tech">
+              <span class="tag">.NET 9</span>
+              <span class="tag">PostgreSQL</span>
+              <span class="tag tag-blue">Flutter（单库三端）</span>
+              <span class="tag tag-purple">Anthropic Claude API</span>
+              <span class="tag">Ollama / MLC LLM</span>
+              <span class="tag tag-orange">Langfuse</span>
+              <span class="tag tag-orange">Inspect AI</span>
+              <span class="tag">MCP Server</span>
+              <span class="tag">Stripe</span>
+              <span class="tag">Mailgun Inbound</span>
+            </div>
+          </div>
+          <div>
+            <div class="project-detail-title">我的角色</div>
+            <div class="project-points">
+              <div class="project-point"><strong>战略 & 产品：</strong><span>独立完成竞品分析、PRD 拆解、AI-native 功能设计，把产品核心价值翻译成可实现的技术规格</span></div>
+              <div class="project-point"><strong>全栈实现：</strong><span>.NET 9 后端 + Flutter 三端一人落地，LLM 五层 harness 是核心工程贡献</span></div>
+              <div class="project-point"><strong>AI 工程化：</strong><span>多模型路由 + Eval CI + MCP + 可观测性完整实现，达到生产运维标准而非 PoC 水平</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Project 1: AI Q&A Platform -->
+    <article class="project-card" data-reveal>
+      <div class="project-card-header">
+        <div class="project-head-top">
+          <div>
+            <div class="project-number">Project 01 · 2026</div>
+            <h3>AI 智能问答平台</h3>
+            <p class="project-subtitle">
+              为电商平台构建企业级 AI 客服系统，将高频咨询场景从人工处理转为 AI 自助——
+              从 0 到 1 完整主导产品设计、技术架构与团队交付。
+            </p>
+            <div class="project-role-tags">
+              <span class="tag tag-purple">解决方案架构师</span>
+              <span class="tag">公司：PNYY 株式会社（日本）</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-metrics">
+          <div class="metric">
+            <div class="metric-val green">65%</div>
+            <div class="metric-label">会员自助解决率</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val blue">↓30%</div>
+            <div class="metric-label">客服工单量降低</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val orange">87%</div>
+            <div class="metric-label">用户满意度（点赞率）</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val">&lt;100ms</div>
+            <div class="metric-label">精确匹配响应时间</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card-body">
+        <div class="project-main">
+          <div class="project-detail-title">核心产品设计决策</div>
+          <div class="project-points-grid">
+            <span class="pp-role">设计</span>
+            <strong class="pp-term">多策略回答引擎</strong>
+            <span class="pp-desc">精确匹配 → 关键词匹配 → LLM 实时生成，在响应速度（&lt;100ms）与回答质量之间找到最优平衡点。</span>
+
+            <span class="pp-role">核心创新</span>
+            <strong class="pp-term">LLM 三层记忆架构</strong>
+            <span class="pp-desc">短期会话 + 长期向量记忆 + 用户画像，解决 LLM 上下文窗口有限导致的多轮对话体验断裂问题，用户无感知窗口切换。</span>
+
+            <span class="pp-role">规划</span>
+            <strong class="pp-term">Multi-Agent 三层架构</strong>
+            <span class="pp-desc">（编排器 + 执行器 + 评估器），配置 10+ 专业化子 Agent，定义 7 类任务质量评估模板（≥75 采用 / &lt;60 重做）。</span>
+
+            <span class="pp-role">核心引擎</span>
+            <strong class="pp-term">LangGraph 状态机编排</strong>
+            <span class="pp-desc">基于 LangGraph 构建有状态的 Agent 工作流：将意图识别 → 策略路由 → 工具调用 → 结果评估建模为有向图，支持条件分支与循环重试，彻底解决线性 Chain 无法处理动态决策的问题。</span>
+
+            <span class="pp-role">设计</span>
+            <strong class="pp-term">多租户沙箱隔离</strong>
+            <span class="pp-desc">机制 + JWT 行级数据隔离，确保企业客户数据安全边界清晰。</span>
+          </div>
+        </div>
+
+        <div class="project-footer-info project-footer-info--narrow">
+          <div>
+            <div class="project-detail-title">技术栈</div>
+            <div class="project-tech">
+              <span class="tag tag-blue">OpenClaw Multi-Agent</span>
+              <span class="tag tag-purple">LLM 记忆分层</span>
+              <span class="tag tag-green">RAG / bge-m3</span>
+              <span class="tag tag-orange">LangGraph</span>
+              <span class="tag">.NET 9 微服务</span>
+              <span class="tag">WebSocket</span>
+              <span class="tag">SQL Server 2025 向量</span>
+              <span class="tag">CQRS + MediatR</span>
+              <span class="tag">RabbitMQ</span>
+            </div>
+          </div>
+          <div>
+            <div class="project-detail-title">我的角色（Forward Deployed 视角）</div>
+            <div class="project-points">
+              <div class="project-point"><strong>Discovery：</strong><span>驻场访谈客服与会员主管，3 周内梳理出高频咨询的 7 大场景与边界</span></div>
+              <div class="project-point"><strong>PoC → Pilot：</strong><span>72h 拉出可演示原型，4 周交付内部试点，LLM 三层记忆架构是我的核心设计</span></div>
+              <div class="project-point"><strong>Production：</strong><span>带 6 人团队推进上线，并把运营 Playbook 移交给客户内部团队</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Project 2: 宝可梦卡牌 Web3 平台 -->
+    <article class="project-card" data-reveal>
+      <div class="project-card-header">
+        <div class="project-head-top">
+          <div>
+            <div class="project-number">Project 02 · 2025</div>
+            <h3>宝可梦卡牌 Web3 交易平台</h3>
+            <p class="project-subtitle">
+              面向日本市场的实体宝可梦卡牌数字化交易平台——通过 NFT 技术实现卡牌链上确权，
+              采用"Web2 先行验证、Web3 平滑迁移"渐进策略，从竞品分析到合规设计，
+              全程以数据驱动产品决策。
+            </p>
+            <div class="project-role-tags">
+              <span class="tag tag-purple">解决方案设计</span>
+              <span class="tag tag-orange">Web3</span>
+              <span class="tag">公司：PNYY 株式会社（日本）</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-metrics">
+          <div class="metric">
+            <div class="metric-val green">3段式</div>
+            <div class="metric-label">产品路线图</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val blue">日本</div>
+            <div class="metric-label">核心目标市场</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val orange">3部</div>
+            <div class="metric-label">日本法规合规研究</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val" style="font-size:16px;letter-spacing:-.3px;">NFT<br>Polygon</div>
+            <div class="metric-label">链上确权（ERC-721）</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card-body">
+        <div class="project-main">
+          <div class="project-detail-title">核心产品决策</div>
+          <div class="project-points-grid">
+            <span class="pp-role">用户痛点</span>
+            <strong class="pp-term">实体卡牌三大核心痛点</strong>
+            <span class="pp-desc">日本卡牌玩家面临：①真假难辨——二手市场假卡泛滥，PSA 评级门槛高；②价格不透明——Yahoo 拍卖与 Mercari 成交分散，无统一估值参考；③流动性差——高价值卡牌难以快速变现，卖家需长期等待买家。三大痛点共同指向"可信确权 + 实时定价 + 即时流动性"的核心产品方向。</span>
+
+            <span class="pp-role">竞品驱动</span>
+            <strong class="pp-term">对标 CollectorCrypt 差异化设计</strong>
+            <span class="pp-desc">深度分析竞品 CollectorCrypt（市值 1,250 万美元），提炼三项借鉴点：即时回购（85% 市价）、透明概率盲盒、社区文化建设；同时识别对方手续费机制不透明的缺陷，设计差异化的阶梯手续费体系（1.5% 普通 / 0.5% 早期用户 / VIP 折扣）。</span>
+
+            <span class="pp-role">商业创新</span>
+            <strong class="pp-term">回购 → 透明盲盒 业务闭环</strong>
+            <span class="pp-desc">设计"平台回购 PSA10 卡牌（市价 85-90%）→ 重新组成公示概率盲盒销售"的业务闭环，既消化库存、又产生额外收入；同步完成日本《景品表示法》合规分析，确保概率公示满足监管要求。</span>
+
+            <span class="pp-role">数据驱动</span>
+            <strong class="pp-term">实时价格抓取驱动定价与收藏估值</strong>
+            <span class="pp-desc">设计 Python 爬虫系统每日抓取 Yahoo 拍卖、Mercari 成交数据，构建卡牌历史价格库；用户收藏总价值实时联动最新市场价计算，价格数据结构预留链上价格预言机接入能力。</span>
+
+            <span class="pp-role">战略决策</span>
+            <strong class="pp-term">Web2 先行、Web3 平滑迁移</strong>
+            <span class="pp-desc">放弃"一步到位 Web3"方案，先以 Web2 MVP（2-3 个月）快速验证市场需求、积累价格数据与用户行为，规避早期合规风险；数据结构设计完全兼容链上格式，确保后续 1:1 迁移至 Polygon。</span>
+
+            <span class="pp-role">合规研究</span>
+            <strong class="pp-term">日本三部法律合规边界分析</strong>
+            <span class="pp-desc">系统梳理《景品表示法》（概率公示要求）、《コンプリートガチャ 禁令》（完整扭蛋禁止）、《古物営業法》（二手商品交易规范），逐条对应产品功能设计，明确卡包盲盒、回购机制各自的合规路径与禁区。</span>
+          </div>
+        </div>
+
+        <div class="project-footer-info project-footer-info--narrow">
+          <div>
+            <div class="project-detail-title">技术栈</div>
+            <div class="project-tech">
+              <span class="tag tag-blue">Next.js / React</span>
+              <span class="tag">Node.js + TypeScript</span>
+              <span class="tag">PostgreSQL</span>
+              <span class="tag">Redis</span>
+              <span class="tag tag-purple">Polygon / ERC-721</span>
+              <span class="tag tag-orange">Python Scrapy / Playwright</span>
+              <span class="tag">Vercel + Railway</span>
+              <span class="tag">JWT</span>
+            </div>
+          </div>
+          <div>
+            <div class="project-detail-title">我的角色（Forward Deployed 视角）</div>
+            <div class="project-points">
+              <div class="project-point"><strong>市场调研：</strong><span>面向日本本地客户做用户访谈与竞品拆解，定位"可信确权 + 实时定价 + 流动性"三大痛点</span></div>
+              <div class="project-point"><strong>方案设计：</strong><span>设计 Web2→Web3 渐进路线、回购 + 透明盲盒闭环、阶梯手续费体系，规避一步到位的 Web3 风险</span></div>
+              <div class="project-point"><strong>合规对齐：</strong><span>主导与日本法务团队对齐三部法律边界，把合规边界翻译成产品功能取舍</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Project 3: 拿牌直销电商平台 -->
+    <article class="project-card" data-reveal>
+      <div class="project-card-header">
+        <div class="project-head-top">
+          <div>
+            <div class="project-number">Project 03 · 2023</div>
+            <h3>私域电商平台</h3>
+            <p class="project-subtitle">
+              面向东南亚多国市场的国际化私域电商系统，从零搭建三端前台 + 七大微服务，
+              支持 6 种语言、4 种货币、USDT 加密支付与复杂薪酬引擎，是我主导设计并落地的最复杂分布式系统之一。
+            </p>
+            <div class="project-role-tags">
+              <span class="tag tag-purple">系统架构师 / 技术负责人</span>
+              <span class="tag">公司：JCS 集团（新加坡 ）</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-metrics">
+          <div class="metric">
+            <div class="metric-val green">6</div>
+            <div class="metric-label">语言本地化</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val blue">7+</div>
+            <div class="metric-label">微服务集群</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val orange">130+</div>
+            <div class="metric-label">API 接口</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val" style="font-size:16px;letter-spacing:-.3px;">TRC-20<br>ERC-20</div>
+            <div class="metric-label">USDT 双链支付</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card-body">
+        <div class="project-main">
+          <div class="project-detail-title">核心架构设计决策</div>
+          <div class="project-points-grid">
+            <span class="pp-role">架构</span>
+            <strong class="pp-term">三端 + 七服务微服务拆分</strong>
+            <span class="pp-desc">Mall 会员端、Org 分公司端、Hq 总部后台三端独立部署；后端按业务域拆分为 BaseServiceCenter（基础服务）、ServiceCenterMall / Hq / Org / Search / Usdt / ImgService 七大服务，各自独立迭代，互不干扰。</span>
+
+            <span class="pp-role">核心设计</span>
+            <strong class="pp-term">自研分库路由算法</strong>
+            <span class="pp-desc">基于 CustomerID / OrderID / CustomerNO / Mobile 等多维路由键，通过数据中心编号奇偶分片，实现多数据库无感知路由，支撑大规模会员数据水平扩展。</span>
+
+            <span class="pp-role">分层缓存</span>
+            <strong class="pp-term">Redis 业务对象缓存体系</strong>
+            <span class="pp-desc">针对商品分类、品牌、公告、广告、字典等高频只读数据，设计 20+ 专项 Cache 类，结合 Redis 实现多级缓存，大幅降低数据库压力。</span>
+
+            <span class="pp-role">国际化</span>
+            <strong class="pp-term">多语言 + 多货币实时汇率</strong>
+            <span class="pp-desc">支持中文、英文、日文、越南文、印尼文、繁体中文 6 种语言动态切换；接入第三方汇率 API，每 30 分钟自动刷新 MYR、HKD、USD、CNY 等货币对，管理端可手动触发。</span>
+
+            <span class="pp-role">支付创新</span>
+            <strong class="pp-term">USDT 加密支付双链集成</strong>
+            <span class="pp-desc">独立 UsdtService 服务，同时支持 TRC-20（Tron）和 ERC-20（Ethereum）链上 USDT 收款与转账，内置 Gas 动态估算、测试网 / 主网一键切换、交易记录持久化。</span>
+          </div>
+        </div>
+
+        <div class="project-footer-info project-footer-info--narrow">
+          <div>
+            <div class="project-detail-title">技术栈</div>
+            <div class="project-tech">
+              <span class="tag">.NET Framework / ASP.NET Web API</span>
+              <span class="tag">SQL Server</span>
+              <span class="tag">Redis</span>
+              <span class="tag tag-blue">自研 Sharding 路由</span>
+              <span class="tag tag-purple">USDT TRC-20 / ERC-20</span>
+              <span class="tag tag-orange">多语言 i18n</span>
+              <span class="tag">JWT 鉴权</span>
+              <span class="tag">log4net</span>
+              <span class="tag">Quartz 定时任务</span>
+              <span class="tag">SVN</span>
+            </div>
+          </div>
+          <div>
+            <div class="project-detail-title">我的角色（Forward Deployed 视角）</div>
+            <div class="project-points">
+              <div class="project-point"><strong>跨国现场：</strong><span>常驻新加坡、出差客户各分公司，与各国业务团队对齐业务/语言/货币本地化要求</span></div>
+              <div class="project-point"><strong>方案架构：</strong><span>主导微服务拆分、自研分库路由、加密支付链路设计，直接交付到客户多国并行上线</span></div>
+              <div class="project-point"><strong>团队协作：</strong><span>带跨国研发团队，完成持续迭代与移交。</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+
+
+  </div>
+</section>
+
+<!-- ── CTA ─────────────────────────────────────────────────── -->
+<section class="container projects-cta">
+  <div class="projects-cta-inner">
+    <p class="eyebrow">Let's Talk</p>
+    <h2>对以上项目有问题？想深入聊聊？</h2>
+    <p class="cta-desc">
+      欢迎通过邮件联系我，我会认真回复每一封。
+    </p>
+    <div class="projects-cta-actions">
+      <a class="btn btn-primary" href="/cdn-cgi/l/email-protection#26554e47495f47485f47481f17661710150845494b"><span class="__cf_email__" data-cfemail="36455e57594f57584f57580f07760700051855595b">[email&#160;protected]</span> →</a>
+      <a class="btn btn-ghost" href="about.html">查看完整经历</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="nav.js"></script>
+<script src="motion.js"></script>
+<script>
+document.querySelector('.nav-toggle').addEventListener('click', function() {
+  const nav = this.closest('.site-nav');
+  const open = nav.classList.toggle('menu-open');
+  this.setAttribute('aria-expanded', open);
+});
+</script>
+</body>
+</html>

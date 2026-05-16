@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="邵炎炎 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验。技术出身，跑过中/日/东南亚客户现场，把 AI 从 PoC 推到生产。">
+  <title>关于我 — 邵炎炎</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── About Page Overrides ─────────────────────────────────── */
+
+    /* Hero */
+    .about-hero-wrap {
+      padding: 0 0 5px;
+      position: relative;
+    }
+    .about-hero-wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 60% 0%, #dbeafe55 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .about-hero {
+      display: block;
+    }
+    .about-name { font-size: 40px; font-weight: 900; letter-spacing: -1.2px; margin-bottom: 6px; }
+    .about-role {
+      font-size: 16px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .about-role-sep { color: var(--border); font-weight: 400; }
+    .role-cn {
+      font-size: 12px;
+      color: var(--text-2);
+      font-weight: 500;
+      margin-left: 6px;
+      letter-spacing: .3px;
+      opacity: .85;
+    }
+    .about-role strong .role-cn { color: var(--text-1); }
+    .about-bio { font-size: 15px; color: var(--text-2); line-height: 1.8; }
+    .about-bio + .about-bio { margin-top: 12px; }
+    .about-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .about-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      transition: border-color .15s, color .15s, box-shadow .15s;
+    }
+    .about-link:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--shadow-sm); }
+
+    /* Stats Strip */
+    .metrics-strip {
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 36px 0;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 8px 12px;
+      position: relative;
+    }
+    .stat-item + .stat-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 18%; height: 64%;
+      width: 1px;
+      background: var(--border);
+    }
+    .stat-num {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -1.2px;
+      margin-bottom: 8px;
+    }
+    .stat-num span { font-size: 16px; font-weight: 700; color: var(--accent); margin-left: 2px; }
+    .stat-label { font-size: 12px; color: var(--text-3); font-weight: 500; letter-spacing: .2px; }
+
+    /* Timeline — layout from styles.css; tighten left column & left-align dates */
+    .timeline-item { grid-template-columns: 88px 1fr !important; }
+    .timeline-date {
+      text-align: left !important;
+      padding-top: 0 !important;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      line-height: 1.2 !important;
+    }
+    .timeline-date .date-year {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .timeline-date .date-period {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-3);
+      letter-spacing: .2px;
+    }
+    .timeline-dot { left: 96px !important; top: 8px !important; }
+    .timeline-item::before { left: 102px !important; top: 10px !important; }
+    .timeline-body { padding-left: 22px !important; }
+    .timeline-dot.active {
+      box-shadow: 0 0 0 5px #dbeafe;
+    }
+
+    /* Skills Grid */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .skill-group {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .skill-group:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); }
+    .skill-group-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .skill-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      color: var(--text-2);
+    }
+
+    /* ── How I Work ──────────────────────────────────────── */
+    .howiwork-section { padding-top: 8px; }
+    .howiwork-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 6px;
+      counter-reset: howstep;
+    }
+    .howiwork-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 22px 20px;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .howiwork-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+    .howiwork-card::before {
+      counter-increment: howstep;
+      content: counter(howstep, decimal-leading-zero);
+      position: absolute;
+      top: 16px; right: 18px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      color: var(--text-3);
+      font-variant-numeric: tabular-nums;
+    }
+    .howiwork-week {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid #bfdbfe;
+      padding: 3px 9px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+    .howiwork-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.2px;
+      margin-bottom: 8px;
+    }
+    .howiwork-desc {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.65;
+    }
+    .howiwork-foot {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      font-style: italic;
+    }
+    @media (max-width: 900px) {
+      .howiwork-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .howiwork-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Positioning Section ─────────────────────────────────── */
+    .positioning-section {
+      background: var(--bg-subtle);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 72px 0;
+      margin-top: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .positioning-section::before {
+      content: '';
+      position: absolute;
+      top: -120px; right: -80px;
+      width: 360px; height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #dbeafe88 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pos-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .pos-title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -.5px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .pos-subtitle {
+      font-size: 15px;
+      color: var(--text-2);
+      margin-bottom: 36px;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+    .pos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .pos-card {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+      position: relative;
+    }
+    .pos-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+    .pos-card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .pos-card-question {
+      font-size: 13px;
+      color: var(--text-3);
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+    .pos-card-answer {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.55;
+      letter-spacing: -.1px;
+    }
+    .pos-statement {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      position: relative;
+      z-index: 1;
+      box-shadow: var(--shadow-sm);
+    }
+    .pos-quote-mark {
+      font-size: 56px;
+      line-height: .8;
+      color: var(--accent);
+      opacity: .25;
+      font-family: Georgia, serif;
+      flex-shrink: 0;
+      margin-top: -4px;
+    }
+    .pos-statement-text {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .pos-statement-text em {
+      font-style: normal;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    /* ── CTA ────────────────────────────────────────────────── */
+    .about-cta {
+      padding: 64px 0 56px;
+    }
+    .cta-inner {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 44px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: center;
+    }
+    .cta-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .cta-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(.85); }
+    }
+    .cta-heading {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -.4px;
+      margin-bottom: 10px;
+      max-width: 520px;
+    }
+    .cta-desc { font-size: 14px; color: var(--text-2); line-height: 1.75; max-width: 520px; }
+    .cta-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; min-width: 168px; }
+    .cta-actions .btn { justify-content: center; }
+
+    /* Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    .tag-blue   { background: var(--accent-dim);  color: var(--accent);  border-color: #bfdbfe; }
+    .tag-green  { background: var(--green-dim);   color: var(--green);   border-color: #a7f3d0; }
+    .tag-orange { background: var(--orange-dim);  color: var(--orange);  border-color: #fde68a; }
+    .tag-purple { background: var(--purple-dim);  color: var(--purple);  border-color: #ddd6fe; }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+      .about-hero-wrap { padding: 0 0 5px; }
+      .about-role { flex-wrap: wrap; }
+      .metrics-strip { padding: 28px 0; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px 0; }
+      .stat-item + .stat-item::before { display: none; }
+      .stat-item:nth-child(odd)::after {
+        content: '';
+        position: absolute;
+        right: 0; top: 18%; height: 64%;
+        width: 1px;
+        background: var(--border);
+      }
+      .stat-num { font-size: 28px; }
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .pos-grid { grid-template-columns: 1fr; }
+      .positioning-section { padding: 48px 0; }
+      .about-cta { padding: 40px 0; }
+      .cta-inner { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px; }
+      .cta-actions { align-items: stretch; min-width: 0; }
+      .pos-statement { flex-direction: column; gap: 8px; padding: 22px; }
+      .pos-statement-text { font-size: 15px; }
+    }
+    @media (max-width: 480px) {
+      .about-name { font-size: 30px; }
+      .skills-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <span class="dot"><img src="avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>
+      邵炎炎
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="about.html" class="active">关于我</a>
+      <a href="projects.html">项目</a>
+      <a href="blog.html">博客</a>
+      <a href="/cdn-cgi/l/email-protection#eb98838a84928a85928a85d2daabdaddd8c5888486" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ── About Hero ─────────────────────────────────────────── -->
+<div class="about-hero-wrap">
+  <div class="container">
+    <div class="about-hero">
+      <p class="eyebrow">About Me</p>
+      <h1 class="about-name">邵炎炎</h1>
+      <p class="about-role">
+        <strong>Forward Deployed Engineer<span class="role-cn">前置交付工程师</span></strong>
+        <span class="about-role-sep">·</span>
+        Solutions Architect<span class="role-cn">解决方案架构师</span>
+        <span class="about-role-sep">·</span>
+        AI 产品经理
+        <span class="about-role-sep">·</span>
+        CIO<span class="role-cn">首席信息官</span>
+      </p>
+      <p class="about-bio">
+        我把自己定位成 <strong>Forward Deployed Engineer</strong>——
+        既能写架构决策文档，也能在客户会议室白板上画方案；
+        进客户现场访谈业务，<strong>72 小时给出第一个跑得起来的 Demo</strong>，
+        4 周做出 Pilot，3 个月推进生产，并把交付物移交给客户内部团队继续运营。
+      </p>
+      <p class="about-bio">
+        13 年前我以 C# 工程师入行，5 年后晋升部门副经理。
+        此后主导跨国电商平台从零搭建，7 大微服务落地东南亚多国市场；
+        再到日本创业公司担任 CIO，把 AI 智能问答系统从想法做到上线——
+        会员自助解决率 65%，客服工单下降 30%。
+        同期完成宝可梦卡牌 Web3 交易平台的产品规划与日本市场合规设计。
+      </p>
+      <p class="about-bio">
+        这条路不是直线，但每一步都在同一个方向上：<strong>到客户那儿去，把复杂的技术翻译成可度量的业务结果</strong>。
+        我既懂 RAG 向量检索的技术细节，也能把它讲成"自助解决率 65% / 工单 ↓30%"的业务语言；
+        既会和客户的 CTO 讨论架构选型，也会跟客服主管一起标注问答数据。
+      </p>
+      <div class="about-links">
+        <a class="about-link" href="/cdn-cgi/l/email-protection#1c6f747d73657d72657d72252d5c2d2a2f327f7371">✉️ <span class="__cf_email__" data-cfemail="f5869d949a8c949b8c949bccc4b5c4c3c6db969a98">[email&#160;protected]</span></a>
+        <a class="about-link" href="projects.html">🗂️ 项目案例</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── How I Work ──────────────────────────────────────────── -->
+<section class="section container howiwork-section">
+  <div class="section-head" style="max-width:none;">
+    <p class="eyebrow">How I Work</p>
+    <h2>我的工作方式</h2>
+    <p style="max-width:none;">一段典型的 Forward Deployed 交付节奏——从进客户现场到上线度量，每一步都有明确的输出物。</p>
+  </div>
+
+  <div class="howiwork-grid" data-reveal-stagger data-reveal-step="70">
+    <div class="howiwork-card" data-reveal>
+      <span class="howiwork-week">Week 1</span>
+      <div class="howiwork-title">Discovery · 现场访谈</div>
+      <div class="howiwork-desc">驻场访谈业务方与最终用户，画出业务地图、痛点优先级、数据形态、合规边界，对齐"成功长什么样"。</div>
+      <div class="howiwork-foot">输出：Discovery Memo + Demo 假设</div>
+    </div>
+    <div class="howiwork-card" data-reveal>
+      <span class="howiwork-week">Week 2 – 3</span>
+      <div class="howiwork-title">PoC · 72h 拉原型</div>
+      <div class="howiwork-desc">3 天内拉出可演示原型，剩余时间在 Demo 反馈循环里迭代——每轮带一个失败案例，把假设证伪或证实。</div>
+      <div class="howiwork-foot">输出：可演示 Demo + Decision Memo</div>
+    </div>
+    <div class="howiwork-card" data-reveal>
+      <span class="howiwork-week">Week 4 – 8</span>
+      <div class="howiwork-title">Pilot · 真实流量</div>
+      <div class="howiwork-desc">导入小流量真实用户，跑评估指标、调 prompt、修引用展示，并把可重复的部分写进 Playbook 与 ADR。</div>
+      <div class="howiwork-foot">输出：Pilot 报告 + Architecture Decision Records</div>
+    </div>
+    <div class="howiwork-card" data-reveal>
+      <span class="howiwork-week">Week 9+</span>
+      <div class="howiwork-title">Production · 上线 + 移交</div>
+      <div class="howiwork-desc">推进生产上线、定义业务度量口径，把运营 Playbook 与监控移交给客户内部团队，确保 FDE 离开后系统能自走。</div>
+      <div class="howiwork-foot">输出：上线 + 业务度量 + 运营 Playbook</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Work Timeline ───────────────────────────────────────── -->
+<section class="section container">
+  <div class="section-head">
+    <p class="eyebrow">Experience</p>
+    <h2>工作经历</h2>
+  </div>
+
+  <div class="timeline" data-reveal-stagger data-reveal-step="90">
+
+    <div class="timeline-item" data-reveal>
+      <div class="timeline-date">
+        <span class="date-year">2025</span>
+        <span class="date-period">9月 — 至今</span>
+      </div>
+      <div class="timeline-dot active"></div>
+      <div class="timeline-body">
+        <div class="timeline-company">日本 PNYY 株式会社</div>
+        <div class="timeline-title">CIO · 首席信息官</div>
+        <div class="timeline-desc">
+          远程管理 6 人技术团队，全面负责公司技术战略、AI 能力建设与多产品线技术规划。
+          主导企业级 AI 智能问答系统从 0 到 1 落地：基于 Multi-Agent 三层架构 + LLM 记忆分层设计，
+          上线后会员自助解决率达 65%，客服工单量降低 30%，用户满意度 87%。
+          主导宝可梦卡牌 Web3 交易平台产品规划：完成日本市场用户痛点分析、竞品研究、
+          三部法律合规设计（景品表示法 / 古物営業法 / 扭蛋禁令），制定 Web2 先行 + Web3 平滑迁移的渐进策略。
+          构建 Claude Code + Cursor + CodeX AI 辅助开发工作流，新模块开发效率提升约 40%。
+        </div>
+        <div class="timeline-tags">
+          <span class="tag tag-blue">Multi-Agent</span>
+          <span class="tag tag-purple">LLM 架构</span>
+          <span class="tag tag-green">RAG</span>
+          <span class="tag tag-orange">Web3 产品</span>
+          <span class="tag">.NET 9 微服务</span>
+          <span class="tag">日本市场合规</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item" data-reveal>
+      <div class="timeline-date">
+        <span class="date-year">2018 — 25</span>
+        <span class="date-period">11月 — 6月</span>
+      </div>
+      <div class="timeline-dot"></div>
+      <div class="timeline-body">
+        <div class="timeline-company">新加坡 JCS 集团</div>
+        <div class="timeline-title">系统架构师 · 技术负责人</div>
+        <div class="timeline-desc">
+          作为 Forward Deployed 角色常驻新加坡客户现场，主导面向东南亚多国市场的私域电商平台从 0 到 1 落地。
+          在客户现场直接与各国业务团队访谈，把复杂的多套奖励制度翻译成可维护的引擎；
+          主导三端前台（Mall / Org / Hq）+ 七大微服务的架构拆分，设计自研分库路由与 USDT TRC-20 / ERC-20 双链支付，
+          一次性交付到客户 4 国市场并行上线，并带研发团队完成持续迭代与移交。
+        </div>
+        <div class="timeline-tags">
+          <span class="tag tag-blue">Forward Deployed</span>
+          <span class="tag tag-purple">客户现场交付</span>
+          <span class="tag tag-orange">多国并行上线</span>
+          <span class="tag">微服务架构</span>
+          <span class="tag">跨国团队</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item" data-reveal>
+      <div class="timeline-date">
+        <span class="date-year">2013 — 18</span>
+        <span class="date-period">4月 — 9月</span>
+      </div>
+      <div class="timeline-dot"></div>
+      <div class="timeline-body">
+        <div class="timeline-company">北京中科北软</div>
+        <div class="timeline-title">部门副经理 / 项目经理 / 开发工程师</div>
+        <div class="timeline-desc">
+          5 年内完成技术 → 管理的完整转型。从 C# 后端开发起步，逐步承担项目管理职责，
+          最终晋升为部门副经理，负责员工绩效、大客户关系维护与产品技术升级。
+          主导多个大型电商平台重点项目，推动推荐转化率提升 18%。
+        </div>
+        <div class="timeline-tags">
+          <span class="tag">C# / .NET</span>
+          <span class="tag">高并发架构</span>
+          <span class="tag">团队管理</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item" data-reveal>
+      <div class="timeline-date">
+        <span class="date-year">2009 — 13</span>
+        <span class="date-period">本科四年</span>
+      </div>
+      <div class="timeline-dot"></div>
+      <div class="timeline-body">
+        <div class="timeline-company">北京建筑大学</div>
+        <div class="timeline-title">计算机科学与技术（本科）</div>
+        <div class="timeline-desc">
+          系统学习计算机科学基础，打下扎实的工程底层逻辑，
+          为后续 13 年的技术与产品复合成长奠定基础。
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Skills ──────────────────────────────────────────────── -->
+<section class="section container" style="padding-top:0;">
+  <div class="section-head">
+    <p class="eyebrow">Skills</p>
+    <h2>技能图谱</h2>
+  </div>
+
+  <div class="skills-grid" data-reveal-stagger data-reveal-step="50">
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">🚚 客户交付 / Solutioning</div>
+      <div class="skill-list">
+        <span class="skill-pill">客户访谈与需求挖掘</span>
+        <span class="skill-pill">高管 stakeholder 沟通</span>
+        <span class="skill-pill">72h PoC 设计</span>
+        <span class="skill-pill">解决方案演示</span>
+        <span class="skill-pill">现场白板设计</span>
+        <span class="skill-pill">合规与法务对齐</span>
+        <span class="skill-pill">上线推广与客户教育</span>
+      </div>
+    </div>
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">🤖 AI / LLM 工程化</div>
+      <div class="skill-list">
+        <span class="skill-pill">Multi-Agent 编排</span>
+        <span class="skill-pill">LLM 记忆分层</span>
+        <span class="skill-pill">RAG 检索增强</span>
+        <span class="skill-pill">多模型动态路由</span>
+        <span class="skill-pill">本地推理（Ollama / MLC LLM）</span>
+        <span class="skill-pill">Eval-as-CI-gate</span>
+        <span class="skill-pill">LLM 可观测性（Langfuse）</span>
+        <span class="skill-pill">MCP Server</span>
+        <span class="skill-pill">输出护栏 / Guardrail</span>
+        <span class="skill-pill">Prompt Injection 红队</span>
+        <span class="skill-pill">HITL 设计</span>
+        <span class="skill-pill">Prompt Engineering</span>
+        <span class="skill-pill">向量检索 / bge-m3</span>
+      </div>
+    </div>
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">🎯 产品管理</div>
+      <div class="skill-list">
+        <span class="skill-pill">AI-native 产品设计</span>
+        <span class="skill-pill">PRD 拆解与战略规划</span>
+        <span class="skill-pill">MVP 拆解</span>
+        <span class="skill-pill">竞品分析</span>
+        <span class="skill-pill">用户体验设计</span>
+        <span class="skill-pill">数据驱动决策</span>
+        <span class="skill-pill">OKR / KPI 制定</span>
+        <span class="skill-pill">Build in Public 迭代</span>
+      </div>
+    </div>
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">🏗️ 技术架构</div>
+      <div class="skill-list">
+        <span class="skill-pill">.NET 9 微服务</span>
+        <span class="skill-pill">CQRS + MediatR</span>
+        <span class="skill-pill">MassTransit / RabbitMQ</span>
+        <span class="skill-pill">YARP 网关</span>
+        <span class="skill-pill">PostgreSQL / SQL Server</span>
+        <span class="skill-pill">Redis</span>
+        <span class="skill-pill">WebSocket / Hangfire</span>
+        <span class="skill-pill">分库路由设计</span>
+        <span class="skill-pill">Flutter 三端（Web / iOS / Android）</span>
+        <span class="skill-pill">USDT 双链 / Polygon ERC-721</span>
+      </div>
+    </div>
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">📊 业务领域</div>
+      <div class="skill-list">
+        <span class="skill-pill">企业数字化转型</span>
+        <span class="skill-pill">AI-native SaaS</span>
+        <span class="skill-pill">智能客服</span>
+        <span class="skill-pill">会员制电商</span>
+        <span class="skill-pill">高并发电商</span>
+        <span class="skill-pill">Web3 / NFT 确权</span>
+        <span class="skill-pill">日本市场合规</span>
+      </div>
+    </div>
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">🌏 管理与协作</div>
+      <div class="skill-list">
+        <span class="skill-pill">跨国团队管理</span>
+        <span class="skill-pill">研发效能体系</span>
+        <span class="skill-pill">项目全流程管理</span>
+        <span class="skill-pill">大客户关系维护</span>
+        <span class="skill-pill">技术选型决策</span>
+        <span class="skill-pill">独立全栈交付</span>
+      </div>
+    </div>
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">🛠️ 开发工具 & 语言</div>
+      <div class="skill-list">
+        <span class="skill-pill">Claude Code</span>
+        <span class="skill-pill">Codex</span>
+        <span class="skill-pill">Cursor</span>
+        <span class="skill-pill">Flutter</span>
+        <span class="skill-pill">Docker</span>
+        <span class="skill-pill">Git</span>
+        <span class="skill-pill">C#</span>
+        <span class="skill-pill">TypeScript</span>
+        <span class="skill-pill">Python</span>
+        <span class="skill-pill">Next.js</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Positioning ─────────────────────────────────────────── -->
+<div class="positioning-section">
+  <div class="container" style="position:relative;z-index:1;">
+    <p class="pos-eyebrow">Value Positioning</p>
+    <h2 class="pos-title">我作为 Forward Deployed Engineer 的定位</h2>
+    <p class="pos-subtitle">
+      用产品定位的框架审视自己：我是谁，和谁比，在哪个类别里，对谁最有价值。
+    </p>
+
+    <div class="pos-grid">
+      <div class="pos-card">
+        <div class="pos-card-label">竞争参照物</div>
+        <div class="pos-card-question">我和谁放在一起被比较？</div>
+        <div class="pos-card-answer">纯交付的 Solutions Engineer，或纯产品的 AI PM——而我同时是两者，并且能直接写架构、上手实现。</div>
+      </div>
+      <div class="pos-card">
+        <div class="pos-card-label">差异化优势</div>
+        <div class="pos-card-question">我真正独特的地方是什么？</div>
+        <div class="pos-card-answer">13 年技术 + CIO + 跨国客户现场经验。能在客户白板上画方案，72h 拉出 Demo，并且把它推到生产。</div>
+      </div>
+      <div class="pos-card">
+        <div class="pos-card-label">市场类别</div>
+        <div class="pos-card-question">我应该放在哪个框架里被评估？</div>
+        <div class="pos-card-answer">Forward Deployed Engineer / Solutions Architect——不是后端工程师，也不是传统 PM，是把 AI 落到客户业务里的"最后一公里"。</div>
+      </div>
+      <div class="pos-card">
+        <div class="pos-card-label">目标客户价值</div>
+        <div class="pos-card-question">什么样的公司最该用我？</div>
+        <div class="pos-card-answer">业务复杂、有 AI 预算但内部 AI 团队还没成型的成长期企业——他们不缺工程师，缺一个能进现场把方案拍下来的人。</div>
+      </div>
+    </div>
+
+    <div class="pos-statement">
+      <div class="pos-quote-mark">"</div>
+      <div class="pos-statement-text">
+        面向<em>有 AI 雄心、但内部 AI 团队还在搭建</em>的成长期企业，
+        一个能进客户现场、<em>72h 拉出 PoC、3 个月推进生产</em>的 Forward Deployed Engineer。
+        对大厂研发团队来说太"客户向"，对传统咨询来说太"动手"，
+        但对需要一个人扛起从业务访谈到上线度量的公司——<em>正好</em>。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA ─────────────────────────────────────────────────── -->
+<div class="about-cta">
+  <div class="container">
+    <div class="cta-inner">
+      <div>
+        <div class="cta-label">Open to Work</div>
+        <h2 class="cta-heading">正在寻找 Forward Deployed Engineer / Solutions Engineer / AI 解决方案架构师 岗位</h2>
+        <p class="cta-desc">
+          期望城市：上海 · 苏州，可接受 Remote 与跨国出差。
+          擅长进客户现场把 AI 从 PoC 推到生产，13 年技术 + 产品 + CIO 复合背景，
+          能独立完成"业务访谈 → 方案设计 → 原型交付 → 推进上线"全链路。欢迎聊聊。
+        </p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-primary" href="/cdn-cgi/l/email-protection#73001b121c0a121d0a121d4a42334245405d101c1e">发送邮件 →</a>
+        <a class="btn btn-ghost" href="projects.html">先看项目案例</a>
+        <a class="btn btn-ghost" href="resume-shaoyanyan.pdf" download>下载简历 PDF ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="projects.html">项目</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="nav.js"></script>
+<script src="motion.js"></script>
+<script>
+document.querySelector('.nav-toggle').addEventListener('click', function() {
+  const nav = this.closest('.site-nav');
+  const open = nav.classList.toggle('menu-open');
+  this.setAttribute('aria-expanded', open);
+});
+</script>
+</body>
+</html>

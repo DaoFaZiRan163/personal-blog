@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="邵炎炎的博客 — 关于 AI 落地实践、产品经理方法论与软件架构设计的观察。">
+  <title>博客 — 邵炎炎</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Page header (matches projects-header) ── */
+    .blog-header {
+      padding: 10px 0 32px;
+    }
+    .blog-header h1 {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 14px;
+    }
+    .blog-header .lead {
+      font-size: 16px;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+    @media (max-width: 720px) {
+      .blog-header h1 { font-size: 30px; }
+    }
+
+    /* ── Blog-specific styles ── */
+    .blog-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+      align-items: center;
+    }
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 16px;
+      border-radius: 20px;
+      min-height: 40px;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .blog-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .blog-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+    .blog-card.featured {
+      grid-column: span 3;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      padding: 32px;
+      background: var(--text);
+      border-color: transparent;
+      color: #fff;
+    }
+    .blog-card.featured .blog-cat { background: rgba(255,255,255,.15); color: rgba(255,255,255,.85); border-color: transparent; }
+    .blog-card.featured .blog-date { color: rgba(255,255,255,.45); }
+    .blog-card.featured h2 { color: #fff; font-size: 22px; }
+    .blog-card.featured p { color: rgba(255,255,255,.7); }
+    .blog-card.featured .blog-read-more { color: #93c5fd; }
+    .featured-left { display: flex; flex-direction: column; gap: 10px; }
+    .featured-right {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 180px;
+      justify-content: center;
+    }
+    .feat-stat {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+    .feat-stat-val { font-size: 22px; font-weight: 800; color: #93c5fd; line-height: 1; }
+    .feat-stat-label { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+
+    .blog-cat {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid #bfdbfe;
+      align-self: flex-start;
+    }
+    .blog-cat.pm     { background: var(--green-dim); color: var(--green); border-color: #a7f3d0; }
+    .blog-cat.arch   { background: var(--purple-dim); color: var(--purple); border-color: #ddd6fe; }
+    .blog-cat.fde    { background: var(--orange-dim); color: var(--orange); border-color: #fde68a; }
+
+    .blog-date { font-size: 12px; color: var(--text-3); }
+    .blog-card h2 { font-size: 16px; font-weight: 700; line-height: 1.45; color: var(--text); }
+    .blog-card p  { font-size: 13px; color: var(--text-2); line-height: 1.65; flex: 1; }
+    .blog-read-more { font-size: 12px; font-weight: 600; color: var(--accent); margin-top: 4px; }
+
+    .blog-card[data-cat].hidden { display: none; }
+    .blog-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .page-status {
+      font-size: 13px;
+      color: var(--text-3);
+    }
+    .page-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 36px;
+      padding: 0 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      background: var(--bg);
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .page-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+    .blog-pagination.hidden { display: none; }
+
+    @media (max-width: 900px) {
+      .blog-grid { grid-template-columns: 1fr 1fr; }
+      .blog-card.featured { grid-column: span 2; grid-template-columns: 1fr; }
+      .featured-right { flex-direction: row; min-width: unset; }
+    }
+    @media (max-width: 600px) {
+      .blog-filter {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        margin: 0 -4px 28px;
+        padding: 0 4px 4px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .blog-filter::-webkit-scrollbar { display: none; }
+      .filter-btn {
+        flex: 0 0 auto;
+        min-width: max-content;
+        padding: 0 16px;
+        scroll-snap-align: start;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+      }
+      .blog-grid { grid-template-columns: 1fr; }
+      .blog-card.featured { grid-column: span 1; grid-template-columns: 1fr; gap: 16px; padding: 20px; }
+      .featured-right { display: none; }
+      .blog-pagination {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 22px;
+        padding-top: 18px;
+      }
+      .page-controls {
+        justify-content: flex-start;
+        gap: 10px;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+      .page-controls::-webkit-scrollbar { display: none; }
+      .page-status {
+        font-size: 12px;
+      }
+      .page-btn {
+        flex: 0 0 auto;
+        height: 36px;
+        min-width: 38px;
+        padding: 0 13px;
+        border-radius: 999px;
+      }
+      .page-btn:first-child,
+      .page-btn:last-child {
+        min-width: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <span class="dot"><img src="avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>
+      邵炎炎
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于我</a>
+      <a href="projects.html">项目</a>
+      <a href="blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+
+  <!-- Page header -->
+  <div class="blog-header" style="padding: 0px 0px 32px">
+    <p class="eyebrow">Blog</p>
+    <h1>博客</h1>
+    <p class="lead">
+      记录客户现场交付、AI 落地实践、产品经理方法论与软件架构思考。
+      不追热点，尽量把问题说清楚，把经验留下来。
+    </p>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="blog-filter">
+    <button class="filter-btn active" onclick="filterPosts('all', this)">全部</button>
+    <button class="filter-btn" onclick="filterPosts('fde', this)">🚚 交付实战</button>
+    <button class="filter-btn" onclick="filterPosts('ai', this)">🤖 AI 实践</button>
+    <button class="filter-btn" onclick="filterPosts('pm', this)">🎯 产品经理</button>
+    <button class="filter-btn" onclick="filterPosts('arch', this)">🏗️ 软件架构</button>
+  </div>
+
+  <!-- Posts grid -->
+  <div class="blog-grid" id="postsGrid">
+
+    <!-- Featured post -->
+    <a class="blog-card featured" href="posts/72h-rag-demo-for-client.html" data-cat="fde">
+      <div class="featured-left">
+        <div>
+          <span class="blog-cat fde">交付实战</span>
+        </div>
+        <h2>72 小时为客户做出第一个可用的 RAG Demo —— 一份 FDE 的实战清单</h2>
+        <p>
+          "3 天搞定一个 AI Demo"听上去像销售话术，但作为 Forward Deployed Engineer，这其实是一份可执行的清单。
+          Day 0 预案、Day 1 数据骨架、Day 2 串通跑通、Day 3 演示与诚实的失败案例。
+        </p>
+        <span class="blog-read-more">阅读全文 →</span>
+        <span class="blog-date" style="margin-top:4px;">2026.05.16 · 约 9 分钟阅读</span>
+      </div>
+      <div class="featured-right">
+        <div class="feat-stat">
+          <div class="feat-stat-val">72h</div>
+          <div class="feat-stat-label">PoC 时窗</div>
+        </div>
+        <div class="feat-stat">
+          <div class="feat-stat-val">5 问</div>
+          <div class="feat-stat-label">Day 0 预案</div>
+        </div>
+        <div class="feat-stat">
+          <div class="feat-stat-val">3 坑</div>
+          <div class="feat-stat-label">反复见过的翻车</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Hermes Agent -->
+    <a class="blog-card" href="posts/hermes-agent-harness.html" data-cat="ai">
+      <span class="blog-cat">AI 实践</span>
+      <h2>Hermes Agent：从“会聊天的工具”到“会长大的工作系统”</h2>
+      <p>读 Hermes Agent 后的个人理解：Agent 真正有价值的地方，不是更会聊天，而是能把规则、记忆、工具和复盘沉淀成持续进化的工作系统。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.14</span>
+    </a>
+
+    <!-- Post: LangGraph -->
+    <a class="blog-card" href="posts/langgraph-ai-qa-system.html" data-cat="ai">
+      <span class="blog-cat">AI 实践</span>
+      <h2>LangGraph：用状态机思维重构 AI 问答系统的工作流编排</h2>
+      <p>当 AI 系统需要动态决策、循环重试、多 Agent 协作时，线性 Chain 就到了边界。LangGraph 用有向图 + 共享状态 + 条件路由，让复杂工作流变得可理解、可调试、可维护。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.15</span>
+    </a>
+
+    <!-- Post: Obvious Awesome -->
+    <a class="blog-card" href="posts/obvious-awesome-positioning.html" data-cat="pm">
+      <span class="blog-cat pm">产品经理</span>
+      <h2>读《Obvious Awesome》：当 AI 的厉害变得"显而易见"</h2>
+      <p>定位不是营销话术，是你在客户脑子里占据的那个判断框架。结合 AI 产品落地与直销行业经验，提炼五个真实体会。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.15</span>
+    </a>
+
+    <a class="blog-card" href="posts/obsidian-ai-second-brain.html" data-cat="ai">
+      <span class="blog-cat">AI 实践</span>
+      <h2>Obsidian + AI：我为什么重新理解“第二大脑”</h2>
+      <p>Markdown 仍适合输入和草稿，但面向发布、Agent 访问和长期知识资产，语义 HTML 会越来越重要。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.14</span>
+    </a>
+
+    <a class="blog-card" href="posts/llm-memory-architecture.html" data-cat="ai">
+      <span class="blog-cat">AI 实践</span>
+      <h2>LLM 记忆分层架构：解决多轮对话体验断裂的工程实践</h2>
+      <p>短期会话记忆、长期向量记忆、用户画像记忆三层设计，让用户感知不到上下文窗口的存在。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.12</span>
+    </a>
+
+    <!-- Post: Enterprise AI Playbook (new) -->
+    <a class="blog-card" href="posts/enterprise-ai-implementation-playbook.html" data-cat="ai">
+      <span class="blog-cat">AI 实践</span>
+      <h2>企业 AI 实施手册：斯坦福实证报告与一线落地经验</h2>
+      <p>斯坦福分析 51 个真实案例，77% 的最难挑战是变革管理而非技术。结合 AI 智能问答落地经历，拆解从 Pilot 到规模化的完整路径。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.13</span>
+    </a>
+
+    <!-- Post 2 -->
+    <a class="blog-card" href="posts/ai-quality-evaluation.html" data-cat="pm">
+      <span class="blog-cat pm">产品经理</span>
+      <h2>AI 产品的质量评估体系怎么建？</h2>
+      <p>从 7 类任务评估模板到评分阈值设定，AI 输出质量可控才是真的可交付。介绍我们在智能问答平台上建立的评估器机制。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.05</span>
+    </a>
+
+    <!-- Post 3 -->
+    <a class="blog-card" href="posts/dotnet9-cqrs-ai-microservice.html" data-cat="arch">
+      <span class="blog-cat arch">软件架构</span>
+      <h2>为什么我选择 .NET 9 + CQRS 做 AI 微服务</h2>
+      <p>技术选型不是追热点，而是匹配团队、场景和可维护性的综合判断。记录我们在 AI 服务架构上的决策过程。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.04.20</span>
+    </a>
+
+    <!-- Post 4 -->
+    <a class="blog-card" href="posts/multi-agent-product-design.html" data-cat="ai">
+      <span class="blog-cat">AI 实践</span>
+      <h2>Multi-Agent 编排平台的产品设计：从概念到可落地方案</h2>
+      <p>Agent 很火，但真正把它做成可用的产品并不容易。分享编排器 + 执行器 + 评估器三层架构的产品设计思路。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.04.08</span>
+    </a>
+
+    <!-- Post 6 -->
+    <a class="blog-card" href="posts/pm-from-engineer.html" data-cat="pm">
+      <span class="blog-cat pm">产品经理</span>
+      <h2>技术出身的 PM，优势在哪里？</h2>
+      <p>5 年工程师经历让我在做产品时有了不同的视角——能估工作量、能识别技术风险、能和研发平等对话。这是礼物也是局限。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.03.10</span>
+    </a>
+
+    <!-- Post 7 -->
+    <a class="blog-card" href="posts/prompt-engineering-practice.html" data-cat="ai">
+      <span class="blog-cat">AI 实践</span>
+      <h2>Prompt Engineering 的工程化：从个人技巧到团队规范</h2>
+      <p>一个人写好 Prompt 不难，让整个团队用同一套规范写出高质量 Prompt 才是真正的挑战。我们是怎么做到的。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.02.18</span>
+    </a>
+
+    <!-- Post 8 -->
+    <a class="blog-card" href="posts/high-concurrency-architecture.html" data-cat="arch">
+      <span class="blog-cat arch">软件架构</span>
+      <h2>500万用户电商平台的高并发架构复盘</h2>
+      <p>峰值 QPS 800+，99.9% 可用性，TB 级数据库——我们在天津康婷电商平台上做了哪些架构决策，踩了哪些坑。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.01.30</span>
+    </a>
+
+    <a class="blog-card" href="posts/user-value-formula-ai-product.html" data-cat="pm">
+      <span class="blog-cat pm">产品经理</span>
+      <h2>用户价值公式：为什么好功能不一定有人用</h2>
+      <p>用户价值 = 新体验 - 旧体验 - 替换成本。放到 AI 产品里，信任成本、Prompt 学习成本和迁移成本会决定用户是否真的愿意切换。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2025.12.25</span>
+    </a>
+
+    <a class="blog-card" href="posts/ai-product-manager-overview.html" data-cat="pm">
+      <span class="blog-cat pm">产品经理</span>
+      <h2>AI 产品经理概论：从功能定义者到协作架构师</h2>
+      <p>产品经理的本质不是写需求文档，而是在用户问题、商业目标与技术实现之间做判断。AI 时代还要设计行为边界、评测和持续迭代机制。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2025.12.18</span>
+    </a>
+
+  </div>
+
+  <div class="blog-pagination" id="blogPagination" aria-label="博客分页">
+    <div class="page-status" id="pageStatus"></div>
+    <div class="page-controls" id="pageControls"></div>
+  </div>
+
+</section>
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="about.html">关于</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+
+<script src="nav.js"></script>
+<script src="motion.js"></script>
+<script>
+const pageSize = 6;
+let activeCategory = 'all';
+let currentPage = 1;
+
+function filterPosts(cat, btn) {
+  activeCategory = cat;
+  currentPage = 1;
+  document.querySelectorAll('.filter-btn').forEach((button) => button.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderBlogPage();
+}
+
+function setBlogPage(page) {
+  currentPage = page;
+  renderBlogPage();
+  document.getElementById('postsGrid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderBlogPage() {
+  const cards = Array.from(document.querySelectorAll('.blog-card[data-cat]'));
+  const listCards = cards.filter((card) => !card.classList.contains('featured'));
+  const matchedCards = listCards.filter((card) => (
+    activeCategory === 'all' || card.getAttribute('data-cat') === activeCategory
+  ));
+  const totalPages = Math.max(1, Math.ceil(matchedCards.length / pageSize));
+  currentPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const visibleCards = new Set(matchedCards.slice(start, start + pageSize));
+
+  cards.forEach((card) => {
+    const isFeaturedVisible = card.classList.contains('featured')
+      && currentPage === 1
+      && (activeCategory === 'all' || card.getAttribute('data-cat') === activeCategory);
+    card.classList.toggle('hidden', !(isFeaturedVisible || visibleCards.has(card)));
+  });
+
+  renderPagination(matchedCards.length, totalPages);
+}
+
+function renderPagination(totalItems, totalPages) {
+  const pagination = document.getElementById('blogPagination');
+  const status = document.getElementById('pageStatus');
+  const controls = document.getElementById('pageControls');
+  if (!pagination || !status || !controls) return;
+
+  pagination.classList.toggle('hidden', totalPages <= 1);
+  if (totalPages <= 1) return;
+
+  const startItem = (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
+  status.textContent = `显示 ${startItem}-${endItem} / 共 ${totalItems} 篇`;
+  controls.innerHTML = '';
+
+  const createButton = (label, page, options = {}) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'page-btn';
+    button.textContent = label;
+    if (options.active) button.classList.add('active');
+    if (options.disabled) button.disabled = true;
+    button.addEventListener('click', () => setBlogPage(page));
+    return button;
+  };
+
+  controls.appendChild(createButton('上一页', currentPage - 1, { disabled: currentPage === 1 }));
+  for (let page = 1; page <= totalPages; page += 1) {
+    controls.appendChild(createButton(String(page), page, { active: page === currentPage }));
+  }
+  controls.appendChild(createButton('下一页', currentPage + 1, { disabled: currentPage === totalPages }));
+}
+
+renderBlogPage();
+</script>
+</body>
+</html>

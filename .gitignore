@@ -1,0 +1,4 @@
+.vs/
+.vercel/
+node_modules/
+dist/

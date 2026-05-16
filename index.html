@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="邵炎炎的个人博客 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验，专注把 AI 从 PoC 推到生产。">
+  <meta property="og:title" content="邵炎炎 — Forward Deployed Engineer · 把 AI 从 PoC 推到生产">
+  <meta property="og:description" content="13 年从工程师走到 CIO，跑过中/日/东南亚客户现场。72h PoC、4 周 Pilot、3 个月推进生产。">
+  <meta property="og:type" content="website">
+  <title>邵炎炎 — Forward Deployed Engineer · 把 AI 从 PoC 推到生产</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Engagement Flow (Discovery → PoC → Pilot → Production) ── */
+    .flow-section {
+      padding-top: 56px;
+      padding-bottom: 24px;
+    }
+    .flow-head { text-align: center; margin-bottom: 28px; }
+    .flow-head .eyebrow { color: var(--accent); }
+    .flow-head h2 {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -.4px;
+      margin: 6px 0 8px;
+    }
+    .flow-head p {
+      font-size: 14px;
+      color: var(--text-2);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .flow-track {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      align-items: stretch;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      overflow: hidden;
+    }
+    .flow-step {
+      position: relative;
+      padding: 22px 22px 24px;
+      border-right: 1px solid var(--border);
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background .2s;
+    }
+    .flow-step:last-child { border-right: 0; }
+    .flow-step:hover { background: var(--bg-subtle); }
+    .flow-step::after {
+      content: '→';
+      position: absolute;
+      top: 50%;
+      right: -11px;
+      transform: translateY(-50%);
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 19px;
+      text-align: center;
+      z-index: 2;
+    }
+    .flow-step:last-child::after { display: none; }
+    .flow-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 6px;
+      background: var(--accent-dim);
+    }
+    .flow-step.s2 .flow-icon { background: var(--purple-dim); }
+    .flow-step.s3 .flow-icon { background: var(--green-dim); }
+    .flow-step.s4 .flow-icon { background: var(--orange-dim); }
+    .flow-stage {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .flow-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.2px;
+      line-height: 1.25;
+    }
+    .flow-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+    .flow-step.s2 .flow-time { color: var(--purple); }
+    .flow-step.s3 .flow-time { color: var(--green); }
+    .flow-step.s4 .flow-time { color: var(--orange); }
+    .flow-desc {
+      font-size: 12.5px;
+      color: var(--text-2);
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+    @media (max-width: 720px) {
+      .flow-section { padding-top: 36px; padding-bottom: 12px; }
+      .flow-track {
+        grid-template-columns: 1fr;
+      }
+      .flow-step {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+        padding: 18px 20px 20px;
+      }
+      .flow-step:last-child { border-bottom: 0; }
+      .flow-step::after {
+        content: '↓';
+        top: auto;
+        bottom: -11px;
+        right: 50%;
+        transform: translateX(50%);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html"><span class="dot"><img src="avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="index.html" class="active">首页</a>
+      <a href="about.html">关于我</a>
+      <a href="projects.html">项目</a>
+      <a href="blog.html">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="container">
+  <div class="hero">
+    <div class="hero-copy">
+      <div class="hero-badge"><span class="pulse"></span>正在寻找 Forward Deployed Engineer 机会 · 上海 / 苏州 / 远程</div>
+      <h1>Forward Deployed Engineer<br><em>把 AI 从 PoC</em><br>推到生产</h1>
+      <p class="hero-subtitle-cn">前置交付工程师 · 解决方案架构师</p>
+      <p class="hero-desc">13 年从 C# 工程师走到 CIO。我能做的事——<strong>进客户现场，72 小时拉出 PoC，3 个月推进生产</strong>，把 AI 能力落到客户的 P&amp;L 里。既能写架构决策文档，也能在客户会议室白板上画方案。</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="projects.html">查看项目案例 →</a>
+        <a class="btn btn-ghost" href="about.html">了解我的经历</a>
+        <a class="btn btn-ghost" href="resume-shaoyanyan.pdf" download>下载简历 PDF ↓</a>
+      </div>
+    </div>
+    <div class="hero-panel">
+      <div class="hero-id">
+        <div class="hero-id-text"><h3>Forward Deployed Engineer</h3><p class="hero-id-cn">前置交付工程师</p><p>客户现场 · PoC → Pilot → Production</p></div>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-tags">
+        <span class="tag tag-blue">Forward Deployed</span>
+        <span class="tag tag-purple">Multi-Agent</span>
+        <span class="tag tag-green">RAG / LLM</span>
+        <span class="tag tag-orange">客户现场交付</span>
+        <span class="tag">.NET 架构</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stack">
+        <div class="stack-item"><div class="stack-item-left"><div class="stack-icon">🚚</div>客户现场交付</div><div class="stack-bar"><div class="stack-bar-fill" data-fill="93%"></div></div></div>
+        <div class="stack-item"><div class="stack-item-left"><div class="stack-icon">🤖</div>AI / LLM 落地</div><div class="stack-bar"><div class="stack-bar-fill" data-fill="95%"></div></div></div>
+        <div class="stack-item"><div class="stack-item-left"><div class="stack-icon">🗂️</div>解决方案架构</div><div class="stack-bar"><div class="stack-bar-fill" data-fill="90%"></div></div></div>
+        <div class="stack-item"><div class="stack-item-left"><div class="stack-icon">🛠️</div>企业 AI 工程化</div><div class="stack-bar"><div class="stack-bar-fill" data-fill="92%"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="metrics-strip">
+  <div class="container">
+    <div class="stat-grid" data-reveal-stagger data-reveal-step="60">
+      <div class="stat-item" data-reveal><div class="stat-num"><span data-countup="13">13</span><span>年</span></div><div class="stat-label">互联网从业经验<br>工程师 → PM → CIO</div></div>
+      <div class="stat-item" data-reveal><div class="stat-num"><span data-countup="4">4</span><span>周</span></div><div class="stat-label">AI 问答从 PoC 到生产<br>首发上线节奏</div></div>
+      <div class="stat-item" data-reveal><div class="stat-num"><span data-countup="65">65</span><span>%</span></div><div class="stat-label">客户自助解决率<br>客服工单 ↓30%</div></div>
+      <div class="stat-item" data-reveal><div class="stat-num"><span data-countup="3">3</span><span>×0→1</span></div><div class="stat-label">主导跨行业平台落地<br>电商 · 智能客服 · Web3</div></div>
+      <div class="stat-item" data-reveal><div class="stat-num"><span data-countup="3">3</span><span>国</span></div><div class="stat-label">跨国客户现场交付<br>中国 · 新加坡 · 日本</div></div>
+    </div>
+  </div>
+</div>
+
+<section class="section container flow-section">
+  <div class="flow-head">
+    <p class="eyebrow">How I Engage</p>
+    <h2>从客户现场到生产上线的交付节奏</h2>
+    <p>每一段都有明确的时窗与输出物——FDE 的工作不是"做项目"，是把客户的不确定性逐段切掉。</p>
+  </div>
+  <div class="flow-track" role="list" aria-label="Engagement Flow" data-reveal-stagger data-reveal-step="90">
+    <div class="flow-step s1" role="listitem" data-reveal>
+      <span class="flow-icon">🔍</span>
+      <div class="flow-stage">Stage 01</div>
+      <div class="flow-name">Discovery</div>
+      <div class="flow-time">Week 1</div>
+      <div class="flow-desc">驻场访谈业务方与最终用户，画出业务地图、痛点优先级、数据形态、合规边界。</div>
+    </div>
+    <div class="flow-step s2" role="listitem" data-reveal>
+      <span class="flow-icon">⚡</span>
+      <div class="flow-stage">Stage 02</div>
+      <div class="flow-name">PoC</div>
+      <div class="flow-time">72 hours</div>
+      <div class="flow-desc">3 天拉出可演示原型，用真实数据 + 真实问题验证最关键的那一个假设。</div>
+    </div>
+    <div class="flow-step s3" role="listitem" data-reveal>
+      <span class="flow-icon">🧪</span>
+      <div class="flow-stage">Stage 03</div>
+      <div class="flow-name">Pilot</div>
+      <div class="flow-time">4 weeks</div>
+      <div class="flow-desc">小流量真实用户跑评估，沉淀 Playbook 与 ADR，确认能不能进生产。</div>
+    </div>
+    <div class="flow-step s4" role="listitem" data-reveal>
+      <span class="flow-icon">🚀</span>
+      <div class="flow-stage">Stage 04</div>
+      <div class="flow-name">Production</div>
+      <div class="flow-time">12 weeks</div>
+      <div class="flow-desc">推进上线、定义业务度量口径、把运营移交给客户内部团队，确保系统能自走。</div>
+    </div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <p class="eyebrow">Writing</p>
+    <h2>最新文章</h2>
+    <p>关于 AI 落地实践、产品思维、软件架构与行业数字化的一手观察。</p>
+  </div>
+  <div class="post-grid" data-reveal-stagger data-reveal-step="80">
+    <article class="post-card featured" data-reveal>
+      <div class="post-meta"><span class="post-meta-tag">交付实战</span><time class="post-meta-date" datetime="2026-05-16">2026.05.16</time></div>
+      <h3><a href="posts/72h-rag-demo-for-client.html">72 小时为客户做出第一个可用的 RAG Demo —— 一份 FDE 的实战清单</a></h3>
+      <p>"3 天搞定一个 AI Demo"听上去像销售话术。把它拆成 Day 0–3 四段清单后，会发现这其实是 Forward Deployed Engineer 的标准动作。</p>
+      <a href="posts/72h-rag-demo-for-client.html" class="post-read-more">阅读全文 →</a>
+    </article>
+    <article class="post-card" data-reveal>
+      <div class="post-meta"><span class="post-meta-tag">AI 实践</span><time class="post-meta-date" datetime="2026-05-14">2026.05.14</time></div>
+      <h3><a href="posts/hermes-agent-harness.html">Hermes Agent：从"会聊天的工具"到"会长大的工作系统"</a></h3>
+      <p>Agent 真正有价值的地方，不是更会聊天，而是能把规则、记忆、工具和复盘沉淀成持续进化的工作系统。</p>
+      <a href="posts/hermes-agent-harness.html" class="post-read-more">阅读全文 →</a>
+    </article>
+    <article class="post-card" data-reveal>
+      <div class="post-meta"><span class="post-meta-tag">AI 实践</span><time class="post-meta-date" datetime="2026-05-13">2026.05.13</time></div>
+      <h3><a href="posts/enterprise-ai-implementation-playbook.html">企业 AI 实施手册：斯坦福实证报告与一线落地经验</a></h3>
+      <p>斯坦福分析 51 个真实案例，77% 的最难挑战是变革管理而非技术。</p>
+      <a href="posts/enterprise-ai-implementation-playbook.html" class="post-read-more">阅读全文 →</a>
+    </article>
+  </div>
+</section>
+
+<section class="section-sm container" style="border-top:1px solid var(--border);">
+  <div class="about-cta-row">
+    <div>
+      <p class="eyebrow">About</p>
+      <h2 style="font-size:26px;font-weight:800;letter-spacing:-.4px;margin-bottom:10px;">为什么 Forward Deployed 是我的最优解</h2>
+      <p style="font-size:15px;color:var(--text-2);line-height:1.75;max-width:480px;">写过代码、做过架构、当过 CIO，也跨国跑过客户现场。FDE 这个角色刚好把这些能力压成一件事——<strong>到客户那儿去，把 AI 落到能算得清账的业务里</strong>。</p>
+    </div>
+    <a class="btn btn-ghost" href="about.html" style="white-space:nowrap;">查看完整经历 →</a>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="about.html">关于</a>
+      <a href="projects.html">项目</a>
+      <a href="blog.html">博客</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+
+<script src="nav.js"></script>
+<script src="motion.js"></script>
+<script>
+document.querySelector('.nav-toggle').addEventListener('click', function() {
+  const nav = this.closest('.site-nav');
+  const open = nav.classList.toggle('menu-open');
+  this.setAttribute('aria-expanded', open);
+});
+</script>
+</body>
+</html>
+

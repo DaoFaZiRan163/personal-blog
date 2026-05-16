@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="500万用户电商平台的高并发架构复盘：缓存、数据库、异步化、限流、可观测性和故障演练。">
+  <title>500万用户电商平台的高并发架构复盘 · 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+<nav class="site-nav"><div class="nav-inner"><a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a><button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button><div class="nav-links"><a href="../index.html">首页</a><a href="../about.html">关于我</a><a href="../projects.html">项目</a><a href="../blog.html" class="active">博客</a><a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a></div></div></nav>
+<main>
+<section class="section container">
+  <div class="post-header">
+    <div class="post-meta-row"><a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a><span style="color:var(--border);">|</span><span class="tag tag-purple">软件架构</span><span class="blog-date" style="font-size:12px;color:var(--text-3);">2026年1月30日 · 约 10 分钟阅读</span></div>
+    <h1>500万用户电商平台的高并发架构复盘</h1>
+    <p class="post-lead">高并发不是单点性能竞赛，而是一整套系统工程：容量预估、缓存设计、数据库保护、异步削峰、限流降级、监控告警和故障演练缺一不可。</p>
+  </div>
+  <div class="post-layout">
+    <article class="post-body"><div class="prose">
+      <h2 id="context">背景与压力来源</h2>
+      <p>电商平台的并发压力通常不是均匀到来的，而是集中在活动、上新、支付、库存变化和消息通知这些节点。平时系统看起来很稳定，一到峰值流量，真正的瓶颈才会暴露。</p>
+      <p>我做这类系统时，最深的感受是：不要只盯接口平均耗时。更要看峰值、长尾、数据库连接、缓存命中率、队列堆积、错误率和恢复时间。</p>
+      <blockquote>高并发架构的目标不是永远不出问题，而是问题出现时系统能扛住、能降级、能定位、能恢复。</blockquote>
+
+      <h2 id="layers">分层保护思路</h2>
+      <p>我们会把系统拆成几层保护，而不是期待某一个组件解决所有压力。</p>
+      <div class="post-panel">
+        <div class="panel-row"><div class="panel-label">入口层</div><div class="panel-desc">做限流、鉴权、黑白名单、基础参数校验，把明显无效请求挡在外面。</div></div>
+        <div class="panel-row"><div class="panel-label">缓存层</div><div class="panel-desc">承接高频读请求，减少数据库压力，同时处理穿透、击穿和雪崩。</div></div>
+        <div class="panel-row"><div class="panel-label">服务层</div><div class="panel-desc">拆分核心服务边界，避免一个慢接口拖垮整条链路。</div></div>
+        <div class="panel-row"><div class="panel-label">异步层</div><div class="panel-desc">把通知、统计、日志、非实时状态同步放到队列里削峰。</div></div>
+        <div class="panel-row"><div class="panel-label">数据层</div><div class="panel-desc">保护核心表，控制慢查询，做好读写分离、索引和归档策略。</div></div>
+      </div>
+
+      <h2 id="cache">缓存不是越多越好</h2>
+      <p>缓存是高并发系统最常用的手段，但缓存也会制造复杂度。什么时候缓存、缓存多久、失效后怎么办、数据不一致能不能接受，这些都必须先想清楚。</p>
+      <ul>
+        <li><strong>商品和配置：</strong>适合缓存，更新频率低，读多写少。</li>
+        <li><strong>用户状态：</strong>谨慎缓存，必须明确一致性边界。</li>
+        <li><strong>库存和支付：</strong>不能只靠缓存判断，必须回到核心交易链路。</li>
+      </ul>
+      <p>缓存设计真正难的是异常场景：缓存失效时数据库能不能承受？热点 key 被打爆怎么办？缓存数据错了如何快速修正？这些比“加一层 Redis”重要得多。</p>
+
+      <h2 id="database">数据库要被保护起来</h2>
+      <p>数据库往往是系统最后的事实源，也最容易成为瓶颈。我的原则是：不要让所有请求都直接冲到数据库，尤其不要让复杂查询出现在高频链路里。</p>
+      <table class="post-table">
+        <thead><tr><th>问题</th><th>处理方式</th><th>收益</th></tr></thead>
+        <tbody>
+          <tr><td>高频读</td><td>缓存 + 读库 + 预聚合</td><td>降低主库压力</td></tr>
+          <tr><td>慢查询</td><td>索引治理 + SQL 审查 + 分页限制</td><td>减少连接占用</td></tr>
+          <tr><td>大表增长</td><td>冷热分离 + 归档策略</td><td>保持核心表轻量</td></tr>
+          <tr><td>写入尖峰</td><td>队列削峰 + 批量处理</td><td>保护核心事务</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="async">异步化解决的是峰值，不是偷懒</h2>
+      <p>不是所有动作都需要同步完成。下单后发通知、生成统计、写行为日志、更新部分非核心状态，都可以异步处理。关键是区分哪些是用户必须立即感知的，哪些可以延迟。</p>
+      <p>异步化后，必须补上幂等、重试、死信队列和补偿机制。否则队列只是把问题从接口耗时转移到了后台积压。</p>
+
+      <h2 id="degrade">限流和降级要提前设计</h2>
+      <p>很多系统出问题，是因为团队不愿意提前定义“保什么、舍什么”。高并发场景下，必须有明确优先级：核心交易优先，查询可降级，推荐可关闭，非关键统计可延迟。</p>
+      <div class="callout"><div class="callout-title">关键判断</div>降级不是失败，而是系统在压力下主动保住核心体验。没有降级策略的系统，最后往往只能整体不可用。</div>
+
+      <h2 id="observability">没有监控就没有高并发</h2>
+      <p>高并发系统必须能实时回答几个问题：现在流量从哪里来？哪个接口慢？数据库是否接近上限？队列是否堆积？错误率从什么时候开始升高？</p>
+      <p>我会把监控拆成四类：业务指标、接口指标、资源指标、链路追踪。只有这些数据齐全，故障复盘才不是猜测。</p>
+
+      <h2 id="summary">总结</h2>
+      <p>高并发架构不是一次性设计完成的，它是在真实流量、故障复盘和持续优化中长出来的。真正可靠的系统，一定有边界、有保护、有监控、有演练。</p>
+      <p>如果只追求单个接口的性能数字，很容易忽略整体韧性。能承受峰值、能局部降级、能快速恢复，才是电商平台长期稳定的关键。</p>
+      <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+      <hr><p style="font-size:13px;color:var(--text-3);">本文首发于邵炎炎个人博客。转载请注明出处。</p>
+    </div></article>
+    <aside class="post-sidebar">
+      <div class="toc"><div class="toc-title">目录</div><div class="toc-list"><a href="#context">背景</a><a href="#layers">分层保护</a><a href="#cache">缓存</a><a href="#database">数据库</a><a href="#async">异步化</a><a href="#degrade">限流降级</a><a href="#observability">监控</a><a href="#summary">总结</a></div></div>
+      <div class="sidebar-card results-card"><div class="sidebar-card-title">架构指标</div><div class="metric-line"><strong>500万</strong><span>平台注册用户规模</span></div><div class="metric-line"><strong>800+</strong><span>峰值 QPS 参考</span></div><div class="metric-line"><strong>99.9%</strong><span>可用性目标</span></div></div>
+      <div class="sidebar-card author-card"><div class="sidebar-card-title">作者</div><div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>CIO · AI 产品经理</span></div></div><a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a></div>
+      <div class="sidebar-card related-card"><div class="sidebar-card-title">相关文章</div><a class="related-post" href="dotnet9-cqrs-ai-microservice.html"><div><div class="related-post-title">为什么我选择 .NET 9 + CQRS 做 AI 微服务</div><div class="related-post-meta"><div class="related-post-cat">软件架构</div><div class="related-post-date">2026.04.20</div></div></div></a><a class="related-post" href="enterprise-ai-implementation-playbook.html"><div><div class="related-post-title">企业 AI 实施手册</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.13</div></div></div></a><a class="related-post" href="pm-from-engineer.html"><div><div class="related-post-title">技术出身的 PM，优势在哪里？</div><div class="related-post-meta"><div class="related-post-cat">产品经理</div><div class="related-post-date">2026.03.10</div></div></div></a></div>
+    </aside>
+  </div>
+</section>
+</main>
+<footer class="site-footer"><div class="footer-inner"><p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p><div class="footer-links"><a href="../about.html">关于</a><a href="../projects.html">项目</a><a href="../blog.html">博客</a><a href="#" class="footer-cta">联系我</a></div></div></footer>
+<script src="../nav.js"></script>
+</body>
+</html>

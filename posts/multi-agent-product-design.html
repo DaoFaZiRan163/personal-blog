@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Multi-Agent 编排平台的产品设计：从概念、角色拆分、执行链路、评估器到可落地方案。">
+  <title>Multi-Agent 编排平台的产品设计 · 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a><a href="../about.html">关于我</a><a href="../projects.html">项目</a><a href="../blog.html" class="active">博客</a><a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-header">
+    <div class="post-meta-row">
+      <a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a>
+      <span style="color:var(--border);">|</span>
+      <span class="tag tag-blue">AI 实践</span>
+      <span class="blog-date" style="font-size:12px;color:var(--text-3);">2026年4月8日 · 约 9 分钟阅读</span>
+    </div>
+    <h1>Multi-Agent 编排平台的产品设计：从概念到可落地方案</h1>
+    <p class="post-lead">Agent 很火，但真正把它做成可用产品并不容易。难点不在于让一个 Agent 能回答，而在于让多个 Agent 可协作、可追踪、可评估、可回滚。</p>
+  </div>
+
+  <div class="post-layout">
+    <article class="post-body">
+      <div class="prose">
+        <h2 id="problem">问题不是 Agent 太少，而是边界太乱</h2>
+        <p>很多团队刚开始做 Multi-Agent 时，会把注意力放在“要不要多几个角色”上：规划 Agent、执行 Agent、审查 Agent、总结 Agent。角色一多，看起来很智能，但实际落地时经常出现责任不清、链路过长、失败无法定位的问题。</p>
+        <p>我的判断是：Multi-Agent 产品首先要解决的不是角色数量，而是任务边界。一个 Agent 必须知道自己能做什么、不能做什么、输出给谁、失败时怎么处理。</p>
+        <blockquote>Agent 编排的本质，是把不稳定的推理过程拆成可观察、可评估、可替换的工作单元。</blockquote>
+
+        <h2 id="layers">三层产品结构</h2>
+        <p>我会把 Multi-Agent 平台拆成三层：编排器、执行器和评估器。这样产品、工程和运营都能理解系统是怎么跑的。</p>
+        <div class="post-panel">
+          <div class="panel-row"><div class="panel-label">编排器</div><div class="panel-desc">负责理解用户目标、拆分任务、选择 Agent、控制流程和处理异常分支。</div></div>
+          <div class="panel-row"><div class="panel-label">执行器</div><div class="panel-desc">负责具体动作，比如检索知识、调用工具、生成回复、整理报告或创建工单。</div></div>
+          <div class="panel-row"><div class="panel-label">评估器</div><div class="panel-desc">负责检查输出质量、判断是否需要重试、转人工、降级回答或写入样本库。</div></div>
+        </div>
+
+        <h2 id="workflow">一次任务如何流转</h2>
+        <p>一个典型请求进入平台后，不应该直接交给“万能 Agent”。更稳的流程是：先分类，再规划，再执行，再评估，最后交付。</p>
+        <ol>
+          <li><strong>识别目标：</strong>判断用户是在咨询、排障、查询、投诉，还是要求生成内容。</li>
+          <li><strong>拆分任务：</strong>把大目标拆成几个可以独立执行的小任务。</li>
+          <li><strong>分配 Agent：</strong>根据任务类型选择检索、工具、写作、校验等不同 Agent。</li>
+          <li><strong>聚合结果：</strong>把多个执行结果合并成一个对用户有价值的输出。</li>
+          <li><strong>质量评估：</strong>检查事实、完整性、合规边界和可执行性。</li>
+        </ol>
+
+        <h2 id="state">状态管理比 Prompt 更重要</h2>
+        <p>Multi-Agent 失败的常见原因，是状态在多个角色之间传丢了。规划 Agent 认为任务 A 已完成，执行 Agent 实际失败了；总结 Agent 拿到的是过期上下文；评估 Agent 不知道工具调用返回了什么。</p>
+        <p>所以平台必须有统一的任务状态，而不是让每个 Agent 在自己的 Prompt 里“记住”。状态里至少要记录任务目标、当前步骤、输入输出、工具调用、错误原因、重试次数和最终结论。</p>
+
+        <h2 id="guardrails">产品侧的护栏</h2>
+        <p>Multi-Agent 平台一定要有护栏，否则很容易把错误放大。一个 Agent 的误判会影响下一个 Agent，最后形成一条看似合理但完全错误的执行链。</p>
+        <table class="post-table">
+          <thead><tr><th>护栏</th><th>作用</th><th>产品表现</th></tr></thead>
+          <tbody>
+            <tr><td>最大步骤数</td><td>防止无限规划和循环执行</td><td>超过阈值后降级或转人工</td></tr>
+            <tr><td>工具白名单</td><td>限制 Agent 能调用的外部能力</td><td>不同场景配置不同权限</td></tr>
+            <tr><td>输出评估</td><td>避免错误结果直接交付</td><td>低分结果自动重试或标记</td></tr>
+            <tr><td>人工接管</td><td>处理高风险和低置信度任务</td><td>保留完整上下文供人工继续</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="mvp">第一版应该做多小</h2>
+        <p>我不建议第一版就做通用 Agent 平台。更务实的做法，是先选一个高频、边界清楚、可衡量的场景，例如“客服问题分诊 + 知识检索 + 答案评估”。</p>
+        <div class="callout"><div class="callout-title">MVP 原则</div>第一版只证明一件事：多角色协作是否比单 Agent 更稳定、更可控、更容易定位问题。不要同时追求所有自动化能力。</div>
+
+        <h2 id="summary">总结</h2>
+        <p>Multi-Agent 的价值不是“多几个智能角色”，而是让复杂任务可以被拆分、被协作、被评估。产品经理需要关注的不是技术名词本身，而是用户目标如何被稳定完成。</p>
+        <p>当平台能回答“现在执行到哪一步、为什么失败、哪一步需要重试、什么情况下交给人工”时，Multi-Agent 才真正从 Demo 走向产品。</p>
+        <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+        <hr><p style="font-size:13px;color:var(--text-3);">本文首发于邵炎炎个人博客。转载请注明出处。</p>
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc"><div class="toc-title">目录</div><div class="toc-list">
+        <a href="#problem">边界太乱</a><a href="#layers">三层产品结构</a><a href="#workflow">任务流转</a><a href="#state">状态管理</a><a href="#guardrails">产品护栏</a><a href="#mvp">MVP 范围</a><a href="#summary">总结</a>
+      </div></div>
+      <div class="sidebar-card results-card"><div class="sidebar-card-title">设计重点</div><div class="metric-line"><strong>3层</strong><span>编排 / 执行 / 评估</span></div><div class="metric-line"><strong>5步</strong><span>任务流转链路</span></div><div class="metric-line"><strong>MVP</strong><span>先验证可控性</span></div></div>
+      <div class="sidebar-card author-card"><div class="sidebar-card-title">作者</div><div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>CIO · AI 产品经理</span></div></div><a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a></div>
+      <div class="sidebar-card related-card"><div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="ai-quality-evaluation.html"><div><div class="related-post-title">AI 产品的质量评估体系怎么建？</div><div class="related-post-meta"><div class="related-post-cat">产品经理</div><div class="related-post-date">2026.05.05</div></div></div></a>
+        <a class="related-post" href="llm-memory-architecture.html"><div><div class="related-post-title">LLM 记忆分层架构</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.12</div></div></div></a>
+        <a class="related-post" href="prompt-engineering-practice.html"><div><div class="related-post-title">Prompt Engineering 的工程化</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.02.18</div></div></div></a>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>
+<footer class="site-footer"><div class="footer-inner"><p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p><div class="footer-links"><a href="../about.html">关于</a><a href="../projects.html">项目</a><a href="../blog.html">博客</a><a href="#" class="footer-cta">联系我</a></div></div></footer>
+<script src="../nav.js"></script>
+</body>
+</html>

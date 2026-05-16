@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LangGraph 概念详解与 AI 问答系统落地实践：从有向图状态机到多 Agent 工作流编排，彻底解决线性 Chain 的动态决策局限。">
+  <title>LangGraph：用状态机思维重构 AI 问答系统的工作流编排 — 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* ── Post-specific styles ── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 56px;
+      align-items: start;
+      padding-bottom: 56px;
+    }
+    .post-body { max-width: 720px; }
+    .post-header {
+      padding: 0 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .post-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .post-header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -.8px;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .post-header .post-lead {
+      font-size: 18px;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+    /* Prose */
+    .prose { font-size: 16px; line-height: 1.85; color: var(--text); }
+    .prose h2 {
+      font-size: 24px; font-weight: 800;
+      letter-spacing: -.3px; margin: 48px 0 16px;
+      color: var(--text); line-height: 1.25;
+    }
+    .prose h3 {
+      font-size: 18px; font-weight: 700;
+      margin: 32px 0 12px; color: var(--text);
+    }
+    .prose p { margin-bottom: 20px; }
+    .prose strong { font-weight: 700; color: var(--text); }
+    .prose em { font-style: italic; color: var(--text-2); }
+    .prose ul, .prose ol {
+      margin: 0 0 20px 0;
+      padding-left: 20px;
+    }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin-bottom: 8px; }
+    .prose a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(37,99,235,.3); }
+    .prose a:hover { text-decoration-color: var(--accent); }
+    .prose blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 20px;
+      margin: 28px 0;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+    .prose code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--purple);
+    }
+    .prose pre {
+      background: #0f172a;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      overflow-x: auto;
+      margin: 24px 0;
+    }
+    .prose pre code {
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 13px;
+      padding: 0;
+    }
+    .prose hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* Callout box */
+    .callout {
+      background: var(--accent-dim);
+      border: 1px solid #bfdbfe;
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 28px 0;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .callout.green {
+      background: var(--green-dim);
+      border-color: #a7f3d0;
+      border-left-color: var(--green);
+    }
+    .callout.orange {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      border-left-color: #f97316;
+    }
+    .callout.purple {
+      background: var(--purple-dim);
+      border-color: #ddd6fe;
+      border-left-color: var(--purple);
+    }
+    .callout-title {
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .callout.green .callout-title { color: var(--green); }
+    .callout.orange .callout-title { color: #f97316; }
+    .callout.purple .callout-title { color: var(--purple); }
+
+    /* Graph diagram */
+    .graph-diagram {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin: 28px 0;
+      font-size: 14px;
+      overflow-x: auto;
+    }
+    .graph-diagram-title {
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .6px;
+      color: var(--text-3); margin-bottom: 20px;
+    }
+    .graph-flow {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+    .graph-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .graph-node {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      min-width: 120px;
+      text-align: center;
+    }
+    .graph-node.start { background: #0f172a; color: #fff; }
+    .graph-node.blue  { background: #dbeafe; border: 1.5px solid #93c5fd; color: #1d4ed8; }
+    .graph-node.purple{ background: var(--purple-dim); border: 1.5px solid #c4b5fd; color: #7c3aed; }
+    .graph-node.green { background: var(--green-dim); border: 1.5px solid #6ee7b7; color: #059669; }
+    .graph-node.orange{ background: #fff7ed; border: 1.5px solid #fed7aa; color: #c2410c; }
+    .graph-node.end   { background: var(--text); color: #fff; }
+    .graph-node.router{ background: #fef9c3; border: 1.5px solid #fde047; color: #ca8a04; border-radius: 50px; min-width: 80px; }
+    .graph-arrow { color: var(--text-3); font-size: 16px; flex-shrink: 0; }
+    .graph-arrow-down { text-align: center; color: var(--text-3); font-size: 18px; padding: 2px 0; margin-left: 60px; }
+    .graph-branch {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-left: 60px;
+      flex-wrap: wrap;
+    }
+    .graph-branch-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .graph-branch-label {
+      font-size: 11px;
+      color: var(--text-3);
+      font-style: italic;
+    }
+
+    /* Comparison table */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+    .compare-table th {
+      background: var(--bg-subtle);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--text-3);
+      border: 1px solid var(--border);
+    }
+    .compare-table td {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text-2);
+      line-height: 1.65;
+    }
+    .compare-table tr:nth-child(even) td { background: var(--bg-subtle); }
+    .compare-table .good { color: var(--green); font-weight: 700; }
+    .compare-table .bad  { color: #ef4444; font-weight: 700; }
+    .compare-table .mid  { color: #f97316; font-weight: 700; }
+
+    /* Stats strip */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 28px 0;
+    }
+    .stat-box {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .stat-val { font-size: 28px; font-weight: 900; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--text-3); margin-top: 4px; line-height: 1.4; }
+
+    /* Sidebar */
+    .post-sidebar {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .toc {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .toc-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--text-3); margin-bottom: 12px; }
+    .toc-list { display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a { font-size: 13px; color: var(--text-2); transition: color .15s; padding: 2px 0; border-left: 2px solid transparent; padding-left: 10px; }
+    .toc-list a:hover { color: var(--accent); border-left-color: var(--accent); }
+    .toc-list a.sub { padding-left: 20px; font-size: 12px; }
+
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .sidebar-card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); margin-bottom: 12px; }
+
+    .related-post {
+      display: flex; gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-soft);
+      text-decoration: none;
+      color: inherit;
+    }
+    .related-post:last-child { border-bottom: none; }
+    .related-post:hover .related-post-title { color: var(--accent); }
+    .related-post-title { font-size: 13px; font-weight: 600; line-height: 1.4; transition: color .15s; }
+    .related-post-cat { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+    @media (max-width: 900px) {
+      .post-layout { grid-template-columns: 1fr; gap: 18px; padding-bottom: 24px; }
+      .post-sidebar { position: static; margin-top: 0; }
+      .post-header h1 { font-size: 28px; }
+      .post-sidebar .toc,
+      .post-sidebar .sidebar-card { display: none; }
+      .stats-strip { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .stats-strip { grid-template-columns: 1fr; }
+      .graph-branch { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">
+      <span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>
+      邵炎炎
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-layout">
+
+    <!-- ── Article body ─────────────────────────────────── -->
+    <article class="post-body">
+
+      <header class="post-header">
+        <div class="post-meta-row">
+          <span class="blog-cat">AI 实践</span>
+          <span class="blog-date">2026.05.15 · 约 10 分钟阅读</span>
+        </div>
+        <h1>LangGraph：用状态机思维重构 AI 问答系统的工作流编排</h1>
+        <p class="post-lead">
+          当你的 AI 系统需要根据结果动态决策、支持循环重试、协调多个 Agent 协作时，
+          线性 Chain 就到了它的边界。LangGraph 把 Agent 工作流建模为有向图，
+          让复杂的 AI 应用获得真正的状态感知能力。这是我们在 AI 智能问答平台落地的完整记录。
+        </p>
+      </header>
+
+      <div class="prose">
+
+        <div class="stats-strip">
+          <div class="stat-box">
+            <div class="stat-val">↓40%</div>
+            <div class="stat-label">无效 LLM 调用减少</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">3层</div>
+            <div class="stat-label">条件路由节点</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">10+</div>
+            <div class="stat-label">专业化子 Agent</div>
+          </div>
+        </div>
+
+        <!-- ── Section 1 ────────────────────────────────── -->
+        <h2 id="s1">从一个真实问题说起</h2>
+
+        <p>
+          我们在构建 AI 智能问答平台的早期，用的是最典型的 LangChain 线性 Chain 方案：
+          用户输入 → Prompt 拼装 → LLM 生成 → 输出结果。
+          这个方案跑通 Demo 很快，但上线后问题接踵而至。
+        </p>
+
+        <p>
+          有一类用户的咨询是这样的："我上个月买的套餐还没发货，我想换货，
+          顺便问一下积分怎么用？"——这里面混杂了<strong>订单查询、换货申请、积分说明</strong>三类意图。
+          线性 Chain 只能选一个主意图处理，剩下的要么忽略要么乱答。
+        </p>
+
+        <p>
+          更麻烦的是评估环节。当 LLM 生成的答案质量不达标时，我们需要让系统
+          <strong>自动重试</strong>——调整 Prompt、换个策略、再试一次。
+          线性 Chain 做不到：它不记得自己跑到哪一步了，也不知道该回哪个节点重试。
+        </p>
+
+        <div class="callout orange">
+          <div class="callout-title">核心矛盾</div>
+          线性 Chain 假设每一步都会成功，但真实 AI 应用充满条件判断、分支跳转与重试循环。
+          你需要的不是一条流水线，而是一张<strong>可以感知状态、动态导航的地图</strong>。
+        </div>
+
+        <!-- ── Section 2 ────────────────────────────────── -->
+        <h2 id="s2">LangGraph 是什么</h2>
+
+        <p>
+          LangGraph 是 LangChain 团队于 2024 年推出的 Agent 编排框架，
+          其核心思想是：<strong>把 LLM 工作流建模为有向图（Directed Graph）</strong>。
+        </p>
+
+        <p>
+          图中的每个<strong>节点（Node）</strong>是一个独立的处理单元——可以是一次 LLM 调用、
+          一个工具函数、一段业务逻辑，或一个子 Agent。
+          节点之间通过<strong>边（Edge）</strong>连接，边可以是无条件的顺序跳转，
+          也可以是根据当前状态动态决策的<strong>条件边（Conditional Edge）</strong>。
+          整个图共享一个<strong>全局状态对象（State）</strong>，每个节点读取状态、执行任务、
+          写回状态，驱动整条工作流向前推进。
+        </p>
+
+        <p>
+          相比 LangChain 的 Chain，LangGraph 带来了三个关键能力的飞跃：
+        </p>
+
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>能力维度</th>
+              <th>LangChain Chain</th>
+              <th>LangGraph</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>流程结构</td>
+              <td class="bad">线性顺序，固定步骤</td>
+              <td class="good">有向图，支持分支 / 并行 / 循环</td>
+            </tr>
+            <tr>
+              <td>状态管理</td>
+              <td class="bad">无持久化状态，靠传参</td>
+              <td class="good">全局 State 对象，节点间共享</td>
+            </tr>
+            <tr>
+              <td>动态路由</td>
+              <td class="bad">不支持，路径预先固定</td>
+              <td class="good">条件边，根据运行时结果跳转</td>
+            </tr>
+            <tr>
+              <td>重试 / 循环</td>
+              <td class="bad">需要手写外层循环逻辑</td>
+              <td class="good">图原生支持回边与循环节点</td>
+            </tr>
+            <tr>
+              <td>多 Agent 协作</td>
+              <td class="mid">需要大量胶水代码</td>
+              <td class="good">子图嵌套，天然支持 Agent 编排</td>
+            </tr>
+            <tr>
+              <td>Human-in-the-loop</td>
+              <td class="bad">基本不支持</td>
+              <td class="good">Checkpoint 机制，随时暂停等待人工干预</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ── Section 3 ────────────────────────────────── -->
+        <h2 id="s3">三个核心概念深度理解</h2>
+
+        <h3 id="s3-1">1. State：工作流的"记忆载体"</h3>
+
+        <p>
+          LangGraph 的 State 是一个类型化的字典，贯穿整个图的执行生命周期。
+          每个节点都可以读取 State 中的任意字段，执行完后写入新字段或更新已有字段。
+          这意味着——<strong>后续节点永远能看到前面节点做了什么</strong>。
+        </p>
+
+        <p>
+          在我们的问答系统中，State 包含这些关键字段：
+          用户原始输入、意图识别结果、已调用工具列表、历史消息、当前轮次答案草稿、
+          评估器评分，以及重试计数器。有了这个 State，
+          评估器节点可以看到"这是第几次重试"，从而在达到上限时强制终止，而不是无限循环。
+        </p>
+
+        <pre><code># 简化的 State 定义示例（Python）
+from typing import TypedDict, List, Optional
+
+class QAState(TypedDict):
+    user_input: str          # 用户原始输入
+    intent: Optional[str]   # 意图识别结果
+    strategy: Optional[str] # 选择的回答策略
+    tools_called: List[str] # 已调用的工具列表
+    draft_answer: Optional[str]  # 答案草稿
+    eval_score: Optional[int]    # 评估分数 (0-100)
+    retry_count: int        # 当前重试次数
+    final_answer: Optional[str]  # 最终输出答案</code></pre>
+
+        <h3 id="s3-2">2. Node：工作流的"执行单元"</h3>
+
+        <p>
+          Node 是纯函数：接收当前 State，返回更新后的 State（或 State 的差量）。
+          这个设计让节点天然可测试——你可以为每个节点单独写单元测试，
+          不需要跑完整个流程。
+        </p>
+
+        <p>
+          节点可以做任何事：调用 LLM、查数据库、执行 Python 代码、
+          调用外部 API，或者启动一个嵌套子图（Sub-graph）。
+          在我们的实现里，每个专业化子 Agent（订单 Agent、积分 Agent、物流 Agent）
+          本身就是一个 LangGraph 子图，被作为节点嵌入主流程图中。
+        </p>
+
+        <h3 id="s3-3">3. Edge：工作流的"决策路径"</h3>
+
+        <p>
+          普通 Edge 是静态的，表示"A 执行完后必定跳到 B"。
+          而<strong>Conditional Edge（条件边）</strong>才是 LangGraph 最强大的地方——
+          它接受一个路由函数，该函数读取当前 State，返回下一个节点的名称。
+        </p>
+
+        <p>
+          评估器的重试逻辑正是依赖条件边实现的：评估分数 ≥ 75 跳到 END，
+          评估分数 &lt; 60 跳回生成节点重试，中间值则触发人工审核流程。
+          整个逻辑完全在图的结构里，不需要在业务代码里写 if/else。
+        </p>
+
+        <!-- ── Section 4 ────────────────────────────────── -->
+        <h2 id="s4">在 AI 问答系统中的完整落地</h2>
+
+        <p>
+          下面是我们 AI 智能问答平台的 LangGraph 工作流全貌。
+          整个流程从用户输入出发，经过意图识别、策略路由、多 Agent 执行、
+          质量评估，最终输出答案。
+        </p>
+
+        <div class="graph-diagram">
+          <div class="graph-diagram-title">AI 问答系统 · LangGraph 工作流</div>
+          <div class="graph-flow">
+
+            <div class="graph-row">
+              <div class="graph-node start">START</div>
+              <div class="graph-arrow">→</div>
+              <div class="graph-node blue">意图识别节点<br><small style="font-weight:400;font-size:11px;">分析输入 / 拆分多意图</small></div>
+            </div>
+            <div class="graph-arrow-down">↓</div>
+
+            <div class="graph-row">
+              <div style="width:60px;flex-shrink:0;"></div>
+              <div class="graph-node router">策略路由</div>
+              <div class="graph-arrow" style="margin-left:8px;">条件边 →</div>
+            </div>
+            <div class="graph-arrow-down">↓ ↓ ↓</div>
+
+            <div class="graph-branch">
+              <div class="graph-branch-item">
+                <div class="graph-branch-label">精确匹配</div>
+                <div class="graph-node green" style="min-width:90px;">FAQ<br>检索节点</div>
+              </div>
+              <div class="graph-branch-item">
+                <div class="graph-branch-label">关键词匹配</div>
+                <div class="graph-node purple" style="min-width:90px;">RAG<br>检索节点</div>
+              </div>
+              <div class="graph-branch-item">
+                <div class="graph-branch-label">复杂意图</div>
+                <div class="graph-node blue" style="min-width:110px;">Agent<br>编排节点</div>
+              </div>
+            </div>
+            <div class="graph-arrow-down">↓ 合并</div>
+
+            <div class="graph-row">
+              <div style="width:60px;flex-shrink:0;"></div>
+              <div class="graph-node orange">答案生成节点<br><small style="font-weight:400;font-size:11px;">LLM 生成 / 格式化</small></div>
+            </div>
+            <div class="graph-arrow-down">↓</div>
+
+            <div class="graph-row">
+              <div style="width:60px;flex-shrink:0;"></div>
+              <div class="graph-node purple">质量评估节点<br><small style="font-weight:400;font-size:11px;">评分 0–100 / 7类模板</small></div>
+              <div class="graph-arrow" style="margin-left:8px;">条件边</div>
+            </div>
+            <div class="graph-arrow-down">↓ (&lt;60 → 回答案生成节点重试 / ≥75 → END)</div>
+
+            <div class="graph-row">
+              <div style="width:60px;flex-shrink:0;"></div>
+              <div class="graph-node end">END · 输出最终答案</div>
+            </div>
+
+          </div>
+        </div>
+
+        <h3 id="s4-1">关键节点详解</h3>
+
+        <p>
+          <strong>意图识别节点</strong>是整个流程的入口。我们用一个轻量 LLM 调用
+          （而非完整的 GPT-4 级模型）对用户输入做分类和拆解：
+          单意图直接输出意图类型，多意图则拆分成有序的子任务列表，写入 State。
+          这里选用小模型有意为之——意图分类是分类任务，不需要生成能力，
+          用 GPT-3.5 级别就够，省下 token 成本和延迟。
+        </p>
+
+        <p>
+          <strong>策略路由节点</strong>是第一个条件边的触发点。路由函数读取意图类型，
+          按照我们设计的三层策略优先级：精确匹配（&lt;100ms）→ 关键词 + RAG 检索 →
+          多 Agent LLM 生成，返回对应的下一节点名称。
+          这个优先级设计的背后逻辑是：<strong>能不用 LLM 就不用 LLM</strong>，
+          既节省成本，也降低延迟。
+        </p>
+
+        <p>
+          <strong>Agent 编排节点</strong>是最复杂的部分。当意图识别出需要调用外部系统时
+          （查订单、查积分、查物流），这里会展开一个子图：
+          编排器 Agent 根据子任务列表，并行或串行调用对应的专业子 Agent，
+          每个子 Agent 有自己的工具调用权限和知识域边界。
+          所有子 Agent 的结果汇聚回主图的 State，供答案生成节点使用。
+        </p>
+
+        <p>
+          <strong>质量评估节点</strong>是第二个条件边的触发点，也是整个系统与众不同的地方。
+          我们定义了 7 类评估模板（事实性、相关性、完整性、格式合规、安全合规等），
+          评估器节点用另一个 LLM 实例对生成答案打分（0–100）。
+          路由函数的逻辑是：≥75 输出采用，60–74 进入人工审核队列，&lt;60 写入失败原因后
+          回跳到答案生成节点重试（State 里的 retry_count 确保最多重试 2 次）。
+        </p>
+
+        <div class="callout green">
+          <div class="callout-title">落地效果</div>
+          引入 LangGraph 重构工作流后，无效 LLM 调用（因质量差被丢弃的生成）
+          减少了约 40%。更重要的是，工作流的每一步都有明确的 State 快照，
+          排查问题从"看日志猜执行路径"变成了"直接回放 State 时间线"，
+          调试效率提升显著。
+        </div>
+
+        <!-- ── Section 5 ────────────────────────────────── -->
+        <h2 id="s5">LangGraph vs 手写状态机：为什么选框架</h2>
+
+        <p>
+          有人会问：用 if/else 手写一个状态机不也能实现类似的效果吗？
+          能，但有代价。
+        </p>
+
+        <p>
+          手写状态机在节点数量超过 5 个后，代码复杂度会非线性增长——
+          每加一条分支，所有相关路径都要手动处理。
+          LangGraph 把这个复杂度"压"进图结构：
+          节点是独立函数，边是显式声明的路由，
+          新增一个分支只需要加一个节点 + 修改路由函数，其他节点完全不受影响。
+        </p>
+
+        <p>
+          LangGraph 还提供了开箱即用的 Checkpoint 机制：
+          每个节点执行完后，State 会被持久化（可以存 Redis 或数据库）。
+          这意味着你可以随时暂停工作流、等待人工审核、然后从断点恢复——
+          这在需要人工介入的企业 AI 场景里价值巨大。
+        </p>
+
+        <div class="callout purple">
+          <div class="callout-title">一个判断标准</div>
+          如果你的 AI 工作流需要满足以下任意一条，就应该认真考虑 LangGraph：
+          动态路由（不同输入走不同路径）、循环重试、多 Agent 协作、
+          Human-in-the-loop、或者超过 3 个顺序步骤且步骤间有状态依赖。
+        </div>
+
+        <!-- ── Section 6 ────────────────────────────────── -->
+        <h2 id="s6">踩过的坑与经验沉淀</h2>
+
+        <p>
+          <strong>坑一：State 字段膨胀。</strong>
+          随着节点增加，State 里的字段越来越多，最终变成一个几十个键的大字典，
+          很难搞清楚哪个字段是哪个节点在用。我们后来引入了分组命名约定
+          （<code>intent_*</code>、<code>eval_*</code>、<code>agent_*</code>），
+          并在文档里明确每个字段的"写入方"和"读取方"，才把这个问题控制住。
+        </p>
+
+        <p>
+          <strong>坑二：子图的 State 继承问题。</strong>
+          子 Agent 以子图形式嵌入主图时，子图有自己的 State 定义，
+          和主图的 State 需要显式做字段映射，否则数据在子图内部修改后无法同步到主图。
+          LangGraph 提供了 <code>input</code>/<code>output</code> 映射机制解决这个问题，
+          但刚上手时很容易忽略，导致诡异的"数据丢失"问题。
+        </p>
+
+        <p>
+          <strong>坑三：条件边的调试难度。</strong>
+          当系统有多个条件边时，排查"为什么跳到了这个节点"比较费时。
+          我们的解决方案是在每个路由函数里加结构化日志，
+          记录路由函数的输入 State 快照和输出节点名称，
+          再接入统一的链路追踪系统，让每次请求的完整执行路径一目了然。
+        </p>
+
+        <p>
+          <strong>经验：节点粒度要恰当。</strong>
+          LangGraph 鼓励你把逻辑切成很细的节点，但节点太细会导致图结构复杂难以维护。
+          我们的经验是：以"一个节点只做一件能被单独测试的事"为原则，
+          但把高度耦合的子步骤放在同一个节点里的一个私有函数里，不要为了"纯粹"而过度拆分。
+        </p>
+
+        <!-- ── Section 7 ────────────────────────────────── -->
+        <h2 id="s7">写在最后</h2>
+
+        <p>
+          LangGraph 不是银弹。如果你的 AI 应用是简单的"输入 → 调 LLM → 输出"，
+          用普通 Chain 甚至直接调 API 就够了，引入 LangGraph 是过度设计。
+        </p>
+
+        <p>
+          但当你的系统开始需要动态决策、多 Agent 协作、或者质量评估 + 重试时，
+          LangGraph 提供的<strong>图结构 + 共享状态 + 条件路由</strong>三件套，
+          会让复杂的 Agent 工作流变得可理解、可调试、可维护。
+        </p>
+
+        <p>
+          我们在 AI 问答平台上的实践证明了这一点：
+          从意图识别到多 Agent 编排，从质量评估到自动重试，
+          整个工作流用 LangGraph 建模后，团队里不熟悉底层实现的成员
+          也能通过看图结构理解系统在做什么——这才是好的工程设计应该达到的效果。
+        </p>
+
+        <blockquote>
+          好的 AI 系统架构，应该让工作流本身就是文档。
+          LangGraph 的图结构做到了这一点。
+        </blockquote>
+
+        <hr>
+        <p style="font-size:14px;color:var(--text-3);">
+          如果你对 LangGraph 的具体实现细节、或者我们的多 Agent 编排平台有兴趣，
+          欢迎通过邮件和我交流。项目相关的架构设计可以看
+          <a href="../projects.html">项目案例</a> 页面。
+        </p>
+
+      </div>
+    </article>
+
+    <!-- ── Sidebar ──────────────────────────────────────── -->
+    <aside class="post-sidebar">
+      <nav class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#s1">从一个真实问题说起</a>
+          <a href="#s2">LangGraph 是什么</a>
+          <a href="#s3">三个核心概念深度理解</a>
+          <a href="#s3-1" class="sub">State：记忆载体</a>
+          <a href="#s3-2" class="sub">Node：执行单元</a>
+          <a href="#s3-3" class="sub">Edge：决策路径</a>
+          <a href="#s4">在 AI 问答系统中的落地</a>
+          <a href="#s4-1" class="sub">关键节点详解</a>
+          <a href="#s5">LangGraph vs 手写状态机</a>
+          <a href="#s6">踩过的坑与经验沉淀</a>
+          <a href="#s7">写在最后</a>
+        </div>
+      </nav>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">关于作者</div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.65;margin-bottom:12px;">
+          邵炎炎，AI 产品负责人 + 架构师，主导构建企业级 AI 问答平台，
+          深度实践 LangGraph、Multi-Agent 编排与 LLM 记忆分层架构。
+        </p>
+        <a href="../about.html" style="font-size:13px;font-weight:600;color:var(--accent);">查看完整经历 →</a>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="multi-agent-product-design.html">
+          <div>
+            <div class="related-post-title">Multi-Agent 编排平台的产品设计</div>
+            <div class="related-post-cat">AI 实践 · 2026.04.08</div>
+          </div>
+        </a>
+        <a class="related-post" href="llm-memory-architecture.html">
+          <div>
+            <div class="related-post-title">LLM 记忆分层架构：解决多轮对话体验断裂</div>
+            <div class="related-post-cat">AI 实践 · 2026.05.12</div>
+          </div>
+        </a>
+        <a class="related-post" href="ai-quality-evaluation.html">
+          <div>
+            <div class="related-post-title">AI 产品的质量评估体系怎么建？</div>
+            <div class="related-post-cat">产品经理 · 2026.05.05</div>
+          </div>
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</section>
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+
+<script src="../nav.js"></script>
+<script>
+document.querySelector('.nav-toggle').addEventListener('click', function() {
+  const nav = this.closest('.site-nav');
+  const open = nav.classList.toggle('menu-open');
+  this.setAttribute('aria-expanded', open);
+});
+</script>
+</body>
+</html>

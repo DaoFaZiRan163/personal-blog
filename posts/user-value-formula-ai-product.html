@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="用户价值公式在 AI 产品中的应用：用户价值 = 新体验 - 旧体验 - 替换成本。为什么好功能不一定有人用，以及 AI PM 如何降低信任成本和迁移成本。">
+  <title>用户价值公式：为什么好功能不一定有人用 — 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-header">
+    <div class="post-meta-row">
+      <a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a>
+      <span style="color:var(--border);">|</span>
+      <span class="post-meta-tag">产品经理</span>
+      <time class="post-meta-date" datetime="2025-12-25">2025年12月25日 · 约 7 分钟阅读</time>
+    </div>
+    <h1>用户价值公式：为什么好功能不一定有人用</h1>
+    <p class="post-lead">很多产品不是输在功能不够好，而是输在用户没有足够理由迁移。用户价值公式提醒 PM：新体验必须明显超过旧体验，并且足以覆盖替换成本。</p>
+  </div>
+
+  <div class="post-layout">
+    <article class="post-body">
+      <div class="prose">
+        <h2 id="formula">一个产品判断公式</h2>
+        <p>我很喜欢俞军的用户价值公式，因为它足够简单，也足够刺痛产品经理的自嗨：</p>
+        <blockquote>用户价值 = (新体验 - 旧体验) - 替换成本</blockquote>
+        <p>这不是一个精确计算公式，而是一个判断框架。它强迫我们从用户视角看问题：你做的新功能，到底让用户比现在好多少？这个提升，是否足以覆盖用户迁移、学习、信任和习惯改变的成本？</p>
+        <p>如果答案是否定的，即使功能很完整、技术很先进、团队很努力，用户也未必会用。</p>
+
+        <h2 id="three-variables">三个变量：新体验、旧体验、替换成本</h2>
+        <p>这个公式最关键的是三个变量，每一个都容易被低估或误判。</p>
+        <div class="post-panel">
+          <div class="panel-row"><div class="panel-label">新体验</div><div class="panel-desc">用户使用新产品后获得的效率、确定性、情绪、社交或业务收益。误区是只看功能参数，不看真实感受。</div></div>
+          <div class="panel-row"><div class="panel-label">旧体验</div><div class="panel-desc">用户现在解决同一问题的方式，可能是竞品、人工流程、Excel、微信群，甚至是“忍着不解决”。</div></div>
+          <div class="panel-row"><div class="panel-label">替换成本</div><div class="panel-desc">用户从旧方案迁移到新方案的全部代价，包括学习、数据迁移、习惯改变、金钱成本和心理成本。</div></div>
+        </div>
+        <p>很多 PM 会高估新体验，低估旧体验和替换成本。最典型的想法是：“我们这个功能更先进，用户自然会来。”现实通常没有这么温柔。</p>
+
+        <h2 id="scenarios">三个典型场景</h2>
+        <p>用这个公式看产品增长，会更容易理解为什么有些产品爆发很快，有些产品明明体验更好却推进很慢。</p>
+        <table class="post-table">
+          <thead><tr><th>场景</th><th>公式表现</th><th>产品启发</th></tr></thead>
+          <tbody>
+            <tr><td>快速增长</td><td>新体验巨大，替换成本极低。</td><td>用户几乎不用学习和迁移，就能获得明显收益。</td></tr>
+            <tr><td>慢热或失败</td><td>新体验不错，但替换成本很高。</td><td>B 端系统、企业工具、知识库迁移经常卡在这里。</td></tr>
+            <tr><td>市场空白</td><td>旧体验接近 0，只要新体验为正就有机会。</td><td>关键是找到旧方案极差或根本不存在的场景。</td></tr>
+          </tbody>
+        </table>
+        <p>这也是为什么 B 端产品不能只展示“新系统多好用”。如果旧系统里有历史数据、组织习惯、审批流程和培训成本，新体验必须大到足够抵消这些摩擦。</p>
+
+        <h2 id="ai-product">放到 AI 产品里，替换成本更复杂</h2>
+        <p>AI 产品里，用户价值公式依然成立，而且“替换成本”变得更关键。</p>
+        <p>首先，AI 的新体验不是固定值，而是一个分布。同一个问题，模型可能今天答得很好，明天因为上下文、检索结果或 Prompt 变化而表现不稳定。因此 AI PM 不只要提升平均质量，还要关注最差情况的兜底。</p>
+        <p>其次，旧体验常常被团队低估。用户现在可能是百度搜索、问同事、翻内部文档、打电话找客服，甚至凭经验处理。旧体验未必优雅，但它熟悉、可控、可解释。</p>
+        <p>最后，AI 产品有三类特殊替换成本：</p>
+        <ul>
+          <li><strong>信任成本：</strong>用户需要时间验证 AI 输出是否可靠。</li>
+          <li><strong>Prompt 学习成本：</strong>用户需要学会怎样提问，才能得到稳定结果。</li>
+          <li><strong>上下文迁移成本：</strong>切换工具可能意味着丢失历史对话、记忆和个性化配置。</li>
+        </ul>
+
+        <h2 id="qa-case">用 AI 问答产品举例</h2>
+        <p>如果做一个企业知识库 AI 问答产品，不能只说“它能秒级回答”。更完整的分析应该是：</p>
+        <div class="post-panel">
+          <div class="panel-row"><div class="panel-label">新体验</div><div class="panel-desc">秒级回答，24 小时可用，能整合多个文档来源，并给出引用来源。</div></div>
+          <div class="panel-row"><div class="panel-label">旧体验</div><div class="panel-desc">发消息问同事、翻 wiki、找客服、等邮件回复，效率低但用户已经习惯。</div></div>
+          <div class="panel-row"><div class="panel-label">替换成本</div><div class="panel-desc">用户担心 AI 答错，不知道该怎么问，也不确定什么时候该相信答案。</div></div>
+        </div>
+        <p>所以这类产品的核心竞争力不只是“有 AI”，而是“可信的 AI”。引用来源、低置信度提示、转人工入口、Bad Case 反馈、回答评分，这些设计本质上都在降低替换成本。</p>
+
+        <h2 id="strategy">从公式倒推产品策略</h2>
+        <p>当用户价值偏低时，PM 可以从三个方向倒推策略。</p>
+        <ol>
+          <li><strong>提升新体验：</strong>优化回答质量、速度、界面体验、个性化能力和任务完成率。</li>
+          <li><strong>重新暴露旧体验的问题：</strong>用场景化演示让用户意识到旧方案的低效、不可追踪或不可规模化。</li>
+          <li><strong>降低替换成本：</strong>提供一键导入、平滑迁移、默认模板、引用来源、培训引导和人工兜底。</li>
+        </ol>
+        <p>不同产品的杠杆点不一样。B 端产品通常优先降低替换成本；C 端产品更依赖新体验的惊喜感；新兴 AI 工具的核心瓶颈往往是信任成本。</p>
+
+        <h2 id="business-value">用户价值不等于商业价值</h2>
+        <p>用户价值为正，只说明用户愿意用，不代表公司能可持续赚钱。一个产品真正成立，需要同时满足：</p>
+        <blockquote>产品成立 = 用户价值 &gt; 0 且 商业价值 &gt; 0</blockquote>
+        <p>AI 产品尤其要注意这一点。因为 AI 的 Token、检索、推理和工具调用成本会随使用量增长。用户越爱用，成本也可能越高。AI PM 不能只优化用户价值，还要关注单次服务成本和商业模型。</p>
+
+        <h2 id="summary">总结</h2>
+        <p>用户价值公式最重要的提醒是：好产品不是“功能更强”，而是“用户真的觉得值得切换”。</p>
+        <p>在 AI 产品里，这个判断更关键。因为 AI 往往带来很强的新体验，但同时也带来信任成本、学习成本和上下文迁移成本。真正能落地的 AI 产品，不只是让用户惊艳一次，而是让用户愿意把原来的工作方式迁移过来。</p>
+        <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+        <hr>
+        <p style="font-size:13px;color:var(--text-3);">本文整理自个人 AI PM 知识库，并结合 AI 问答、企业知识库与产品落地实践补充。</p>
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#formula">产品判断公式</a>
+          <a href="#three-variables">三个变量</a>
+          <a href="#scenarios">典型场景</a>
+          <a href="#ai-product">AI 产品替换成本</a>
+          <a href="#qa-case">AI 问答案例</a>
+          <a href="#strategy">产品策略</a>
+          <a href="#business-value">商业价值</a>
+          <a href="#summary">总结</a>
+        </div>
+      </div>
+
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">关键词</div>
+        <div class="metric-line"><strong>公式</strong><span>新体验 - 旧体验 - 替换成本</span></div>
+        <div class="metric-line"><strong>信任</strong><span>AI 产品的核心替换成本</span></div>
+        <div class="metric-line"><strong>迁移</strong><span>好功能也要降低切换摩擦</span></div>
+      </div>
+
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>CIO · AI 产品经理</span></div></div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="ai-product-manager-overview.html"><div><div class="related-post-title">AI 产品经理概论：从功能定义者到协作架构师</div><div class="related-post-meta"><div class="related-post-cat">产品经理</div><div class="related-post-date">2025.12.18</div></div></div></a>
+        <a class="related-post" href="ai-quality-evaluation.html"><div><div class="related-post-title">AI 产品的质量评估体系怎么建？</div><div class="related-post-meta"><div class="related-post-cat">产品经理</div><div class="related-post-date">2026.05.05</div></div></div></a>
+        <a class="related-post" href="llm-memory-architecture.html"><div><div class="related-post-title">LLM 记忆分层架构：解决多轮对话体验断裂的工程实践</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.12</div></div></div></a>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links"><a href="../about.html">关于</a><a href="../projects.html">项目</a><a href="../blog.html">博客</a><a href="#" class="footer-cta">联系我</a></div>
+  </div>
+</footer>
+<script src="../nav.js"></script>
+</body>
+</html>

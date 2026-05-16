@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AI 产品的质量评估体系怎么建：从任务拆分、样本集、评分规则、阈值到上线后的持续评估。">
+  <title>AI 产品的质量评估体系怎么建？ · 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .post-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 56px;
+      align-items: start;
+      padding-bottom: 56px;
+    }
+    .post-body { max-width: 720px; }
+    .post-header {
+      padding: 0 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .post-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .post-header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -.8px;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .post-header .post-lead {
+      font-size: 18px;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+    .prose { font-size: 16px; line-height: 1.85; color: var(--text); }
+    .prose h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+      margin: 8px 0 16px;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .prose h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 32px 0 12px;
+      color: var(--text);
+    }
+    .prose p { margin-bottom: 20px; }
+    .prose strong { font-weight: 700; color: var(--text); }
+    .prose ul, .prose ol {
+      margin: 0 0 20px 0;
+      padding-left: 20px;
+    }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin-bottom: 8px; }
+    .prose a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(37,99,235,.3); }
+    .prose blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 20px;
+      margin: 28px 0;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+    .prose code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--purple);
+    }
+    .prose hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+    .callout {
+      background: var(--accent-dim);
+      border: 1px solid #bfdbfe;
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 28px 0;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .callout-title {
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .eval-grid {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin: 28px 0;
+      display: grid;
+      gap: 12px;
+    }
+    .eval-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .eval-item:last-child { border-bottom: none; }
+    .eval-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .eval-desc {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.65;
+    }
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .score-table th,
+    .score-table td {
+      border-bottom: 1px solid var(--border-soft);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .score-table th {
+      background: var(--bg-subtle);
+      color: var(--text-3);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .score-table tr:last-child td { border-bottom: none; }
+    .post-sidebar {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .toc {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .toc-title,
+    .sidebar-card-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text-3);
+      margin-bottom: 12px;
+    }
+    .toc-list { display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a {
+      font-size: 13px;
+      color: var(--text-2);
+      transition: color .15s;
+      padding: 2px 0 2px 10px;
+      border-left: 2px solid transparent;
+    }
+    .toc-list a:hover { color: var(--accent); border-left-color: var(--accent); }
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .metric-line {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .metric-line:last-child { border-bottom: none; }
+    .metric-line strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .metric-line span { font-size: 12px; color: var(--text-3); }
+    .related-post {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-soft);
+      text-decoration: none;
+      color: inherit;
+    }
+    .related-post > div { flex: 1; min-width: 0; }
+    .related-post:last-child { border-bottom: none; }
+    .related-post:hover .related-post-title { color: var(--accent); }
+    .related-post-title { font-size: 13px; font-weight: 600; line-height: 1.4; transition: color .15s; }
+    .related-post-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .related-post-cat { font-size: 11px; color: var(--text-3); }
+    .related-post-date {
+      min-width: 70px;
+      flex: 0 0 70px;
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .author-mini {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .author-mini img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .author-mini strong { display: block; font-size: 14px; }
+    .author-mini span { display: block; font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+    @media (max-width: 900px) {
+      .post-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding-bottom: 24px;
+      }
+      .post-sidebar {
+        position: static;
+        margin-top: 0;
+      }
+      .post-header h1 { font-size: 28px; }
+      .post-sidebar .toc,
+      .post-sidebar .results-card,
+      .post-sidebar .author-card { display: none; }
+      .post-body .prose > p:last-child { margin-bottom: 0; }
+      .prose hr { margin: 24px 0; }
+      .related-card {
+        border-radius: 14px;
+        padding: 10px 14px;
+        margin: 0;
+      }
+      .related-card .sidebar-card-title {
+        margin-bottom: 4px;
+        font-size: 11px;
+      }
+      .related-post { padding: 10px 0; }
+      .related-post-title {
+        font-size: 15px;
+        line-height: 1.35;
+      }
+      .related-post-meta {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .related-post-cat,
+      .related-post-date { font-size: 12px; }
+      .related-post-date {
+        min-width: 74px;
+        flex: 0 0 74px;
+        justify-self: end;
+        text-align: right;
+      }
+    }
+    @media (max-width: 600px) {
+      .eval-item { grid-template-columns: 1fr; gap: 4px; }
+      .score-table { font-size: 13px; }
+      .score-table th,
+      .score-table td { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">
+      <span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>
+      邵炎炎
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-header">
+    <div class="post-meta-row">
+      <a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a>
+      <span style="color:var(--border);">|</span>
+      <span class="tag tag-purple">产品经理</span>
+      <span class="blog-date" style="font-size:12px;color:var(--text-3);">2026年5月5日 · 约 9 分钟阅读</span>
+    </div>
+    <h1>AI 产品的质量评估体系怎么建？</h1>
+    <p class="post-lead">
+      AI 产品不是“能回答”就算可交付。真正难的是持续判断它答得是否正确、稳定、可控，并且能在每次模型、知识库、Prompt 或工具链调整后知道质量有没有变差。
+    </p>
+  </div>
+
+  <div class="post-layout">
+    <article class="post-body">
+      <div class="prose">
+        <h2 id="why">为什么要先建评估体系</h2>
+        <p>
+          很多 AI 项目的早期验收方式很朴素：找几个同事随便问一问，感觉“回答还不错”，就开始推进上线。这个阶段当然有价值，它能帮助团队确认方向，但它不能支撑一个长期运行的产品。
+        </p>
+        <p>
+          因为 AI 产品的质量问题不是一次性的。知识库会更新，用户问题会变化，Prompt 会被优化，模型版本会升级，工具调用链路也会调整。只靠人工体验，很难知道一次修改到底让系统变好了，还是只是让某几个样例变好了。
+        </p>
+        <blockquote>
+          AI 产品的评估体系，本质上是把“感觉还行”变成“可以被复现、比较和追踪”的产品机制。
+        </blockquote>
+
+        <h2 id="object">先定义评估对象</h2>
+        <p>
+          我们最开始踩过一个坑：试图给“AI 回答质量”打一个总分。结果大家很快发现，总分没有指导意义。一个回答可能事实正确但语气很差，也可能语气很好但引用了错误资料。总分会把这些问题混在一起。
+        </p>
+        <p>
+          后来我们把评估对象拆成了几个更具体的任务层级：
+        </p>
+        <ul>
+          <li><strong>意图识别：</strong>用户到底在问售后、订单、制度、活动，还是投诉？</li>
+          <li><strong>知识召回：</strong>系统有没有找到正确的文档、条款或历史记录？</li>
+          <li><strong>答案生成：</strong>回答是否准确、完整、可读，并且没有编造？</li>
+          <li><strong>工具调用：</strong>是否在该查订单、查会员、查工单时调用了正确工具？</li>
+          <li><strong>边界处理：</strong>遇到敏感、超范围或不确定问题时，有没有正确拒答或转人工？</li>
+        </ul>
+        <p>
+          这一步很重要。评估粒度越清楚，问题定位越快。否则你只会得到一句“AI 不好用”，但不知道该改知识库、改 Prompt、改 RAG、改工具，还是改产品流程。
+        </p>
+
+        <h2 id="template">7 类评估模板</h2>
+        <p>
+          在智能问答平台里，我们把测试样本按任务类型做成了 7 类模板。每一类模板都有固定字段、评分维度和失败原因，便于产品、测试和研发使用同一套语言沟通。
+        </p>
+        <div class="eval-grid">
+          <div class="eval-item">
+            <div class="eval-label">事实准确性</div>
+            <div class="eval-desc">检查答案是否符合知识库、业务规则和系统数据，尤其关注金额、时间、资格、流程等硬事实。</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">完整性</div>
+            <div class="eval-desc">判断回答是否覆盖用户真正需要的信息，是否漏掉前置条件、操作步骤、例外情况。</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">可执行性</div>
+            <div class="eval-desc">用户看完之后是否知道下一步该怎么做，而不是只得到一段正确但无法行动的解释。</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">上下文一致性</div>
+            <div class="eval-desc">多轮对话中是否记住用户已经提供的信息，是否避免重复追问或前后矛盾。</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">工具调用正确性</div>
+            <div class="eval-desc">判断是否该调用工具、调用哪个工具、参数是否正确，以及工具失败时有没有合理兜底。</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">合规与边界</div>
+            <div class="eval-desc">对政策、隐私、敏感内容、超出权限的问题，是否给出安全且不误导的处理方式。</div>
+          </div>
+          <div class="eval-item">
+            <div class="eval-label">表达体验</div>
+            <div class="eval-desc">语气是否自然、简洁、有服务感，是否避免机械堆砌、过度承诺和不必要的技术术语。</div>
+          </div>
+        </div>
+
+        <h2 id="score">评分规则不要太复杂</h2>
+        <p>
+          评分规则越复杂，早期越难落地。我的经验是先用 0 / 1 / 2 三档，再配失败原因，比一开始就设计 100 分制更有效。
+        </p>
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>分数</th>
+              <th>含义</th>
+              <th>处理方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>2</strong></td>
+              <td>答案可直接交付，事实正确、信息完整、表达清楚。</td>
+              <td>进入通过样本，可作为后续回归评估基线。</td>
+            </tr>
+            <tr>
+              <td><strong>1</strong></td>
+              <td>方向正确但有瑕疵，例如缺步骤、表达绕、引用不够明确。</td>
+              <td>记录为可优化样本，进入 Prompt 或知识库改进队列。</td>
+            </tr>
+            <tr>
+              <td><strong>0</strong></td>
+              <td>事实错误、答非所问、越权承诺、错误调用工具或应转人工未转。</td>
+              <td>阻断上线或回滚修改，必须定位到具体原因。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          这套分法的好处是产品和研发都容易理解。更细的分数可以后面再加，但第一版必须让团队愿意长期填写和复盘。
+        </p>
+
+        <h2 id="threshold">阈值怎么设</h2>
+        <p>
+          评估体系真正起作用，是从设置阈值开始的。没有阈值，评估只是记录；有了阈值，它才会变成发布门禁。
+        </p>
+        <p>
+          我们通常会把样本分成三组：
+        </p>
+        <ul>
+          <li><strong>核心高频问题：</strong>必须高通过率，任何明显错误都不应该上线。</li>
+          <li><strong>长尾普通问题：</strong>允许部分表达不完美，但不能出现事实错误和明显误导。</li>
+          <li><strong>高风险问题：</strong>宁可保守转人工，也不要让 AI 自信地给错答案。</li>
+        </ul>
+        <div class="callout">
+          <div class="callout-title">一个实用规则</div>
+          第一版不要追求“全量问题 95% 通过”。更现实的做法是：先保证 Top 50 高频问题稳定，再逐步扩展到 Top 200、Top 500。AI 产品的质量建设是分层推进，不是一次性封顶。
+        </div>
+
+        <h2 id="pipeline">评估流程怎么跑</h2>
+        <p>
+          一套可持续的评估流程，至少要覆盖上线前和上线后两个阶段。
+        </p>
+        <h3>上线前：回归评估</h3>
+        <p>
+          每次改 Prompt、改知识库、换模型、调整 RAG 参数之前，都要跑一遍固定样本集。重点不是看单次结果多漂亮，而是看和上一个版本相比有没有退化。
+        </p>
+        <h3>上线后：真实会话抽检</h3>
+        <p>
+          线上真实问题永远比测试集丰富。我们会定期抽取未解决、低满意度、转人工、重复追问的会话，把它们沉淀成新的评估样本。这样测试集会随着业务一起生长。
+        </p>
+        <h3>异常样本：反向进入产品 Backlog</h3>
+        <p>
+          如果某类问题反复失败，不要只让工程师改 Prompt。它可能意味着产品流程不清晰、知识文档结构不好、业务规则本身有歧义。评估结果应该进入产品 Backlog，而不是停留在测试报告里。
+        </p>
+
+        <h2 id="result">落地后的变化</h2>
+        <p>
+          评估体系上线后，团队讨论 AI 质量的方式会明显变化。过去大家说“这个回答感觉不太行”，现在会说“这个样本事实正确，但完整性是 1 分，因为漏了售后时效条件”。
+        </p>
+        <ul>
+          <li><strong>问题定位更快：</strong>失败样本可以直接归因到知识、Prompt、工具或流程。</li>
+          <li><strong>发布更有底：</strong>每次调整都有回归数据，不再依赖零散体验。</li>
+          <li><strong>跨团队沟通更顺：</strong>产品、测试、研发和业务都用同一套质量语言。</li>
+        </ul>
+
+        <h2 id="summary">总结</h2>
+        <p>
+          AI 产品的质量评估体系，不是为了把 AI 变成一个考试机器，而是为了让团队持续知道：系统在哪些问题上可靠，在哪些问题上不可靠，以及下一步应该改哪里。
+        </p>
+        <p>
+          对企业级 AI 产品来说，评估体系和功能本身一样重要。没有评估，AI 很难从 Demo 走向可持续交付；有了评估，产品迭代才有真正的方向感。
+        </p>
+        <p>
+          欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a>
+        </p>
+        <hr>
+        <p style="font-size:13px;color:var(--text-3);">本文首发于邵炎炎个人博客。转载请注明出处。</p>
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#why">为什么要先建评估体系</a>
+          <a href="#object">先定义评估对象</a>
+          <a href="#template">7 类评估模板</a>
+          <a href="#score">评分规则不要太复杂</a>
+          <a href="#threshold">阈值怎么设</a>
+          <a href="#pipeline">评估流程怎么跑</a>
+          <a href="#result">落地后的变化</a>
+          <a href="#summary">总结</a>
+        </div>
+      </div>
+
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">评估指标</div>
+        <div class="metric-line">
+          <strong>7类</strong>
+          <span>任务评估模板</span>
+        </div>
+        <div class="metric-line">
+          <strong>0/1/2</strong>
+          <span>三档评分机制</span>
+        </div>
+        <div class="metric-line">
+          <strong>Top 50</strong>
+          <span>优先覆盖高频问题</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini">
+          <img src="../avatar.jpg" alt="邵炎炎">
+          <div>
+            <strong>邵炎炎</strong>
+            <span>CIO · AI 产品经理</span>
+          </div>
+        </div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="llm-memory-architecture.html">
+          <div>
+            <div class="related-post-title">LLM 记忆分层架构：解决多轮对话体验断裂的工程实践</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">AI 实践</div>
+              <div class="related-post-date">2026.05.12</div>
+            </div>
+          </div>
+        </a>
+        <a class="related-post" href="enterprise-ai-implementation-playbook.html">
+          <div>
+            <div class="related-post-title">企业 AI 实施手册：斯坦福实证报告与一线落地经验</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">AI 实践</div>
+              <div class="related-post-date">2026.05.13</div>
+            </div>
+          </div>
+        </a>
+        <a class="related-post" href="multi-agent-product-design.html">
+          <div>
+            <div class="related-post-title">Multi-Agent 编排平台的产品设计</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">AI 实践</div>
+              <div class="related-post-date">2026.04.08</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="../about.html">关于</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html">博客</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+<script src="../nav.js"></script>
+</body>
+</html>

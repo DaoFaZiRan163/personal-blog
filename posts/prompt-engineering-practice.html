@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Prompt Engineering 的工程化：从个人技巧到团队规范，建立模板、评审、版本和评估机制。">
+  <title>Prompt Engineering 的工程化 · 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+<nav class="site-nav"><div class="nav-inner"><a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a><button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button><div class="nav-links"><a href="../index.html">首页</a><a href="../about.html">关于我</a><a href="../projects.html">项目</a><a href="../blog.html" class="active">博客</a><a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a></div></div></nav>
+<main>
+<section class="section container">
+  <div class="post-header">
+    <div class="post-meta-row"><a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a><span style="color:var(--border);">|</span><span class="tag tag-blue">AI 实践</span><span class="blog-date" style="font-size:12px;color:var(--text-3);">2026年2月18日 · 约 8 分钟阅读</span></div>
+    <h1>Prompt Engineering 的工程化：从个人技巧到团队规范</h1>
+    <p class="post-lead">一个人写好 Prompt 不难，难的是让整个团队持续写出稳定、可复用、可评估的 Prompt。工程化的核心，是把经验从个人脑子里搬到团队流程里。</p>
+  </div>
+  <div class="post-layout">
+    <article class="post-body"><div class="prose">
+      <h2 id="problem">为什么个人技巧不够</h2>
+      <p>早期做 AI 产品时，Prompt 往往靠少数人“调”。某个同事很会写，效果就好；换一个人维护，质量就波动。这种方式适合 Demo，但不适合长期交付。</p>
+      <p>Prompt 本质上是产品规则、业务知识、交互策略和模型约束的组合。只要它影响线上结果，就应该像代码一样被管理。</p>
+      <blockquote>Prompt Engineering 的工程化，不是把 Prompt 写得更玄，而是让它可审查、可复用、可回归、可追踪。</blockquote>
+
+      <h2 id="template">先建立模板</h2>
+      <p>模板不是为了限制创造力，而是为了减少低级错误。一个稳定模板至少包含角色、目标、输入、输出格式、约束、边界处理和示例。</p>
+      <div class="post-panel">
+        <div class="panel-row"><div class="panel-label">角色</div><div class="panel-desc">告诉模型它在当前任务中的身份，但不要堆叠过多人格设定。</div></div>
+        <div class="panel-row"><div class="panel-label">目标</div><div class="panel-desc">明确这次调用要完成什么，而不是泛泛地说“请回答用户问题”。</div></div>
+        <div class="panel-row"><div class="panel-label">约束</div><div class="panel-desc">定义不能做什么，包括不能编造、不能越权、不能给出未确认事实。</div></div>
+        <div class="panel-row"><div class="panel-label">输出</div><div class="panel-desc">规定格式、字段、语气和长度，让下游系统可以稳定消费。</div></div>
+      </div>
+
+      <h2 id="version">Prompt 必须有版本</h2>
+      <p>如果线上回答变差，但你不知道当时用的是哪个 Prompt，就很难复盘。Prompt 版本要和模型版本、知识库版本、工具版本一起记录。</p>
+      <p>我会把 Prompt 分为三类管理：系统级 Prompt、任务级 Prompt、场景级 Prompt。系统级控制安全边界，任务级控制执行方式，场景级适配具体业务表达。</p>
+      <table class="post-table">
+        <thead><tr><th>类型</th><th>用途</th><th>变更频率</th></tr></thead>
+        <tbody>
+          <tr><td>系统级</td><td>身份、边界、安全规则</td><td>低</td></tr>
+          <tr><td>任务级</td><td>分类、检索、总结、评估等任务</td><td>中</td></tr>
+          <tr><td>场景级</td><td>不同业务场景的话术和规则</td><td>高</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="review">建立评审机制</h2>
+      <p>Prompt 变更不能只靠“我试了几个问题感觉不错”。至少要经过样本回归、同伴评审和线上灰度。尤其涉及用户权益、流程判断、敏感回答时，必须有人确认业务边界。</p>
+      <ul>
+        <li><strong>样本回归：</strong>固定测试集不退化，新增样本有解释。</li>
+        <li><strong>同伴评审：</strong>检查是否过度约束、是否遗漏异常场景。</li>
+        <li><strong>灰度发布：</strong>先小流量观察，再扩大范围。</li>
+        <li><strong>回滚方案：</strong>每次变更都能快速恢复到上一个稳定版本。</li>
+      </ul>
+
+      <h2 id="eval">评估器是 Prompt 的保险</h2>
+      <p>Prompt 再好也不能保证每次输出都可靠。评估器的作用，是在交付前再检查一次：事实是否一致、格式是否正确、是否引用了证据、是否需要转人工。</p>
+      <div class="callout"><div class="callout-title">实践建议</div>不要把所有控制都塞进一个超长 Prompt。能用结构化输入解决的，不靠自然语言提醒；能用评估器兜底的，不指望模型永远自觉。</div>
+
+      <h2 id="team">团队规范怎么落地</h2>
+      <p>最后要形成一份团队规范：命名规则、模板结构、变更流程、评估样本、发布节奏、日志字段。规范不需要一开始很重，但必须让每个人知道该怎么改、改完怎么验。</p>
+      <p>当 Prompt 被纳入工程流程后，它就不再是某个人的“技巧”，而是团队可以持续迭代的产品资产。</p>
+
+      <h2 id="summary">总结</h2>
+      <p>Prompt Engineering 的工程化，是 AI 产品走向稳定交付的一步。它让团队从“会调 Prompt”变成“能管理 Prompt”。前者靠经验，后者靠体系。</p>
+      <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+      <hr><p style="font-size:13px;color:var(--text-3);">本文首发于邵炎炎个人博客。转载请注明出处。</p>
+    </div></article>
+    <aside class="post-sidebar">
+      <div class="toc"><div class="toc-title">目录</div><div class="toc-list"><a href="#problem">个人技巧不够</a><a href="#template">建立模板</a><a href="#version">版本管理</a><a href="#review">评审机制</a><a href="#eval">评估器</a><a href="#team">团队规范</a><a href="#summary">总结</a></div></div>
+      <div class="sidebar-card results-card"><div class="sidebar-card-title">工程化要素</div><div class="metric-line"><strong>模板</strong><span>稳定输入输出</span></div><div class="metric-line"><strong>版本</strong><span>支持追踪回滚</span></div><div class="metric-line"><strong>评估</strong><span>上线前后兜底</span></div></div>
+      <div class="sidebar-card author-card"><div class="sidebar-card-title">作者</div><div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>CIO · AI 产品经理</span></div></div><a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a></div>
+      <div class="sidebar-card related-card"><div class="sidebar-card-title">相关文章</div><a class="related-post" href="multi-agent-product-design.html"><div><div class="related-post-title">Multi-Agent 编排平台的产品设计</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.04.08</div></div></div></a><a class="related-post" href="ai-quality-evaluation.html"><div><div class="related-post-title">AI 产品的质量评估体系怎么建？</div><div class="related-post-meta"><div class="related-post-cat">产品经理</div><div class="related-post-date">2026.05.05</div></div></div></a><a class="related-post" href="llm-memory-architecture.html"><div><div class="related-post-title">LLM 记忆分层架构</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.12</div></div></div></a></div>
+    </aside>
+  </div>
+</section>
+</main>
+<footer class="site-footer"><div class="footer-inner"><p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p><div class="footer-links"><a href="../about.html">关于</a><a href="../projects.html">项目</a><a href="../blog.html">博客</a><a href="#" class="footer-cta">联系我</a></div></div></footer>
+<script src="../nav.js"></script>
+</body>
+</html>

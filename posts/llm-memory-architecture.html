@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LLM 记忆分层架构：短期会话 / 长期向量记忆 / 用户画像三层设计，解决多轮对话体验断裂问题的工程实践。">
+  <title>LLM 记忆分层架构：解决多轮对话体验断裂的工程实践 — 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* ── Post-specific styles ── */
+    .post-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 56px;
+      align-items: start;
+      padding-bottom: 56px;
+    }
+    /* Article body */
+    .post-body {
+      max-width: 720px;
+    }
+    .post-header {
+      padding: 0 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .post-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .post-header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -.8px;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .post-header .post-lead {
+      font-size: 18px;
+      color: var(--text-2);
+      line-height: 1.75;
+    }
+    /* Prose */
+    .prose { font-size: 16px; line-height: 1.85; color: var(--text); }
+    .prose h2 {
+      font-size: 24px; font-weight: 800;
+      letter-spacing: -.3px; margin: 8px 0 16px;
+      color: var(--text); line-height: 1.25;
+    }
+    .prose h3 {
+      font-size: 18px; font-weight: 700;
+      margin: 32px 0 12px; color: var(--text);
+    }
+    .prose p { margin-bottom: 20px; }
+    .prose strong { font-weight: 700; color: var(--text); }
+    .prose em { font-style: italic; color: var(--text-2); }
+    .prose ul, .prose ol {
+      margin: 0 0 20px 0;
+      padding-left: 20px;
+    }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin-bottom: 8px; }
+    .prose a { color: var(--accent); text-decoration: underline; text-decoration-color: rgba(37,99,235,.3); }
+    .prose a:hover { text-decoration-color: var(--accent); }
+    .prose blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 20px;
+      margin: 28px 0;
+      color: var(--text-2);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+    .prose code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--purple);
+    }
+    .prose pre {
+      background: #0f172a;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      overflow-x: auto;
+      margin: 24px 0;
+    }
+    .prose pre code {
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 13px;
+      padding: 0;
+    }
+    .prose hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* Callout box */
+    .callout {
+      background: var(--accent-dim);
+      border: 1px solid #bfdbfe;
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 28px 0;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .callout-title { font-weight: 700; color: var(--accent); margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin: 28px 0;
+      font-size: 14px;
+    }
+    .arch-diagram-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--text-3); margin-bottom: 20px; }
+    .arch-layers { display: flex; flex-direction: column; gap: 8px; }
+    .arch-layer {
+      display: flex; align-items: stretch; gap: 12px;
+    }
+    .arch-layer-label {
+      width: 80px; flex-shrink: 0;
+      font-size: 11px; font-weight: 700;
+      color: var(--text-3); text-transform: uppercase;
+      display: flex; align-items: center;
+      text-align: right; justify-content: flex-end;
+    }
+    .arch-layer-body {
+      flex: 1;
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .arch-layer-body.l1 { background: #dbeafe; border: 1px solid #93c5fd; }
+    .arch-layer-body.l2 { background: var(--purple-dim); border: 1px solid #c4b5fd; }
+    .arch-layer-body.l3 { background: var(--green-dim); border: 1px solid #6ee7b7; }
+    .arch-layer-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .arch-layer-desc { font-size: 12px; color: var(--text-2); }
+    .arch-arrow { text-align: center; color: var(--text-3); font-size: 18px; }
+
+    /* Sidebar */
+    .post-sidebar {
+      position: sticky;
+      top: calc(var(--nav-h) + 24px);
+    }
+    .toc {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .toc-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--text-3); margin-bottom: 12px; }
+    .toc-list { display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a { font-size: 13px; color: var(--text-2); transition: color .15s; padding: 2px 0; border-left: 2px solid transparent; padding-left: 10px; }
+    .toc-list a:hover { color: var(--accent); border-left-color: var(--accent); }
+    .toc-list a.sub { padding-left: 20px; font-size: 12px; }
+
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .sidebar-card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); margin-bottom: 12px; }
+
+    /* Related posts */
+    .related-post {
+      display: flex; gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-soft);
+      text-decoration: none;
+      color: inherit;
+    }
+    .related-post > div {
+      flex: 1;
+      min-width: 0;
+    }
+    .related-post:last-child { border-bottom: none; }
+    .related-post:hover .related-post-title { color: var(--accent); }
+    .related-post-title { font-size: 13px; font-weight: 600; line-height: 1.4; transition: color .15s; }
+    .related-post-cat { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .related-post-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .related-post-date {
+      min-width: 70px;
+      flex: 0 0 70px;
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+
+    @media (max-width: 900px) {
+      .post-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding-bottom: 24px;
+      }
+      .post-sidebar {
+        position: static;
+        margin-top: 0;
+      }
+      .post-header h1 { font-size: 28px; }
+      .post-sidebar .toc,
+      .post-sidebar .results-card,
+      .post-sidebar .author-card { display: none; }
+      .post-body .prose > p:last-child {
+        margin-bottom: 0;
+      }
+      .prose hr {
+        margin: 24px 0;
+      }
+      .related-card {
+        border-radius: 14px;
+        padding: 10px 14px;
+        margin: 0;
+      }
+      .related-card .sidebar-card-title {
+        margin-bottom: 4px;
+        font-size: 11px;
+      }
+      .related-post {
+        padding: 10px 0;
+      }
+      .related-post-title {
+        font-size: 15px;
+        line-height: 1.35;
+      }
+      .related-post-meta {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .related-post-cat,
+      .related-post-date {
+        font-size: 12px;
+      }
+      .related-post-date {
+        min-width: 74px;
+        flex: 0 0 74px;
+        justify-self: end;
+        text-align: right;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ─────────────────────────────────────────── -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">
+      <span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>
+      邵炎炎
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+
+  <!-- Post header (full width) -->
+  <div class="post-header">
+    <div class="post-meta-row">
+      <a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a>
+      <span style="color:var(--border);">|</span>
+      <span class="tag tag-blue">AI 实践</span>
+      <span class="blog-date" style="font-size:12px;color:var(--text-3);">2026年5月12日 · 约 10 分钟阅读</span>
+    </div>
+    <h1>LLM 记忆分层架构：解决多轮对话体验断裂的工程实践</h1>
+    <p class="post-lead">
+      上下文窗口有限，是 LLM 落地最大的产品体验障碍之一。
+      这篇文章完整记录我们如何设计短期 / 长期 / 画像三层记忆架构，
+      让用户在长对话中感知不到窗口切换的存在——包括技术方案、产品决策取舍，以及实际落地时踩过的坑。
+    </p>
+  </div>
+
+  <!-- Post layout: article + sidebar -->
+  <div class="post-layout">
+
+    <!-- Article body -->
+    <article class="post-body">
+      <div class="prose">
+
+        <h2 id="problem">问题从哪里来</h2>
+        <p>
+          在我们开始构建 AI 智能问答系统的时候，遇到了一个很典型的产品问题：
+          当用户在一个客服会话里聊了二十几轮之后，AI 突然"失忆"了——
+          它不知道用户刚才说过自己是会员，不知道对话刚才讨论的是哪个订单。
+        </p>
+        <p>
+          用户的反馈很直接："你为什么不记得我刚才说的话？"
+        </p>
+        <p>
+          这是 LLM 的上下文窗口限制导致的。当前主流模型的上下文窗口在
+          8K 到 128K token 不等，一旦对话超出窗口，最早的内容就会被截断丢弃。
+          对于企业级 AI 客服场景，这是一个无法接受的体验问题。
+        </p>
+
+        <blockquote>
+          产品层面的核心问题不是"怎么扩大上下文窗口"，而是"怎么让用户感知不到窗口的存在"。
+        </blockquote>
+
+        <h2 id="solution">三层记忆架构的设计思路</h2>
+        <p>
+          我们借鉴了人类记忆的分层结构，设计了 <strong>L1 短期会话 / L2 长期向量记忆 / L3 用户画像</strong> 三层架构。
+          每一层解决不同时间维度的"记忆"问题。
+        </p>
+
+        <div class="arch-diagram">
+          <div class="arch-diagram-title">三层记忆架构示意</div>
+          <div class="arch-layers">
+            <div class="arch-layer">
+              <div class="arch-layer-label">L1</div>
+              <div class="arch-layer-body l1">
+                <div class="arch-layer-name">短期会话记忆（Session Buffer）</div>
+                <div class="arch-layer-desc">当前对话的最近 N 轮 · 直接注入 Context · 毫秒级访问</div>
+              </div>
+            </div>
+            <div class="arch-arrow">↓ 窗口满时自动摘要压缩</div>
+            <div class="arch-layer">
+              <div class="arch-layer-label">L2</div>
+              <div class="arch-layer-body l2">
+                <div class="arch-layer-name">长期向量记忆（Vector Memory）</div>
+                <div class="arch-layer-desc">历史对话摘要向量化存储 · 语义检索召回 · SQL Server 向量类型</div>
+              </div>
+            </div>
+            <div class="arch-arrow">↓ 每次对话结束后异步写入</div>
+            <div class="arch-layer">
+              <div class="arch-layer-label">L3</div>
+              <div class="arch-layer-body l3">
+                <div class="arch-layer-name">用户画像（User Profile）</div>
+                <div class="arch-layer-desc">用户偏好 · 身份信息 · 高频问题类型 · 每轮对话增量更新</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 id="l1">L1：短期会话记忆</h3>
+        <p>
+          L1 是最直接的层，就是把最近 N 轮对话直接放进 LLM 的 Context 里。
+          这里的关键决策是 <strong>N 取多少</strong>。
+        </p>
+        <p>
+          太少（比如 5 轮）：用户感觉 AI 健忘；太多（比如 50 轮）：Context 很快被填满，而且很多内容是无效的填充。
+          我们最终选择了 <strong>最近 12 轮</strong>，配合 token 数量上限双重控制——无论哪个先触发，都触发压缩流程。
+        </p>
+
+        <div class="callout">
+          <div class="callout-title">💡 工程细节</div>
+          窗口满时，我们不是简单截断，而是调用一个轻量的摘要 LLM 对最早的 6 轮进行压缩，
+          生成一段 200 token 以内的摘要，替换原始内容写回 Context。这样历史信息不会完全丢失。
+        </div>
+
+        <h3 id="l2">L2：长期向量记忆</h3>
+        <p>
+          当一个用户今天问了关于退款的问题，三天后又来问，AI 应该能感知到这是同一个人的同一个问题链。
+          L2 解决的是跨会话的记忆问题。
+        </p>
+        <p>
+          实现上，我们在每次对话结束后（异步，不阻塞主流程），
+          将对话摘要通过 <code>bge-m3</code> 模型 Embedding 成向量，
+          存入 <strong>SQL Server 2025 的原生向量类型</strong>（我们刻意避开了引入独立向量数据库的运维复杂度）。
+        </p>
+        <p>
+          检索时，用用户当前输入的向量做语义检索，召回最相关的历史记忆片段，
+          作为额外上下文注入 L1 的 Context 里。
+        </p>
+
+        <h3 id="l3">L3：用户画像</h3>
+        <p>
+          L3 是最"产品感"的一层。我们维护了一个结构化的用户画像：
+        </p>
+        <ul>
+          <li>身份信息：会员等级、注册时长、历史消费</li>
+          <li>偏好信息：惯用语言风格（正式 / 口语）、关注的产品品类</li>
+          <li>问题类型分布：这个用户历史上 80% 的问题都是关于物流的</li>
+        </ul>
+        <p>
+          L3 的数据在每轮对话结束后增量更新，并在每次对话开始时以结构化 Prompt 的形式注入 Context 的系统提示区。
+          这让 AI 从第一句话就能"认识"这个用户。
+        </p>
+
+        <h2 id="product-decision">几个关键的产品决策</h2>
+
+        <h3>1. 用户感知不到窗口切换是核心设计目标</h3>
+        <p>
+          所有技术方案都服务于这一个产品目标。衡量方式很简单：
+          在 UAT 测试中，让测试人员聊 30 轮以上，看他们能不能感知到"AI 重置了"。
+          达标标准是：100 个测试用例中，感知到断裂的不超过 5 个。
+        </p>
+
+        <h3>2. 压缩摘要的质量是瓶颈</h3>
+        <p>
+          L1 → L2 的压缩摘要质量直接影响长期记忆的可用性。
+          我们花了大量时间在摘要 Prompt 的调优上，最终确定了一套
+          <strong>强制保留关键实体（订单号、问题类型、未解决事项）</strong> 的摘要格式。
+        </p>
+
+        <h3>3. 多租户数据隔离不能妥协</h3>
+        <p>
+          我们的系统服务多个企业客户，每个企业的用户记忆数据必须严格隔离。
+          在 L2 和 L3 的存储层，我们实现了 <strong>JWT + 行级数据隔离</strong>，
+          确保一个租户的 AI 绝对无法访问另一个租户的记忆数据。
+        </p>
+
+        <h2 id="result">落地结果</h2>
+        <p>上线后我们监控了三个核心指标：</p>
+        <ul>
+          <li><strong>会员自助解决率：65%</strong>——上线前这个数字接近 0（全人工）</li>
+          <li><strong>客服工单量降低 30%</strong>——高频简单问题被 AI 消化，人工客服可以专注复杂案例</li>
+          <li><strong>用户满意度（点赞率）：87%</strong>——多轮对话体验的满意度是关键驱动因素</li>
+        </ul>
+
+        <div class="callout">
+          <div class="callout-title">📝 一点反思</div>
+          三层记忆架构解决了"记忆"问题，但带来了新的复杂度：如何保证摘要的准确性、
+          如何处理用户画像的"遗忘"（避免过时信息污染）、如何控制向量检索的召回精度……
+          这些是下一阶段需要继续优化的方向。AI 产品没有"完成"的时候，只有当前版本。
+        </div>
+
+        <h2 id="summary">总结</h2>
+        <p>
+          LLM 记忆问题的本质是一个<strong>产品体验问题，而不仅仅是技术问题</strong>。
+          技术上有很多方案，但哪个方案最终被选择，取决于产品目标——
+          我们要的是"用户感知不到窗口切换"，而不是"上下文窗口最大化"。
+        </p>
+        <p>
+          三层记忆架构是在当前约束下（成本、运维复杂度、团队能力）达到产品目标的最优解。
+          如果你在构建类似的系统，希望这篇文章对你有参考价值。
+        </p>
+        <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+
+        <hr>
+        <p style="font-size:14px;color:var(--text-3);">
+          本文首发于邵炎炎个人博客。转载请注明出处。
+        </p>
+
+      </div>
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#problem">问题从哪里来</a>
+          <a href="#solution">三层记忆架构设计思路</a>
+          <a href="#l1" class="sub">L1 短期会话记忆</a>
+          <a href="#l2" class="sub">L2 长期向量记忆</a>
+          <a href="#l3" class="sub">L3 用户画像</a>
+          <a href="#product-decision">关键产品决策</a>
+          <a href="#result">落地结果</a>
+          <a href="#summary">总结</a>
+        </div>
+      </div>
+
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">项目成果</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="font-size:24px;font-weight:800;color:var(--green);line-height:1;">65%</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">会员自助解决率</div>
+          </div>
+          <div style="height:1px;background:var(--border);"></div>
+          <div>
+            <div style="font-size:24px;font-weight:800;color:var(--accent);line-height:1;">↓30%</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">客服工单量降低</div>
+          </div>
+          <div style="height:1px;background:var(--border);"></div>
+          <div>
+            <div style="font-size:24px;font-weight:800;color:var(--orange);line-height:1;">87%</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">用户满意度</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--accent);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+            <img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none';this.parentNode.textContent='邵'">
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;">邵炎炎</div>
+            <div style="font-size:12px;color:var(--text-3);">CIO · AI 产品经理</div>
+          </div>
+        </div>
+        <a class="btn btn-ghost" href="../about.html" style="width:100%;justify-content:center;font-size:13px;padding:8px;">查看完整经历 →</a>
+      </div>
+
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="multi-agent-product-design.html">
+          <div>
+            <div class="related-post-title">Multi-Agent 编排平台的产品设计</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">AI 实践</div>
+              <div class="related-post-date">2026.04.08</div>
+            </div>
+          </div>
+        </a>
+        <a class="related-post" href="ai-quality-evaluation.html">
+          <div>
+            <div class="related-post-title">AI 产品的质量评估体系怎么建？</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">产品经理</div>
+              <div class="related-post-date">2026.05.05</div>
+            </div>
+          </div>
+        </a>
+        <a class="related-post" href="prompt-engineering-practice.html">
+          <div>
+            <div class="related-post-title">Prompt Engineering 的工程化</div>
+            <div class="related-post-meta">
+              <div class="related-post-cat">AI 实践</div>
+              <div class="related-post-date">2026.02.18</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</section>
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<!-- Footer -->
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2026 &#37045;&#28814;&#28814; &middot; &#29992;&#20889;&#20316;&#25972;&#29702;&#24605;&#32771;&#65292;&#29992;&#20195;&#30721;&#39564;&#35777;&#24819;&#27861;</p>
+    <div class="footer-links">
+      <a href="../about.html">&#20851;&#20110;</a>
+      <a href="../projects.html">&#39033;&#30446;</a>
+      <a href="../blog.html">&#21338;&#23458;</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+<script src="../nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Agent 真正有价值的地方，不是更会聊天，而是能把规则、记忆、工具和复盘沉淀成持续进化的工作系统。">
+  <title>Hermes Agent：从“会聊天的工具”到“会长大的工作系统” — 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-layout">
+    <article class="post-body">
+      <header class="post-header">
+        <div class="post-meta-row">
+          <span class="post-meta-tag">AI 实践</span>
+          <time class="post-meta-date" datetime="2026-05-14">2026.05.14</time>
+        </div>
+        <h1>Hermes Agent：从“会聊天的工具”到“会长大的工作系统”</h1>
+        <p class="post-lead">Agent 真正有价值的地方，不是更会聊天，而是能把规则、记忆、Skill 和复盘沉淀成持续进化的工作系统。</p>
+      </header>
+
+      <div class="prose">
+        <p>过去几年我在 AI 领域的实践里，越来越能感受到一件事：AI 能不能落地，关键不在于 Demo 里表现多聪明，而在于它能不能进入一个可维护、可评估、可复用的业务系统。</p>
+        <p>我现在更关心的，不是 Agent 能不能表现得更自主，而是它能不能在每次完成任务后，反过来更新自己的规则、记忆和技能。只有这样，AI 才不只是一次性工具，而是在变成一个会长大的工作系统。</p>
+
+        <h2 id="harness">Agent 的关键不是自主，而是缰绳</h2>
+        <p>这背后对应的是 Harness Engineering 的思路：不要只盯着模型本身，而要给模型构建更好的运行环境，包括系统规则、工具权限、记忆召回、反馈机制和协作流程。</p>
+        <p>这和我做企业 AI 项目时的体感非常接近。模型通常不是唯一瓶颈，真正难的是让模型理解业务边界：哪些话不能乱说，哪些数据不能越权，什么时候需要转人工，怎样留下可追踪的操作记录，怎样在失败后回滚。</p>
+        <p>Agent 如果没有缰绳，只是一个能力很强但边界模糊的执行器。Agent 有了缰绳，才可能进入企业系统、产品流程和团队协作。</p>
+
+        <h2 id="loop">Hermes 最有意思的是学习循环</h2>
+        <p>Hermes 的核心不是“能做很多事”，而是任务结束后会继续做三件事：判断什么值得记住，什么可以提炼成 Skill，已有 Skill 是否需要更新。</p>
+        <p>这件事很像工程团队里的复盘。一个线上问题修完以后，成熟团队不会只改一行代码，而会补测试、补监控、改文档、更新 checklist。Hermes 把这套动作放进了 Agent 的默认循环里。</p>
+        <div class="callout">
+          <div class="callout-title">我的理解</div>
+          <div>AI 协作真正的效率提升，不是每次 prompt 写得更漂亮，而是每次合作都能让下一次少解释一点、少返工一点、少踩一次同样的坑。</div>
+        </div>
+
+        <h2 id="memory">记忆不是聊天记录，而是经验蒸馏</h2>
+        <p>我之前写过 LLM 记忆分层架构，核心观点也是：不能把“记忆”简单理解成保存历史对话。历史对话只是原材料，真正有价值的是从对话里提炼出稳定偏好、业务事实、流程规则和可复用经验。</p>
+        <p>Hermes 的三层记忆和 Skill 系统，在这个方向上给了一个很好的参考。会话记忆解决当下上下文，持久记忆解决用户和业务偏好，Skill 记忆解决“下次怎么做”。</p>
+        <p>这对企业 AI 落地尤其重要。客服系统、知识库问答、销售辅助、内部运营 Agent，都不能只靠临场发挥。它们需要把一线反馈沉淀成可复用的策略，而不是永远停留在“这次回答得还不错”。</p>
+
+        <h2 id="my-workflow">我会怎么用到自己的工作流里</h2>
+        <p>我不会马上把所有任务都交给一个 7x24 小时在线的 Agent。更现实的路径，是先在我现有的 Claude Code、Cursor、CodeX 工作流里补齐三层机制。</p>
+        <div class="post-panel">
+          <div class="panel-row"><div class="panel-label">项目规则</div><div class="panel-desc">把技术栈、目录结构、命名习惯、代码风格、禁止事项写清楚，让 AI 进入项目后少猜。</div></div>
+          <div class="panel-row"><div class="panel-label">复用 Skill</div><div class="panel-desc">把 PDF 解读、博客生成、AI 评估、PR 检查、部署前校验这类重复任务封装成固定步骤。</div></div>
+          <div class="panel-row"><div class="panel-label">复盘写回</div><div class="panel-desc">每次任务完成后，判断有没有新规则、新偏好、新检查项值得写回项目说明或个人知识库。</div></div>
+        </div>
+        <p>这其实就是一个轻量版 Hermes。它不一定炫酷，但非常实用。对个人开发者和小团队来说，最应该先建设的不是“全自动 Agent”，而是能持续积累上下文的工作系统。</p>
+
+        <h2 id="boundary">我也会保留一点警惕</h2>
+        <p>自我改进听起来很美，但如果没有审查，也可能把一次偶然偏好固化成长期规则，把噪声写进记忆，把错误经验包装成 Skill。</p>
+        <p>所以我更倾向于渐进式授权：低风险任务可以让 Agent 自动沉淀；中风险规则由 Agent 建议、人来确认；高风险业务策略必须进入评审和版本管理。</p>
+        <p>好的 Agent 不是突然接管系统的黑箱，而是一个越来越熟悉团队工作方式的同事。它应该变聪明，但也必须可解释、可回滚、可约束。</p>
+
+        <h2 id="summary">总结</h2>
+        <p>Hermes 给我的最大启发，是把 AI 协作从“会话能力”推进到“系统能力”。一次对话可以解决一个问题，但一个会长大的工作系统，能让下一次问题更容易被解决。</p>
+        <p>这也是我现在做个人博客和 AI 工作流整理的目标：把项目里的判断、代码里的约束、产品里的经验慢慢沉淀下来。不是追求一次性搭出完美系统，而是让系统在真实使用中一点点长出来。</p>
+        <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+        <hr>
+        <p style="font-size:13px;color:var(--text-3);">本文结合 AI Agent、Harness Engineering 与个人 AI 产品工程落地经验整理。</p>
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#harness">Agent 的缰绳</a>
+          <a href="#loop">学习循环</a>
+          <a href="#memory">记忆与经验蒸馏</a>
+          <a href="#my-workflow">我的工作流</a>
+          <a href="#boundary">边界与警惕</a>
+          <a href="#summary">总结</a>
+        </div>
+      </div>
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">关键词</div>
+        <div class="metric-line"><strong>Harness</strong><span>规则、工具、记忆与反馈</span></div>
+        <div class="metric-line"><strong>Skill</strong><span>把经验封装成能力</span></div>
+        <div class="metric-line"><strong>Loop</strong><span>任务结束后继续改进系统</span></div>
+      </div>
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>CIO · AI 产品经理</span></div></div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="llm-memory-architecture.html"><div><div class="related-post-title">LLM 记忆分层架构：解决多轮对话体验断裂的工程实践</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.12</div></div></div></a>
+        <a class="related-post" href="multi-agent-product-design.html"><div><div class="related-post-title">Multi-Agent 编排平台的产品设计：从概念到可落地方案</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.04.08</div></div></div></a>
+      </div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="../about.html">关于</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html">博客</a>
+      <a href="#" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+<script src="../nav.js"></script>
+</body>
+</html>
