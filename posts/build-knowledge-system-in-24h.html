@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="作为一个准备转型 Forward Deployed Engineer 的工程师，我花了 24 小时设计并搭建了一套基于 Obsidian + Python 自动化 + AI 集成的个人知识管理系统。这篇文章拆解这套系统的设计决策、目录架构和落地步骤。">
+  <title>24 小时搭建个人知识管理系统：一份工程师的架构设计与落地拆解 — 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+  <style>
+    .arch-diagram {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 28px 0;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.9;
+      color: var(--text-2);
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .arch-diagram .hl { color: var(--accent); font-weight: 700; }
+    .arch-diagram .dim { color: var(--text-3); }
+    .code-block {
+      background: #0f172a;
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin: 24px 0;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.85;
+      color: #e2e8f0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block .kw  { color: #7dd3fc; }
+    .code-block .fn  { color: #a5f3fc; }
+    .code-block .str { color: #86efac; }
+    .code-block .cm  { color: #64748b; }
+    .code-block .nb  { color: #f9a8d4; }
+    .timeline {
+      border-left: 2px solid var(--border);
+      margin: 28px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+    .timeline-item {
+      display: block;
+      position: relative;
+      padding: 0 0 28px 32px;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .tl-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 4px;
+    }
+    .tl-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .tl-body {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
+    .layer-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 24px 0;
+    }
+    .layer {
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .layer-top    { background: #eff6ff; border: 1.5px solid #bfdbfe; }
+    .layer-mid1   { background: #f0fdf4; border: 1.5px solid #bbf7d0; }
+    .layer-mid2   { background: #fefce8; border: 1.5px solid #fde68a; }
+    .layer-bot    { background: #faf5ff; border: 1.5px solid #e9d5ff; }
+    .layer strong { font-weight: 800; display: block; margin-bottom: 2px; font-size: 13px; }
+    .post-panel .panel-row { grid-template-columns: 52px 1fr; }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+<section class="section container">
+  <div class="post-layout">
+    <article class="post-body">
+      <header class="post-header">
+        <div class="post-meta-row">
+          <span class="post-meta-tag">工程实践</span>
+          <time class="post-meta-date" datetime="2026-05-17">2026.05.17</time>
+        </div>
+        <h1>24 小时搭建个人知识管理系统：一份工程师的架构设计与落地拆解</h1>
+        <p class="post-lead">传统的笔记 App 解决不了这个问题——它们没有知识关联，没有自动化，没有面试导向的复习机制。于是我花了一个周末，重新设计了整套个人知识管理架构。</p>
+      </header>
+
+      <div class="prose">
+
+        <h2 id="why">为什么我要重新设计知识管理系统</h2>
+        <p>我决定正式往 FDE（Forward Deployed Engineer）方向发力。这个角色需要同时覆盖四个知识域：扎实的系统架构底子、AI 工程化能力（RAG / LLM / Multi-Agent）、产品与商业判断、客户现场的咨询交付能力。</p>
+        <p>问题是，这四块知识之间联系非常紧密，但也各自有独立的深度。传统的做法是一边学一边记笔记，存进 Notion 或者 Bear，然后等到面试前再翻出来复习。我用这套方式做了两年，结论是：<strong>对于结构性知识积累，这套方式效率极低</strong>。具体体现在三个地方：</p>
+        <div class="post-panel">
+          <div class="panel-row">
+            <div class="panel-label">知识孤岛</div>
+            <div class="panel-desc">每篇笔记独立存在，"RAG 系统"和"企业 AI 落地"之间的关联要靠记忆，没有工具帮你维持知识网络。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">复习失控</div>
+            <div class="panel-desc">学了 LangGraph，三周后面试被问到，想不起来。没有间隔重复机制，知识的遗忘速度比积累速度快。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">无法量化</div>
+            <div class="panel-desc">不知道自己哪块知识薄弱、哪块已经够用，学习计划全靠"感觉"，没有数据驱动。</div>
+          </div>
+        </div>
+        <p>所以我的需求不是"记笔记"，而是设计一套<strong>能自动关联知识、能提醒复习、能量化进度</strong>的系统。这是个工程问题，不是笔记 App 选型问题。</p>
+
+        <h2 id="principles">设计原则：工程师思维做知识管理</h2>
+        <p>在动手之前，我先定了四条设计原则，这些原则后来直接决定了技术选型和目录结构：</p>
+        <div class="post-panel">
+          <div class="panel-row">
+            <div class="panel-label">模块化</div>
+            <div class="panel-desc">每个知识领域独立管理，互不干扰，但能通过统一接口关联。对应到文件系统就是：清晰的分层目录 + 双向链接。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">自动化优先</div>
+            <div class="panel-desc">能让工具做的事情不手动做。知识摄取、间隔重复计算、学习路径排序，都应该是代码跑出来的，不是人工判断的。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">面试导向</div>
+            <div class="panel-desc">每篇笔记都有"FDE 应用场景"章节，强制把知识和实际交付场景挂钩。知识不能只停在理论层面。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">可量化</div>
+            <div class="panel-desc">每个知识模块有难度标注、掌握程度、复习周期，学习进度以 JSON 持久化，随时可以出报表。</div>
+          </div>
+        </div>
+
+        <h2 id="arch">整体架构：三层技术栈</h2>
+        <p>整套系统分三层，每层职责清晰：</p>
+
+        <div class="arch-diagram"><span class="hl">┌──────────────────────────────────────────────────────┐</span>
+<span class="hl">│                  界面层  ·  Obsidian                  │</span>
+<span class="dim">│   双向链接 · 知识图谱可视化 · 模板系统 · 日历视图    │</span>
+<span class="hl">└──────────────────────────────────────────────────────┘</span>
+                         ↑  读写 Markdown 文件
+<span class="hl">┌──────────────────────────────────────────────────────┐</span>
+<span class="hl">│               自动化层  ·  Python CLI                 │</span>
+<span class="dim">│  知识摄取 · 学习路径生成 · 间隔重复 · 面试模拟     │</span>
+<span class="hl">└──────────────────────────────────────────────────────┘</span>
+                         ↑  调用 API / 读写数据
+<span class="hl">┌──────────────────────────────────────────────────────┐</span>
+<span class="hl">│               智能层  ·  AI 服务                      │</span>
+<span class="dim">│  Claude API · 向量数据库(Qdrant) · 知识图谱(NetworkX) │</span>
+<span class="hl">└──────────────────────────────────────────────────────┘</span></div>
+
+        <p>这个三层结构的关键决策是：<strong>Obsidian 只做界面，不做逻辑</strong>。它负责展示 Markdown 文件、维护双向链接，但复杂的逻辑全交给 Python。这样的好处是 Obsidian 挂掉或者换掉，数据和逻辑层完全不受影响。</p>
+
+        <h2 id="structure">目录结构：FDE 能力金字塔的物理映射</h2>
+        <p>目录结构不是随手建的，它直接对应 FDE 的能力模型。我先画了一张能力金字塔，然后把它映射成文件系统：</p>
+
+        <div class="layer-stack">
+          <div class="layer layer-top">
+            <strong>咨询交付层 · consulting-delivery/</strong>
+            客户现场实战 · 变革管理 · 项目交付框架 · 风险评估
+          </div>
+          <div class="layer layer-mid1">
+            <strong>产品业务层 · product-business/</strong>
+            AI 产品思维 · 用户价值公式 · 市场定位 · PM 能力模型
+          </div>
+          <div class="layer layer-mid2">
+            <strong>AI 工程化层 · ai-engineering/</strong>
+            LLM 工程化 · RAG 系统 · Multi-Agent 编排 · 模型评估体系
+          </div>
+          <div class="layer layer-bot">
+            <strong>技术基础层 · foundation/</strong>
+            系统设计 · 数据库 · 云原生 · 微服务架构 · 高并发
+          </div>
+        </div>
+
+        <p>每篇笔记放在对应层级的目录下，并且每篇笔记的头部都有统一的 YAML frontmatter，这是整套自动化能工作的基础：</p>
+
+        <div class="code-block"><span class="cm">---</span>
+<span class="nb">type</span>: concept
+<span class="nb">category</span>: [<span class="str">"ai-engineering"</span>, <span class="str">"rag-systems"</span>]
+<span class="nb">difficulty</span>: intermediate   <span class="cm"># beginner / intermediate / expert</span>
+<span class="nb">tags</span>: [<span class="str">"RAG"</span>, <span class="str">"向量检索"</span>, <span class="str">"FDE实战"</span>]
+<span class="nb">implementation_status</span>: practical  <span class="cm"># theoretical / implementing / production_ready</span>
+<span class="nb">use_cases</span>: [<span class="str">"企业知识库"</span>, <span class="str">"客户现场PoC"</span>]
+<span class="nb">related_concepts</span>: [<span class="str">"LLM工程化实践"</span>, <span class="str">"Multi-Agent编排"</span>]
+<span class="nb">prerequisites</span>: [<span class="str">"机器学习基础"</span>, <span class="str">"Python编程"</span>]
+<span class="cm">---</span></div>
+
+        <p><code>implementation_status</code> 这个字段是我自己加的，用来区分"只看懂了理论"和"真的在项目里用过"——面试时这个区别非常重要，Dataview 插件可以直接按这个字段筛出来复习。</p>
+
+        <h2 id="automation">自动化工具链：把重复劳动交给代码</h2>
+        <p>整个自动化层是一个 Python CLI 工具，入口是 <code>fde-cli</code>，下面挂了四个核心子命令：</p>
+
+        <h3>1. 知识摄取（ingest）</h3>
+        <p>给定一个 PDF 或者 Markdown 文件，自动切块、生成向量嵌入、写入 Qdrant，同时在 Obsidian 目录里生成对应的结构化笔记草稿。核心代码大概长这样：</p>
+
+        <div class="code-block"><span class="kw">class</span> <span class="fn">FDEKnowledgeIngester</span>:
+    <span class="kw">def</span> <span class="fn">process_source</span>(<span class="nb">self</span>, source: <span class="nb">dict</span>) -&gt; <span class="nb">list</span>:
+        processor = <span class="nb">self</span>.processors[source[<span class="str">"type"</span>]]
+        chunks = processor.process(source[<span class="str">"path"</span>])
+
+        <span class="cm"># 每个 chunk 带上 frontmatter 里的元数据</span>
+        <span class="kw">return</span> <span class="nb">self</span>._enrich_chunks(chunks, source[<span class="str">"metadata"</span>])
+
+    <span class="kw">def</span> <span class="fn">index_knowledge</span>(<span class="nb">self</span>, chunks: <span class="nb">list</span>):
+        vectors = [<span class="nb">self</span>.embeddings.embed_query(c.text) <span class="kw">for</span> c <span class="kw">in</span> chunks]
+        <span class="nb">self</span>.qdrant.upsert(<span class="str">"fde_knowledge"</span>, <span class="nb">self</span>._make_points(chunks, vectors))</div>
+
+        <h3>2. 学习路径生成（path）</h3>
+        <p>读取所有笔记的 frontmatter，构建一张<strong>知识依赖图</strong>（prerequisites 字段就是有向边），然后做拓扑排序，输出"今天应该学什么、先学什么后学什么"的排好序的清单。这解决了一个很具体的问题：<strong>知识点之间有依赖关系，但大多数学习计划都假装这个依赖不存在</strong>。</p>
+
+        <div class="code-block"><span class="kw">def</span> <span class="fn">_topological_sort</span>(<span class="nb">self</span>, skill_gaps: <span class="nb">list</span>) -&gt; <span class="nb">list</span>:
+    G = nx.DiGraph()
+    <span class="kw">for</span> module <span class="kw">in</span> skill_gaps:
+        G.add_node(module[<span class="str">"id"</span>])
+        <span class="kw">for</span> prereq <span class="kw">in</span> module[<span class="str">"prerequisites"</span>]:
+            G.add_edge(prereq, module[<span class="str">"id"</span>])
+    <span class="kw">return</span> <span class="nb">list</span>(nx.topological_sort(G))</div>
+
+        <h3>3. 间隔重复（review）</h3>
+        <p>基于 SM-2 算法，根据每次复习的质量评分（0–5）动态计算下次复习时间。所有复习记录存在 <code>docs/review_data.json</code> 里，运行 <code>fde-cli review</code> 就能看到今天有哪些笔记到期了。</p>
+
+        <div class="code-block"><span class="kw">def</span> <span class="fn">record_review</span>(<span class="nb">self</span>, item_id: <span class="nb">str</span>, quality: <span class="nb">int</span>):
+    item = <span class="nb">self</span>.review_items[item_id]
+    result = <span class="nb">self</span>.sm2.calculate_interval(
+        item.interval_days, item.ease_factor,
+        quality, item.repetition_count
+    )
+    item.interval_days  = result[<span class="str">"interval"</span>]
+    item.ease_factor    = result[<span class="str">"ease_factor"</span>]
+    item.next_review    = <span class="nb">self</span>._add_days(result[<span class="str">"interval"</span>])
+    item.repetition_count += <span class="nb">1</span></div>
+
+        <h3>4. 面试模拟（interview）</h3>
+        <p>从题库里按类型权重抽题，每道题用 Claude API 评估你的回答，给出维度评分（技术准确性、业务关联、表达清晰度）和改进建议，结果写入 JSON 文件留档。面试报告有历史对比，能看到哪个维度在提升、哪个维度还在原地踏步。</p>
+
+        <h2 id="24h">24 小时落地清单</h2>
+        <p>如果你想复刻这套系统，下面是我实际走过的时间线，每个阶段的目标和产出写得很具体，避免陷入"配置了半天什么都没做"的陷阱：</p>
+
+        <ul class="timeline">
+          <li class="timeline-item">
+            <div class="tl-label">Hour 0–2</div>
+            <div class="tl-title">目录设计 + Obsidian 初始化</div>
+            <div class="tl-body">先画你自己的能力金字塔（不超过 4 层），把每一层映射成一个顶层目录。在 Obsidian 里打开这个文件夹，安装 4 个插件：Dataview（结构化查询）、Templater（模板）、Tasks（任务追踪）、Calendar（复习日历）。不要在这个阶段折腾主题和外观，这是最常见的时间黑洞。</div>
+          </li>
+          <li class="timeline-item">
+            <div class="tl-label">Hour 2–6</div>
+            <div class="tl-title">设计 frontmatter 规范 + 写第一批模板</div>
+            <div class="tl-body">定义你自己的 frontmatter 字段，关键字段：<code>type</code>、<code>difficulty</code>、<code>implementation_status</code>、<code>prerequisites</code>、<code>tags</code>。用 Templater 把这些字段固化成模板。写 3 种模板就够用：概念笔记、书籍笔记、面试题。模板写好后，用第一篇真实笔记测试一遍流程是否顺畅。</div>
+          </li>
+          <li class="timeline-item">
+            <div class="tl-label">Hour 6–12</div>
+            <div class="tl-title">搭 Python 环境 + 跑通间隔重复</div>
+            <div class="tl-body">先只做间隔重复这一个功能：扫描所有 Markdown 文件读取 frontmatter，生成初始复习记录，实现 SM-2 算法，写一个 CLI 命令输出"今天该复习哪些"。这个功能独立、有即时反馈，是验证整套工具链能不能跑起来的最快路径。Qdrant 和 Claude API 的集成留到后面。</div>
+          </li>
+          <li class="timeline-item">
+            <div class="tl-label">Hour 12–18</div>
+            <div class="tl-title">迁移存量知识 + 测试 Dataview</div>
+            <div class="tl-body">把原来零散的笔记迁移进来，重点是<strong>补上 frontmatter</strong>——这步比写内容重要，因为没有结构化元数据，后面所有自动化都失效。迁移完之后，用 Dataview 写几条查询测试：按 difficulty 筛、按 implementation_status 筛、找出所有 prerequisites 包含某个知识点的笔记。查询跑通说明结构是对的。</div>
+          </li>
+          <li class="timeline-item">
+            <div class="tl-label">Hour 18–22</div>
+            <div class="tl-title">接入 Claude API + 面试模拟跑通</div>
+            <div class="tl-body">配置 <code>.env</code> 文件，加入 <code>ANTHROPIC_API_KEY</code>。实现面试模拟的最小版本：随机抽一道题，把你的回答发给 Claude，拿到评分和反馈，写入 JSON。第一版不需要漂亮的输出格式，能跑通闭环就行。</div>
+          </li>
+          <li class="timeline-item">
+            <div class="tl-label">Hour 22–24</div>
+            <div class="tl-title">建 Git 仓库 + 写 README</div>
+            <div class="tl-body">初始化 Git，把 <code>.env</code>、<code>__pycache__</code>、大文件（PDF）加进 <code>.gitignore</code>，提交第一版。README 里写清楚：这个项目是什么、目录结构是什么、怎么跑起来。这步容易被跳过，但两周后你自己都会忘记某些配置是干什么的。</div>
+          </li>
+        </ul>
+
+        <h2 id="traps">踩过的几个坑</h2>
+        <p>这套系统从零到可用大概花了一个周末，但期间踩了几个让我白白花掉 4–5 小时的坑，列在这里：</p>
+
+        <div class="post-panel">
+          <div class="panel-row">
+            <div class="panel-label">坑 1</div>
+            <div class="panel-desc"><strong>先选工具再设计结构</strong>：花了两个小时研究用 Notion 还是 Obsidian 还是 Logseq，结论是工具不重要，目录结构和 frontmatter 规范才是核心。这两样东西想清楚了，用任何工具都能实现。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">坑 2</div>
+            <div class="panel-desc"><strong>一次性接入所有 AI 功能</strong>：第一版想同时做向量检索 + 面试模拟 + 学习路径生成，结果三个都没跑通。正确做法是一次只做一个功能，跑通了再加下一个。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">坑 3</div>
+            <div class="panel-desc"><strong>frontmatter 字段太多</strong>：第一版设计了 15 个字段，结果写每篇笔记时要花 5 分钟填元数据，写了两天就懒得填了。现在精简到 8 个核心字段，每篇笔记的元数据填写不超过 2 分钟。</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label">坑 4</div>
+            <div class="panel-desc"><strong>忽略 Windows 编码问题</strong>：Python 脚本在 Windows GBK 终端下运行时，中文输出乱码，导致调试时完全看不懂报错信息。加一行 <code>sys.stdout.reconfigure(encoding="utf-8")</code> 就解决了，但找到这个原因花了将近一小时。</div>
+          </div>
+        </div>
+
+        <h2 id="result">现在这套系统能做什么</h2>
+        <p>这套系统现在能做的事情：用自然语言检索跨层级的知识点，得到带上下文的结构化答案；按能力模型自动排出当日复习队列，不需要人工判断先看什么；跑完一次面试模拟后给出多维度评分和历史对比，清楚看到哪个维度在提升、哪个还在原地踏步。</p>
+        <p>更重要的是，<strong>知识之间的关联变得可见了</strong>。Obsidian 的图谱视图能清楚看到"RAG 架构"连着"LLM 工程化"连着"企业 AI 实施"——这张图比任何思维导图都能帮你理解你自己的知识结构。</p>
+        <p>如果你正在系统性地准备某一个方向的转型，我的建议是：<strong>别把时间花在选笔记 App 上，把时间花在设计你自己的知识分层结构上</strong>。结构设计好了，用什么工具都能跑起来。</p>
+
+        <hr>
+        <p>这套系统的完整代码和目录结构在 GitHub 上公开，欢迎 fork 和提 issue。有问题也可以发邮件：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#why">为什么要重新设计</a>
+          <a href="#principles">设计原则</a>
+          <a href="#arch">整体架构：三层技术栈</a>
+          <a href="#structure">目录结构：能力金字塔</a>
+          <a href="#automation">自动化工具链</a>
+          <a href="#24h">24 小时落地清单</a>
+          <a href="#traps">踩过的坑</a>
+          <a href="#result">现状</a>
+        </div>
+      </div>
+
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">系统技术栈</div>
+        <div class="metric-line"><strong>界面层</strong><span>Obsidian</span></div>
+        <div class="metric-line"><strong>自动化</strong><span>Python + Click</span></div>
+        <div class="metric-line"><strong>向量库</strong><span>Qdrant</span></div>
+        <div class="metric-line"><strong>AI 服务</strong><span>Claude API</span></div>
+        <div class="metric-line"><strong>知识图谱</strong><span>NetworkX</span></div>
+        <div class="metric-line"><strong>复习算法</strong><span>SM-2</span></div>
+      </div>
+
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">24 小时节奏</div>
+        <div class="metric-line"><strong>0–2h</strong><span>目录设计</span></div>
+        <div class="metric-line"><strong>2–6h</strong><span>模板规范</span></div>
+        <div class="metric-line"><strong>6–12h</strong><span>Python CLI</span></div>
+        <div class="metric-line"><strong>12–18h</strong><span>知识迁移</span></div>
+        <div class="metric-line"><strong>18–22h</strong><span>AI 集成</span></div>
+        <div class="metric-line"><strong>22–24h</strong><span>Git + README</span></div>
+      </div>
+
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini">
+          <img src="../avatar.jpg" alt="邵炎炎">
+          <div><strong>邵炎炎</strong><span>Forward Deployed Engineer · CIO</span></div>
+        </div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="72h-rag-demo-for-client.html">
+          <div>
+            <div class="related-post-title">72 小时为客户做出第一个可用的 RAG Demo</div>
+            <div class="related-post-meta"><div class="related-post-cat">交付实战</div><div class="related-post-date">2026.05.16</div></div>
+          </div>
+        </a>
+        <a class="related-post" href="hermes-agent-harness.html">
+          <div>
+            <div class="related-post-title">Hermes Agent：从"会聊天的工具"到"会长大的工作系统"</div>
+            <div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.14</div></div>
+          </div>
+        </a>
+        <a class="related-post" href="langgraph-ai-qa-system.html">
+          <div>
+            <div class="related-post-title">LangGraph：用状态机思维重构 AI 问答系统</div>
+            <div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.11</div></div>
+          </div>
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <div class="footer-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html">博客</a>
+            <a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a>
+    </div>
+  </div>
+</footer>
+<script src="../nav.js"></script>
+</body>
+</html>

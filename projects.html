@@ -406,6 +406,104 @@
       </div>
     </article>
 
+    <!-- Lab: FDE Knowledge Hub -->
+    <article class="project-card project-card--lab" data-reveal>
+      <div class="project-card-header">
+        <div class="project-head-top">
+          <div>
+            <div class="project-number"></div>
+            <span class="lab-eyebrow-tag">🧪 周末实验项目 · Build in Public</span>
+            <h3>FDE Knowledge Hub · 个人知识工程系统</h3>
+            <p class="project-subtitle">
+              为 FDE 转型备考设计的个人知识管理系统——核心命题是
+              <strong>把"记笔记"这件事变成一套可自动化的工程流程</strong>：
+              Obsidian 做界面、Python CLI 做自动化、Claude API 做智能评估，
+              三层架构解耦，知识积累、间隔复习、面试模拟全部由代码驱动。
+            </p>
+            <div class="project-role-tags">
+              <span class="tag tag-purple">独立设计 & 开发</span>
+              <span class="tag tag-purple">个人知识工程</span>
+              <span class="tag tag-purple">FDE 能力练习</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-metrics">
+          <div class="metric">
+            <div class="metric-val green">4层</div>
+            <div class="metric-label">能力金字塔目录结构（技术→AI→产品→咨询）</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val blue">SM-2</div>
+            <div class="metric-label">间隔重复算法驱动每日复习队列</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val orange">4 个</div>
+            <div class="metric-label">CLI 子命令（ingest / path / review / interview）</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val" style="font-size:15px;letter-spacing:-.3px;line-height:1.3;">DAG<br>拓扑排序</div>
+            <div class="metric-label">知识依赖图自动排学习顺序</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card-body">
+        <div class="project-main">
+          <div class="project-detail-title">核心技术设计决策</div>
+          <div class="project-points-grid">
+            <span class="pp-role">架构决策</span>
+            <strong class="pp-term">三层解耦：界面 / 自动化 / 智能</strong>
+            <span class="pp-desc">Obsidian 只做界面（Markdown 渲染 + 双向链接），Python CLI 做所有自动化逻辑（间隔重复、路径生成、知识摄取），Claude API 做智能评估（面试打分 + 改进建议）。三层完全解耦，Obsidian 换掉不影响任何逻辑。</span>
+
+            <span class="pp-role">数据建模</span>
+            <strong class="pp-term">frontmatter 作为机器可读结构</strong>
+            <span class="pp-desc">每篇笔记 YAML frontmatter 包含 <code>prerequisites</code>（有向依赖边）、<code>implementation_status</code>（理论 / 实践 / 生产）、<code>difficulty</code> 等 8 个字段。这套结构是所有自动化的数据基础——Dataview 查询、SM-2 复习、拓扑排序均读取同一份元数据。</span>
+
+            <span class="pp-role">路径规划</span>
+            <strong class="pp-term">NetworkX DAG 拓扑排序学习路径</strong>
+            <span class="pp-desc">以 <code>prerequisites</code> 字段为有向边构建知识依赖图（NetworkX DiGraph），拓扑排序后输出"先学什么、后学什么"的有序队列，解决了绝大多数学习计划忽视知识依赖顺序的根本问题。</span>
+
+            <span class="pp-role">复习机制</span>
+            <strong class="pp-term">SM-2 间隔重复算法</strong>
+            <span class="pp-desc">基于 SM-2 算法，根据每次复习质量评分（0–5）动态计算下次复习间隔和难度系数（EF）。所有状态持久化到 JSON，每天运行 <code>fde-cli review</code> 拿到当日到期队列，遗忘曲线被算法接管。</span>
+
+            <span class="pp-role">知识摄取</span>
+            <strong class="pp-term">PDF / Markdown → Qdrant 向量索引</strong>
+            <span class="pp-desc">读取 PDF / Markdown 源文件，切块后用 text-embedding 模型生成向量，写入 Qdrant 本地实例。每个 chunk 携带 frontmatter 元数据，支持按 category / difficulty / status 过滤检索，实现跨笔记语义搜索。</span>
+
+            <span class="pp-role">面试评估</span>
+            <strong class="pp-term">Claude API 多维打分 + 历史对比</strong>
+            <span class="pp-desc">从题库按类型权重抽题，把回答发给 Claude 评估三个维度（技术准确性 / 业务关联度 / 表达清晰度），结果写入带时间戳的 JSON 报告。历史报告可对比，清楚看到哪个维度在进步、哪个还在原地踏步。</span>
+          </div>
+        </div>
+
+        <div class="project-footer-info project-footer-info--narrow">
+          <div>
+            <div class="project-detail-title">技术栈</div>
+            <div class="project-tech">
+              <span class="tag">Python 3.9+</span>
+              <span class="tag">Click CLI</span>
+              <span class="tag tag-blue">Obsidian + Dataview</span>
+              <span class="tag tag-purple">Anthropic Claude API</span>
+              <span class="tag">Qdrant</span>
+              <span class="tag">NetworkX</span>
+              <span class="tag tag-orange">SM-2 算法</span>
+              <span class="tag">Templater</span>
+              <span class="tag">python-frontmatter</span>
+            </div>
+          </div>
+          <div>
+            <div class="project-detail-title">我的角色</div>
+            <div class="project-points">
+              <div class="project-point"><strong>系统设计：</strong><span>从零设计三层架构和四层目录结构，把"求职备考"这个模糊需求翻译成可工程化的知识管理系统</span></div>
+              <div class="project-point"><strong>算法实现：</strong><span>独立实现 SM-2 间隔重复、NetworkX 拓扑排序、向量检索三个核心算法模块</span></div>
+              <div class="project-point"><strong>AI 集成：</strong><span>Claude API 面试评估闭环设计，多维打分 + 历史报告 + JSON 持久化，让备考进度可量化</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
     <!-- Project 1: AI Q&A Platform -->
     <article class="project-card" data-reveal>
       <div class="project-card-header">
@@ -582,38 +680,9 @@
           <div>
             <div class="project-detail-title">我的角色（Forward Deployed 视角）</div>
             <div class="project-points">
-              <div class="project-point"><strong>产品设计：</strong><span>主导从竞品分析到 PRD 的全流程，输出三阶段产品路线图，明确 Web2 MVP → Web3 迁移的里程碑</span></div>
-              <div class="project-point"><strong>合规研究：</strong><span>系统梳理日本三部法律（景品表示法、扭蛋禁令、古物営業法），逐条对应产品功能，划定合规边界</span></div>
-              <div class="project-point"><strong>技术方案：</strong><span>设计链上确权架构（Polygon ERC-721）与爬虫定价系统，数据结构完全兼容后续链上迁移</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </article>
-
-  </div>
-</section>
-</main>
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
-    <div class="footer-links">
-      <a href="about.html">关于</a>
-      <a href="projects.html">项目</a>
-      <a href="blog.html">博客</a>
-      <a href="#" class="footer-cta">联系我</a>
-    </div>
-  </div>
-</footer>
-
-<script src="nav.js"></script>
-<script src="motion.js"></script>
-</body>
-</html>
-              <div class="project-point"><strong>市场调研：</strong><span>面向日本本地客户做用户访谈与竞品拆解，定位"可信确权 + 实时定价 + 流动性"三大痛点</span></div>
-              <div class="project-point"><strong>方案设计：</strong><span>设计 Web2→Web3 渐进路线、回购 + 透明盲盒闭环、阶梯手续费体系，规避一步到位的 Web3 风险</span></div>
-              <div class="project-point"><strong>合规对齐：</strong><span>主导与日本法务团队对齐三部法律边界，把合规边界翻译成产品功能取舍</span></div>
+                            <div class="project-point"><strong>产品设计：</strong><span>主导从零完成竞品分析、用户痛点梳理及三阶段产品路线图设计，所有方案决策以数据和合规研究为依据</span></div>
+              <div class="project-point"><strong>合规研究：</strong><span>独立完成日本三部法律合规分析（景品表示法 / コンプガチャ禁令 / 古物営業法），为产品划定边界，确保核心功能合法落地</span></div>
+              <div class="project-point"><strong>战略决策：</strong><span>主导"Web2 先行验证、Web3 平滑迁移"渐进策略，在市场验证与技术风险之间找到平衡点</span></div>
             </div>
           </div>
         </div>
@@ -629,29 +698,30 @@
             <h3>私域电商平台</h3>
             <p class="project-subtitle">
               面向东南亚多国市场的国际化私域电商系统，从零搭建三端前台 + 七大微服务，
-              支持 6 种语言、4 种货币、USDT 加密支付与复杂薪酬引擎，是我主导设计并落地的最复杂分布式系统之一。
+              支持 6 种语言、4 种货币、USDT 加密支付与复杂薪酬引擎——
+              是我主导设计并落地的分布式系统之一。
             </p>
             <div class="project-role-tags">
               <span class="tag tag-purple">系统架构师 / 技术负责人</span>
-              <span class="tag">公司：JCS 集团（新加坡 ）</span>
+              <span class="tag">公司：JCS 集团（新加坡）</span>
             </div>
           </div>
         </div>
         <div class="project-metrics">
           <div class="metric">
             <div class="metric-val green">6</div>
-            <div class="metric-label">语言本地化</div>
+            <div class="metric-label">语言本地化（中 / 英 / 日 / 越 / 印尼 / 繁中）</div>
           </div>
           <div class="metric">
             <div class="metric-val blue">7+</div>
-            <div class="metric-label">微服务集群</div>
+            <div class="metric-label">国家外发组同步运营</div>
           </div>
           <div class="metric">
             <div class="metric-val orange">130+</div>
-            <div class="metric-label">API 接口</div>
+            <div class="metric-label">API 接口（七大微服务）</div>
           </div>
           <div class="metric">
-            <div class="metric-val" style="font-size:16px;letter-spacing:-.3px;">TRC-20<br>ERC-20</div>
+            <div class="metric-val" style="font-size:15px;letter-spacing:-.3px;line-height:1.3;">TRC-20<br>ERC-20</div>
             <div class="metric-label">USDT 双链支付</div>
           </div>
         </div>
@@ -665,9 +735,9 @@
             <strong class="pp-term">三端 + 七服务微服务拆分</strong>
             <span class="pp-desc">Mall 会员端、Org 分公司端、Hq 总部后台三端独立部署；后端按业务域拆分为 BaseServiceCenter（基础服务）、ServiceCenterMall / Hq / Org / Search / Usdt / ImgService 七大服务，各自独立迭代，互不干扰。</span>
 
-            <span class="pp-role">核心设计</span>
+            <span class="pp-role">路由设计</span>
             <strong class="pp-term">自研分库路由算法</strong>
-            <span class="pp-desc">基于 CustomerID / OrderID / CustomerNO / Mobile 等多维路由键，通过数据中心编号奇偶分片，实现多数据库无感知路由，支撑大规模会员数据水平扩展。</span>
+            <span class="pp-desc">基于 CustomerID / OrderID / CustomerNO / Mobile 等多维路由键，通过数据中心编号奇偶分片，实现多数据库无感知路由，支持大规模会员数据水平扩展。</span>
 
             <span class="pp-role">分层缓存</span>
             <strong class="pp-term">Redis 业务对象缓存体系</strong>
@@ -675,11 +745,11 @@
 
             <span class="pp-role">国际化</span>
             <strong class="pp-term">多语言 + 多货币实时汇率</strong>
-            <span class="pp-desc">支持中文、英文、日文、越南文、印尼文、繁体中文 6 种语言动态切换；接入第三方汇率 API，每 30 分钟自动刷新 MYR、HKD、USD、CNY 等货币对，管理端可手动触发。</span>
+            <span class="pp-desc">支持中文、英文、日文、越南文、印尼文、繁体中文 6 种语言动态切换；接入第三方汇率 API，每 30 分钟自动更新 MYR / HKD / USD / CNY 等货币对，管理端可手动触发。</span>
 
             <span class="pp-role">支付创新</span>
             <strong class="pp-term">USDT 加密支付双链集成</strong>
-            <span class="pp-desc">独立 UsdtService 服务，同时支持 TRC-20（Tron）和 ERC-20（Ethereum）链上 USDT 收款与转账，内置 Gas 动态估算、测试网 / 主网一键切换、交易记录持久化。</span>
+            <span class="pp-desc">独立 UsdtService 服务，同时支持 TRC-20（Tron）和 ERC-20（Ethereum）链上 USDT 收发与转账，内置 Gas 动态估算、测试网 / 主网一键切换、交易记录持久化。</span>
           </div>
         </div>
 
@@ -690,9 +760,9 @@
               <span class="tag">.NET Framework / ASP.NET Web API</span>
               <span class="tag">SQL Server</span>
               <span class="tag">Redis</span>
-              <span class="tag tag-blue">自研 Sharding 路由</span>
+              <span class="tag tag-orange">自研 Sharding 路由</span>
               <span class="tag tag-purple">USDT TRC-20 / ERC-20</span>
-              <span class="tag tag-orange">多语言 i18n</span>
+              <span class="tag tag-blue">多语言 i18n</span>
               <span class="tag">JWT 鉴权</span>
               <span class="tag">log4net</span>
               <span class="tag">Quartz 定时任务</span>
@@ -702,50 +772,48 @@
           <div>
             <div class="project-detail-title">我的角色（Forward Deployed 视角）</div>
             <div class="project-points">
-              <div class="project-point"><strong>跨国现场：</strong><span>常驻新加坡、出差客户各分公司，与各国业务团队对齐业务/语言/货币本地化要求</span></div>
+              <div class="project-point"><strong>跨国现场：</strong><span>常驻新加坡，出差多家客户公司，与各国业务团队对齐业务 / 语言 / 货币本地化要求</span></div>
               <div class="project-point"><strong>方案架构：</strong><span>主导微服务拆分、自研分库路由、加密支付链路设计，直接交付到客户多国并行上线</span></div>
-              <div class="project-point"><strong>团队协作：</strong><span>带跨国研发团队，完成持续迭代与移交。</span></div>
+              <div class="project-point"><strong>团队协作：</strong><span>带领研发团队完成持续迭代与移交，确保系统在多国独立运营后可持续维护</span></div>
             </div>
           </div>
         </div>
       </div>
     </article>
 
-
-
-  </div>
+  </div><!-- /.projects-grid -->
 </section>
 
 <!-- ── CTA ─────────────────────────────────────────────────── -->
 <section class="container projects-cta">
   <div class="projects-cta-inner">
-    <p class="eyebrow">Let's Talk</p>
-    <h2>对以上项目有问题？想深入聊聊？</h2>
+    <h2>想聊聊合作？</h2>
     <p class="cta-desc">
-      欢迎通过邮件联系我，我会认真回复每一封。
+      无论是 AI 落地咨询、系统架构设计，还是 FDE / Solutions Engineer 角色的机会，
+      都欢迎联系我。
     </p>
     <div class="projects-cta-actions">
-      <a class="btn btn-primary" href="/cdn-cgi/l/email-protection#26554e47495f47485f47481f17661710150845494b"><span class="__cf_email__" data-cfemail="36455e57594f57584f57580f07760700051855595b">[email&#160;protected]</span> →</a>
-      <a class="btn btn-ghost" href="about.html">查看完整经历</a>
+      <a class="btn btn-primary" href="mailto:shaoyanyan91@163.com">发邮件联系</a>
+      <a class="btn btn-secondary" href="resume-shaoyanyan.pdf" download>下载简历</a>
     </div>
   </div>
 </section>
 
 </main>
 
-<!-- ── Footer ─────────────────────────────────────────────── -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
+    <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
     <div class="footer-links">
       <a href="index.html">首页</a>
       <a href="about.html">关于</a>
-      <a href="#" class="footer-cta">联系我</a>
+      <a href="projects.html">项目</a>
+      <a href="blog.html">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a>
     </div>
   </div>
 </footer>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="nav.js"></script>
+<script src="nav.js"></script>
 <script src="motion.js"></script>
 </body>
 </html>
