@@ -3,6 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="canonical" href="https://daofaziran163.github.io/personal-blog/blog.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="邵炎炎 · Forward Deployed Engineer">
+  <meta property="og:title" content="博客 — 邵炎炎">
+  <meta property="og:description" content="邵炎炎的博客 — 关于 AI 落地实践、产品经理方法论与软件架构设计的观察。">
+  <meta property="og:url" content="https://daofaziran163.github.io/personal-blog/blog.html">
+  <meta property="og:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="博客 — 邵炎炎">
+  <meta name="twitter:description" content="邵炎炎的博客 — 关于 AI 落地实践、产品经理方法论与软件架构设计的观察。">
+  <meta name="twitter:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
   <meta name="description" content="邵炎炎的博客 — 关于 AI 落地实践、产品经理方法论与软件架构设计的观察。">
   <title>博客 — 邵炎炎</title>
   <link rel="stylesheet" href="styles.css">
@@ -289,33 +301,75 @@
   <div class="blog-grid" id="postsGrid">
 
     <!-- Featured post -->
-    <a class="blog-card featured" href="posts/72h-rag-demo-for-client.html" data-cat="fde">
+    <a class="blog-card featured" href="posts/openai-deployment-company-fde.html" data-cat="fde">
       <div class="featured-left">
         <div>
-          <span class="blog-cat fde">交付实战</span>
+          <span class="blog-cat fde">FDE 实践</span>
         </div>
-        <h2>72 小时为客户做出第一个可用的 RAG Demo —— 一份 FDE 的实战清单</h2>
+        <h2>OpenAI 亲自下场做部署：FDE 为何成了 AI 经济的标配？</h2>
         <p>
-          "3 天搞定一个 AI Demo"听上去像销售话术，但作为 Forward Deployed Engineer，这其实是一份可执行的清单。
-          Day 0 预案、Day 1 数据骨架、Day 2 串通跑通、Day 3 演示与诚实的失败案例。
+          OpenAI 成立 Deployment Company、150 名 FDE、$4B 初始投入。这是行业第一次从组织架构上承认：模型能力之外，部署能力本身就是一门独立的生意。
         </p>
         <span class="blog-read-more">阅读全文 →</span>
-        <span class="blog-date" style="margin-top:4px;">2026.05.16 · 约 9 分钟阅读</span>
+        <span class="blog-date" style="margin-top:4px;">2026.05.26 · 约 8 分钟阅读</span>
       </div>
       <div class="featured-right">
         <div class="feat-stat">
-          <div class="feat-stat-val">72h</div>
-          <div class="feat-stat-label">PoC 时窗</div>
+          <div class="feat-stat-val">$4B</div>
+          <div class="feat-stat-label">初始投资</div>
         </div>
         <div class="feat-stat">
-          <div class="feat-stat-val">5 问</div>
-          <div class="feat-stat-label">Day 0 预案</div>
+          <div class="feat-stat-val">150</div>
+          <div class="feat-stat-label">FDE 工程师</div>
         </div>
         <div class="feat-stat">
-          <div class="feat-stat-val">3 坑</div>
-          <div class="feat-stat-label">反复见过的翻车</div>
+          <div class="feat-stat-val">2026.05</div>
+          <div class="feat-stat-label">官方公告</div>
         </div>
       </div>
+    </a>
+
+    <a class="blog-card" href="posts/72h-rag-demo-for-client.html" data-cat="fde">
+      <span class="blog-cat fde">交付实战</span>
+      <h2>72 小时为客户做出第一个可用的 RAG Demo —— 一份 FDE 的实战清单</h2>
+      <p>
+        "3 天搞定一个 AI Demo"听上去像销售话术，但作为 Forward Deployed Engineer，这其实是一份可执行的清单。
+        Day 0 预案、Day 1 数据骨架、Day 2 串通跑通、Day 3 演示与诚实的失败案例。
+      </p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.16 · 约 9 分钟阅读</span>
+    </a>
+
+    <a class="blog-card" href="posts/ai-tool-to-ai-teammate.html" data-cat="fde">
+      <span class="blog-cat fde">FDE 实践</span>
+      <h2>从「AI 工具」到「AI 队友」：企业工作流架构升级的 FDE 实战路径</h2>
+      <p>企业买了很多 AI 工具，不等于拥有 AI 工作系统。真正的分水岭，是 AI 能否持续理解目标、调用工具、复盘结果，并和人一起完成端到端工作。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.18</span>
+    </a>
+
+    <a class="blog-card" href="posts/openai-finetuning-api-shutdown.html" data-cat="fde">
+      <span class="blog-cat fde">FDE 实践</span>
+      <h2>OpenAI 微调 API 变化之后：FDE 的 RAG 转型实战指南</h2>
+      <p>当平台策略、模型能力和成本结构一起变化时，FDE 要帮客户判断哪些系统受影响、什么路径可以迁移、以及迁移是否真的值得。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.18</span>
+    </a>
+
+    <a class="blog-card" href="posts/enterprise-ai-orchestration-layer.html" data-cat="fde">
+      <span class="blog-cat fde">FDE 实践</span>
+      <h2>从 Copilot 到编排层：FDE 帮客户搭企业 AI 协作系统的实战框架</h2>
+      <p>很多客户已经买了 Copilot 类工具，但业务效率没有系统性变化。问题通常不在工具，而在缺少目标、系统、数据和审批之间的编排层。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.18</span>
+    </a>
+
+    <a class="blog-card" href="posts/build-mcp-server-from-scratch.html" data-cat="fde">
+      <span class="blog-cat fde">FDE 实践</span>
+      <h2>从 0 到 1 构建 MCP Server：一个 FDE 的工程实践</h2>
+      <p>MCP 的价值不是“又多了一个协议”，而是让企业已有系统能以标准方式暴露给 AI 客户端调用。</p>
+      <span class="blog-read-more">阅读全文 →</span>
+      <span class="blog-date">2026.05.18</span>
     </a>
 
     <!-- 24h Knowledge System -->
@@ -463,10 +517,10 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
-    <div class="footer-links">
+    <div class="footer-links"><a href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">GitHub</a>
       <a href="index.html">首页</a>
       <a href="about.html">关于</a>
-      <a href="#" class="footer-cta">联系我</a>
+      <a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a>
     </div>
   </div>
 </footer>
