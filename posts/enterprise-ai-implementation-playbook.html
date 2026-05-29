@@ -3,6 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="canonical" href="https://daofaziran163.github.io/personal-blog/posts/enterprise-ai-implementation-playbook.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="邵炎炎 · Forward Deployed Engineer">
+  <meta property="og:title" content="企业 AI 实施手册：斯坦福实证报告与一线落地经验 — 邵炎炎">
+  <meta property="og:description" content="基于斯坦福大学 2026 年企业 AI 实施实证报告，结合真实落地经验，拆解企业 AI 从 Pilot 到规模化的完整路径与核心陷阱。">
+  <meta property="og:url" content="https://daofaziran163.github.io/personal-blog/posts/enterprise-ai-implementation-playbook.html">
+  <meta property="og:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="企业 AI 实施手册：斯坦福实证报告与一线落地经验 — 邵炎炎">
+  <meta name="twitter:description" content="基于斯坦福大学 2026 年企业 AI 实施实证报告，结合真实落地经验，拆解企业 AI 从 Pilot 到规模化的完整路径与核心陷阱。">
+  <meta name="twitter:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
   <meta name="description" content="基于斯坦福大学 2026 年企业 AI 实施实证报告，结合真实落地经验，拆解企业 AI 从 Pilot 到规模化的完整路径与核心陷阱。">
   <title>企业 AI 实施手册：斯坦福实证报告与一线落地经验 — 邵炎炎</title>
   <link rel="stylesheet" href="../styles.css">
@@ -123,6 +135,47 @@
     .data-desc { font-size: 12px; color: var(--text-2); line-height: 1.5; }
     .data-source { font-size: 11px; color: var(--text-3); margin-top: 4px; }
 
+    .post-source-note {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      margin: 0 0 28px;
+      display: grid;
+      gap: 10px;
+    }
+    .post-source-note-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .post-source-note dl {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 8px 14px;
+      margin: 0;
+    }
+    .post-source-note dt {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-3);
+    }
+    .post-source-note dd {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-2);
+    }
+    .post-source-note a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .post-source-note a:hover { text-decoration: underline; }
+
     /* Finding block */
     .finding {
       border: 1.5px solid var(--border);
@@ -202,6 +255,7 @@
     }
     @media (max-width: 600px) {
       .data-grid { grid-template-columns: 1fr; }
+      .post-source-note dl { grid-template-columns: 1fr; gap: 4px; }
     }
   </style>
 </head>
@@ -259,6 +313,16 @@
   <div class="post-layout" style="padding-bottom:80px;">
     <article class="post-body">
       <div class="prose">
+
+        <section class="post-source-note" aria-label="文章事实说明">
+          <div class="post-source-note-title">事实说明</div>
+          <dl>
+            <dt>参考来源</dt>
+            <dd><a href="https://digitaleconomy.stanford.edu/app/uploads/2026/03/EnterpriseAIPlaybook_PereiraGraylinBrynjolfsson.pdf" target="_blank" rel="noopener">Stanford Digital Economy Lab: The Enterprise AI Playbook</a>、<a href="https://hai.stanford.edu/ai-index/2026-ai-index-report/economy" target="_blank" rel="noopener">Stanford HAI 2026 AI Index: Economy</a>、MIT NANDA 相关公开研究。</dd>
+            <dt>判断边界</dt>
+            <dd>本文把研究数据和个人项目复盘结合，用于梳理企业 AI 落地方法论；具体比例和结论应结合行业、样本口径、组织成熟度重新解释。</dd>
+          </dl>
+        </section>
 
         <h2 id="context">先看数据：企业 AI 的真实现状</h2>
 
@@ -673,11 +737,11 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
-    <div class="footer-links">
+    <div class="footer-links"><a href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">GitHub</a>
       <a href="../index.html">首页</a>
       <a href="../blog.html">博客</a>
       <a href="../about.html">关于</a>
-      <a href="#" class="footer-cta">联系我</a>
+      <a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a>
     </div>
   </div>
 </footer>

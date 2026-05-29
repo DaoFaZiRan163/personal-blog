@@ -3,7 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="邵炎炎项目案例 — AI 智能问答平台、千万用户电商系统、Multi-Agent 编排平台等核心项目。">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="canonical" href="https://daofaziran163.github.io/personal-blog/projects.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="邵炎炎 · Forward Deployed Engineer">
+  <meta property="og:title" content="项目案例 — 邵炎炎">
+  <meta property="og:description" content="邵炎炎项目案例 — 电商平台会员个人助理、千万用户电商系统、Multi-Agent 编排平台等核心项目。">
+  <meta property="og:url" content="https://daofaziran163.github.io/personal-blog/projects.html">
+  <meta property="og:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="项目案例 — 邵炎炎">
+  <meta name="twitter:description" content="邵炎炎项目案例 — 电商平台会员个人助理、千万用户电商系统、Multi-Agent 编排平台等核心项目。">
+  <meta name="twitter:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="description" content="邵炎炎项目案例 — 电商平台会员个人助理、千万用户电商系统、Multi-Agent 编排平台等核心项目。">
   <title>项目案例 — 邵炎炎</title>
   <link rel="stylesheet" href="styles.css">
   <style>
@@ -287,7 +299,7 @@
       <a href="about.html">关于我</a>
       <a href="projects.html" class="active">项目</a>
       <a href="blog.html">博客</a>
-      <a href="/cdn-cgi/l/email-protection#215249404e58404f58404f1810611017120f424e4c" class="nav-cta">联系我</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
     </div>
   </div>
 </nav>
@@ -308,104 +320,6 @@
 <section class="container projects-section">
   <div class="projects-grid" data-reveal-stagger data-reveal-step="100">
 
-    <!-- Lab: CommiNav -->
-    <article class="project-card project-card--lab" data-reveal>
-      <div class="project-card-header">
-        <div class="project-head-top">
-          <div>
-            <div class="project-number"></div>
-            <span class="lab-eyebrow-tag">🧪 周末实验项目 · Build in Public</span>
-            <h3>CommiNav · 佣金导航 SaaS</h3>
-            <p class="project-subtitle">
-              一人从零到一独立完成的 AI-native SaaS——从战略规划、PRD 到全栈实现，
-              核心命题是<strong>把 LLM 当作有 SLA 的服务来运维</strong>：
-              评估、路由、本地推理、护栏、可观测性五层 harness 全部做到生产标准，而非原型级实现。
-            </p>
-            <div class="project-role-tags">
-              <span class="tag tag-purple">独立设计 & 开发</span>
-              <span class="tag tag-purple">AI-native SaaS</span>
-              <span class="tag tag-purple">FDE 能力练习</span>
-            </div>
-          </div>
-        </div>
-        <div class="project-metrics">
-          <div class="metric">
-            <div class="metric-val green">↓42%</div>
-            <div class="metric-label">LLM 调用成本降低（多模型路由 + Prompt Cache）</div>
-          </div>
-          <div class="metric">
-            <div class="metric-val blue">58%</div>
-            <div class="metric-label">本地推理占比（Ollama 处理低敏感度查询）</div>
-          </div>
-          <div class="metric">
-            <div class="metric-val orange">94%</div>
-            <div class="metric-label">Eval CI 套件通过率（PR 合并门控）</div>
-          </div>
-          <div class="metric">
-            <div class="metric-val" style="font-size:16px;letter-spacing:-.3px;">Flutter<br>三端</div>
-            <div class="metric-label">单库 Web / Android / iOS</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-card-body">
-        <div class="project-main">
-          <div class="project-detail-title">核心技术设计决策</div>
-          <div class="project-points-grid">
-            <span class="pp-role">核心创新</span>
-            <strong class="pp-term">LLM 五层 Harness 体系</strong>
-            <span class="pp-desc">把"接入 LLM"拆成五个独立工程层：Eval（质量评估）→ Multi-Model Router（成本/能力路由）→ 本地推理（Ollama / MLC LLM 边缘部署）→ Guardrail（输出护栏）→ Observability（Langfuse 全链路追踪），每层均以生产 SLA 为目标设计。</span>
-
-            <span class="pp-role">成本控制</span>
-            <strong class="pp-term">多模型动态路由</strong>
-            <span class="pp-desc">根据查询复杂度、数据敏感度、单次成本预算三维评分，动态路由至 Claude API（高复杂度）/ Ollama 本地（低敏感度常规查询）/ MLC LLM 边缘（离线场景），LLM 调用成本降低 42%，58% 请求由本地模型处理、零 API 费用。</span>
-
-            <span class="pp-role">质量门控</span>
-            <strong class="pp-term">Eval-as-CI-gate</strong>
-            <span class="pp-desc">用 Inspect AI 构建覆盖意图识别、数值计算、幻觉检测三类场景的评估套件，接入 GitHub Actions，每个 PR 自动触发 eval 运行；Eval 分数低于阈值则阻断合并，确保 LLM 行为变更有质量保障。</span>
-
-            <span class="pp-role">AI 集成</span>
-            <strong class="pp-term">MCP Server 暴露核心引擎</strong>
-            <span class="pp-desc">为核心计算引擎设计并实现 MCP Server 接口，AI 可直接调用"查询本月收益"、"预测下月收入"等工具，实现真正 AI-native 的数据交互，无需用户手动导出报表。</span>
-
-            <span class="pp-role">安全加固</span>
-            <strong class="pp-term">Prompt Injection 红队测试</strong>
-            <span class="pp-desc">对所有 LLM 入口（用户问题输入、Mailgun 邮件解析、MCP 工具调用结果）系统性实施红队测试，发现并修复 3 类注入路径；同步接入 Langfuse 实时 trace，异常 prompt 模式 30 秒内可告警。</span>
-
-            <span class="pp-role">HITL 设计</span>
-            <strong class="pp-term">长任务 + 人工介入节点</strong>
-            <span class="pp-desc">异常申诉、高风险核查等场景采用 HITL（Human-in-the-Loop）设计：AI 完成初步分析 → 挂起等待人工确认 → 确认后继续执行，通过 Hangfire 后台任务 + WebSocket 实时推送状态，保证长任务可中断可追踪。</span>
-          </div>
-        </div>
-
-        <div class="project-footer-info project-footer-info--narrow">
-          <div>
-            <div class="project-detail-title">技术栈</div>
-            <div class="project-tech">
-              <span class="tag">.NET 9</span>
-              <span class="tag">PostgreSQL</span>
-              <span class="tag tag-blue">Flutter（单库三端）</span>
-              <span class="tag tag-purple">Anthropic Claude API</span>
-              <span class="tag">Ollama / MLC LLM</span>
-              <span class="tag tag-orange">Langfuse</span>
-              <span class="tag tag-orange">Inspect AI</span>
-              <span class="tag">MCP Server</span>
-              <span class="tag">Stripe</span>
-              <span class="tag">Mailgun Inbound</span>
-            </div>
-          </div>
-          <div>
-            <div class="project-detail-title">我的角色</div>
-            <div class="project-points">
-              <div class="project-point"><strong>战略 & 产品：</strong><span>独立完成竞品分析、PRD 拆解、AI-native 功能设计，把产品核心价值翻译成可实现的技术规格</span></div>
-              <div class="project-point"><strong>全栈实现：</strong><span>.NET 9 后端 + Flutter 三端一人落地，LLM 五层 harness 是核心工程贡献</span></div>
-              <div class="project-point"><strong>AI 工程化：</strong><span>多模型路由 + Eval CI + MCP + 可观测性完整实现，达到生产运维标准而非 PoC 水平</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </article>
-
     <!-- Lab: FDE Knowledge Hub -->
     <article class="project-card project-card--lab" data-reveal>
       <div class="project-card-header">
@@ -415,10 +329,10 @@
             <span class="lab-eyebrow-tag">🧪 周末实验项目 · Build in Public</span>
             <h3>FDE Knowledge Hub · 个人知识工程系统</h3>
             <p class="project-subtitle">
-              为 FDE 转型备考设计的个人知识管理系统——核心命题是
-              <strong>把"记笔记"这件事变成一套可自动化的工程流程</strong>：
-              Obsidian 做界面、Python CLI 做自动化、Claude API 做智能评估，
-              三层架构解耦，知识积累、间隔复习、面试模拟全部由代码驱动。
+              FDE 知识库——工程化知识管理系统，核心命题是
+              <strong>把"记笔记"变成一套端到端的 AI 数据管线</strong>：
+              网页/PDF/Markdown 多源摄取 → Qwen3 本地向量化 → Qdrant 索引 → RAG 对话学习 → LLM 面试评估，
+              完整 RAG 闭环，Obsidian 做界面、Python CLI 做编排、Claude API 做评估，三层解耦可独立替换。
             </p>
             <div class="project-role-tags">
               <span class="tag tag-purple">独立设计 & 开发</span>
@@ -437,8 +351,8 @@
             <div class="metric-label">间隔重复算法驱动每日复习队列</div>
           </div>
           <div class="metric">
-            <div class="metric-val orange">4 个</div>
-            <div class="metric-label">CLI 子命令（ingest / path / review / interview）</div>
+            <div class="metric-val orange">1,344</div>
+            <div class="metric-label">向量 chunks（115 篇笔记 · Qdrant 本地实例）</div>
           </div>
           <div class="metric">
             <div class="metric-val" style="font-size:15px;letter-spacing:-.3px;line-height:1.3;">DAG<br>拓扑排序</div>
@@ -468,8 +382,12 @@
             <span class="pp-desc">基于 SM-2 算法，根据每次复习质量评分（0–5）动态计算下次复习间隔和难度系数（EF）。所有状态持久化到 JSON，每天运行 <code>fde-cli review</code> 拿到当日到期队列，遗忘曲线被算法接管。</span>
 
             <span class="pp-role">知识摄取</span>
-            <strong class="pp-term">PDF / Markdown → Qdrant 向量索引</strong>
-            <span class="pp-desc">读取 PDF / Markdown 源文件，切块后用 text-embedding 模型生成向量，写入 Qdrant 本地实例。每个 chunk 携带 frontmatter 元数据，支持按 category / difficulty / status 过滤检索，实现跨笔记语义搜索。</span>
+            <strong class="pp-term">多源摄取管线 → Qdrant 向量索引</strong>
+            <span class="pp-desc">支持三种来源：PDF 论文（自动提取标题/摘要/FDE 应用场景）、网页 URL/粘贴文本、Markdown 笔记。切块后用 <strong>Qwen3-Embedding-0.6B 本地模型</strong>生成 1024 维向量，写入 Qdrant 实例，当前已索引 1,344 chunks。每个 chunk 携带 frontmatter 元数据，支持按 category / difficulty / status 过滤的混合检索（语义 + 结构化过滤）。选用本地 Embedding 模型而非 API，单次摄取成本趋近于零。</span>
+
+            <span class="pp-role">RAG 对话学习</span>
+            <strong class="pp-term">递归式补洞学习器（gap_filling.py）</strong>
+            <span class="pp-desc">系统最核心的学习闭环：输入主题 → 向量检索相关 chunks → 拼成 RAG context → 调用 LLM 生成三种角度的追问（专家共识思维模式 / 争议热点与局限性 / 真理解 vs 死记硬背测试题）。多轮对话直到输入 <code>m</code> 标记掌握，写入 <code>mastered_knowledge.json</code> 归档。实质上是一个以知识库为后端、以 LLM 为前端的个人 AI 教练。</span>
 
             <span class="pp-role">面试评估</span>
             <strong class="pp-term">Claude API 多维打分 + 历史对比</strong>
@@ -485,19 +403,22 @@
               <span class="tag">Click CLI</span>
               <span class="tag tag-blue">Obsidian + Dataview</span>
               <span class="tag tag-purple">Anthropic Claude API</span>
-              <span class="tag">Qdrant</span>
-              <span class="tag">NetworkX</span>
+              <span class="tag tag-green">Qdrant 向量数据库</span>
+              <span class="tag tag-green">Qwen3-Embedding-0.6B</span>
+              <span class="tag">NetworkX DAG</span>
               <span class="tag tag-orange">SM-2 算法</span>
-              <span class="tag">Templater</span>
+              <span class="tag">SiliconFlow API</span>
+              <span class="tag">MiniMax API</span>
               <span class="tag">python-frontmatter</span>
+              <span class="tag">RAG Pipeline</span>
             </div>
           </div>
           <div>
             <div class="project-detail-title">我的角色</div>
             <div class="project-points">
-              <div class="project-point"><strong>系统设计：</strong><span>从零设计三层架构和四层目录结构，把"求职备考"这个模糊需求翻译成可工程化的知识管理系统</span></div>
-              <div class="project-point"><strong>算法实现：</strong><span>独立实现 SM-2 间隔重复、NetworkX 拓扑排序、向量检索三个核心算法模块</span></div>
-              <div class="project-point"><strong>AI 集成：</strong><span>Claude API 面试评估闭环设计，多维打分 + 历史报告 + JSON 持久化，让备考进度可量化</span></div>
+              <div class="project-point"><strong>端到端管线设计：</strong><span>从多源数据摄取（网页/PDF/Markdown）到本地向量化、Qdrant 索引、RAG 检索、LLM 评估，独立设计并实现完整 AI 数据管线</span></div>
+              <div class="project-point"><strong>成本优化决策：</strong><span>Embedding 选用 Qwen3-Embedding-0.6B 本地模型而非 API，对话模型按场景分别接入 MiniMax（国内低延迟）和 Claude API（高质量评估），在效果与成本之间做出工程权衡</span></div>
+              <div class="project-point"><strong>算法实现：</strong><span>独立实现 SM-2 间隔重复、NetworkX DAG 拓扑排序、RAG 多源检索三个核心模块，8 个 Python 自动化脚本，115 篇结构化知识笔记</span></div>
             </div>
           </div>
         </div>
@@ -510,13 +431,15 @@
         <div class="project-head-top">
           <div>
             <div class="project-number">Project 01 · 2026</div>
-            <h3>AI 智能问答平台</h3>
+            <h3>电商平台会员个人助理</h3>
             <p class="project-subtitle">
-              为电商平台构建企业级 AI 客服系统，将高频咨询场景从人工处理转为 AI 自助——
-              从 0 到 1 完整主导产品设计、技术架构与团队交付。
+              为电商平台会员构建的 AI 个人助理——会员可用自然语言查询权益、管理关系、生成营销内容、寻求客服支持。
+              核心是一套<strong>自研多 Agent 编排引擎</strong>：意图分类熔断器 → 路由决策 → ReAct 循环，
+              配合三层记忆（Redis 短期 / Qdrant 中期 / PostgreSQL 长期）和 Hybrid RAG，
+              以及 Heartbeat 主动触达系统，从被动问答延伸到主动陪伴。
             </p>
             <div class="project-role-tags">
-              <span class="tag tag-purple">解决方案架构师</span>
+              <span class="tag tag-purple">AI 系统架构师</span>
               <span class="tag">公司：PNYY 株式会社（日本）</span>
             </div>
           </div>
@@ -543,27 +466,35 @@
 
       <div class="project-card-body">
         <div class="project-main">
-          <div class="project-detail-title">核心产品设计决策</div>
+          <div class="project-detail-title">核心技术设计决策</div>
           <div class="project-points-grid">
-            <span class="pp-role">设计</span>
-            <strong class="pp-term">多策略回答引擎</strong>
-            <span class="pp-desc">精确匹配 → 关键词匹配 → LLM 实时生成，在响应速度（&lt;100ms）与回答质量之间找到最优平衡点。</span>
+            <span class="pp-role">编排引擎</span>
+            <strong class="pp-term">LangGraph StateGraph + 自研节点业务逻辑</strong>
+            <span class="pp-desc">基于 LangGraph StateGraph 搭建编排框架，定义 9 个节点（输入护栏 / 记忆加载 / RAG 检索 / 意图分类 / 路由决策 / 4 类 Agent 子图 / HITL / 输出护栏 / 记忆保存），4 类专业化 Agent（政策查询 / 客户 / 营销 / 支持）各为独立子图并行编译。自研部分是节点内的业务逻辑与路由决策：意图置信度 &gt;0.9 且为简单意图走单步路径（maxSteps=1，仍经 LLM，后台可关闭此路径强制全量进入 ReAct）；否则进入 ReAct 循环（政策类查询 maxSteps=8，其余 maxSteps=4）；步数超限自动触发 HITL。图状态通过 PostgresSaver 持久化，支持 HITL interrupt/resume 跨请求恢复。</span>
 
-            <span class="pp-role">核心创新</span>
-            <strong class="pp-term">LLM 三层记忆架构</strong>
-            <span class="pp-desc">短期会话 + 长期向量记忆 + 用户画像，解决 LLM 上下文窗口有限导致的多轮对话体验断裂问题，用户无感知窗口切换。</span>
+            <span class="pp-role">意图分类</span>
+            <strong class="pp-term">关键词规则 + LLM 兜底熔断器</strong>
+            <span class="pp-desc">8 类意图从 JSON 配置文件热加载（<code>fs.watch</code> 监听，无需重启）。关键词匹配置信度低于阈值时调 LLM 兜底分类（claude-haiku-4-5，超时 2.5s）；连续失败 3 次触发进程级熔断器，冷却 60s 不再调用，回落默认意图，避免 LLM 故障级联。LLM 分类时注入最近 4 条会话上下文，准确识别跨轮追问场景。</span>
 
-            <span class="pp-role">规划</span>
-            <strong class="pp-term">Multi-Agent 三层架构</strong>
-            <span class="pp-desc">（编排器 + 执行器 + 评估器），配置 10+ 专业化子 Agent，定义 7 类任务质量评估模板（≥75 采用 / &lt;60 重做）。</span>
+            <span class="pp-role">三层记忆</span>
+            <strong class="pp-term">Redis · PostgreSQL 分层存储</strong>
+            <span class="pp-desc">短期：Redis Session（30min TTL），<code>sliceShortTermMessages</code> 注入最近 8 条消息；超 8,000 tokens 触发压缩，保留 [早期摘要] + 最近 7 条，压缩结果同步写入中期记忆。中期：PostgreSQL <code>MemberConclusion</code>（压缩摘要，跨 Session 恢复上下文）+ <code>ConversationLog</code>（最近 5 条原始问答，<code>type='hitl'</code> 过滤不进 LLM context）。长期：PostgreSQL <code>MemoryRecord</code>（LLM 异步提取稳定事实，带版本号和审计链），满 20 条触发整合，Redis 分布式锁防并发。Qdrant 仅用于知识库 RAG 检索，不存储会员记忆。</span>
 
-            <span class="pp-role">核心引擎</span>
-            <strong class="pp-term">LangGraph 状态机编排</strong>
-            <span class="pp-desc">基于 LangGraph 构建有状态的 Agent 工作流：将意图识别 → 策略路由 → 工具调用 → 结果评估建模为有向图，支持条件分支与循环重试，彻底解决线性 Chain 无法处理动态决策的问题。</span>
+            <span class="pp-role">Hybrid RAG</span>
+            <strong class="pp-term">6 步检索管道 · 稀疏 + 稠密 + 精排 + Sandwich</strong>
+            <span class="pp-desc">① BM25 稀疏向量（FNV-1a hash，CJK 字符 unigram + bigram 加权）；② embedding 缓存优先（SHA-256 key → Redis，重复 query 零 API 费用）；③ HyDE 并行生成假设文档（MiniMax-M2.7）再次 embed；④ 单次 Qdrant 混合查询（sparse + dense + HyDE dense 三路 prefetch，server-side RRF 融合，Top-20 候选）；⑤ 交叉编码器精排（BAAI/bge-reranker-v2-m3 via SiliconFlow，Top-5 输出）；⑥ Sandwich 重排（第 2 高分 chunk 移至末尾，对抗 LLM 中间遗忘）。按 intent 规则跳过 RAG（纯数据查询类不走检索）。</span>
 
-            <span class="pp-role">设计</span>
-            <strong class="pp-term">多租户沙箱隔离</strong>
-            <span class="pp-desc">机制 + JWT 行级数据隔离，确保企业客户数据安全边界清晰。</span>
+            <span class="pp-role">双模型路由</span>
+            <strong class="pp-term">9 种角色 · Claude + MiniMax + 三态熔断自动降级</strong>
+            <span class="pp-desc">定义 9 个模型角色（agent_high / agent_routine / agent_creative / intent / summary / proactive / hyde / vision / voice_script），Claude Sonnet 处理高复杂度推理（政策推理、Self-Consistency k=3），MiniMax M2.7 处理常规回复和中间步骤（成本约 1/6）。进程内三态熔断器（open → closed → degraded），Claude 熔断时非高复杂角色自动切 MiniMax fallback，half-open 单探针恢复；<code>agent_high</code> 不降级，直接 503。每小时按 provider 记录 API 成本，70% 告警、90% 熔断并暂停图片 / TTS 队列。</span>
+
+            <span class="pp-role">主动触达</span>
+            <strong class="pp-term">Heartbeat 规则引擎 + AI 个性化消息</strong>
+            <span class="pp-desc">规则引擎支持 realtime / daily / monthly 三频次调度，条件类型覆盖 always / threshold / milestone / inactive 四类，规则从 JSON 热加载。触发后读取 PostgreSQL 会员画像和历史结论，由 MiniMax-M2.7 生成个性化消息，经输出护栏检查后通过 WebSocket / Inbox / Push（移动端预留）三通道下发。Redis 去重键控制单会员单规则每日发送上限，防骚扰。Heartbeat LLM 成本计入运营侧，不占会员配额。</span>
+
+            <span class="pp-role">HITL</span>
+            <strong class="pp-term">LangGraph interrupt() + PostgresSaver 跨请求暂停恢复</strong>
+            <span class="pp-desc">Agent 步数超限或会员主动请求人工时，<code>hitlResponseNode</code> 调用 LangGraph <code>interrupt()</code> 原地暂停图，状态快照通过 PostgresSaver 持久化（Postgres checkpoints 表，非 Prisma 管理）；当前请求返回"请留下联系方式"提示。会员回复后，第二次请求检测到已中断会话，调用 <code>Command({ resume })</code> 恢复执行，LLM 从原始文本提取姓名和联系方式，写入 PostgreSQL SupportTicket；联系方式 PII 脱敏后写 ConversationLog（<code>type='hitl'</code>），不污染后续 LLM 上下文。非 HITL 请求完成后 <code>deleteThread()</code> 清理 checkpoint，防 Postgres 积压。</span>
           </div>
         </div>
 
@@ -571,23 +502,26 @@
           <div>
             <div class="project-detail-title">技术栈</div>
             <div class="project-tech">
-              <span class="tag tag-blue">OpenClaw Multi-Agent</span>
-              <span class="tag tag-purple">LLM 记忆分层</span>
-              <span class="tag tag-green">RAG / bge-m3</span>
-              <span class="tag tag-orange">LangGraph</span>
-              <span class="tag">.NET 9 微服务</span>
+              <span class="tag">TypeScript / Node.js</span>
+              <span class="tag tag-purple">Claude API（Anthropic）</span>
+              <span class="tag">MiniMax API</span>
+              <span class="tag tag-blue">MCP SDK</span>
+              <span class="tag tag-green">Qdrant 向量数据库</span>
+              <span class="tag">Redis</span>
+              <span class="tag">Prisma + PostgreSQL</span>
+              <span class="tag tag-orange">Langfuse 全链路追踪</span>
               <span class="tag">WebSocket</span>
-              <span class="tag">SQL Server 2025 向量</span>
-              <span class="tag">CQRS + MediatR</span>
-              <span class="tag">RabbitMQ</span>
+              <span class="tag">Qwen3-Embedding-8B · SiliconFlow</span>
+              <span class="tag">Hybrid RAG · RRF · HyDE</span>
+              <span class="tag">Vitest</span>
             </div>
           </div>
           <div>
             <div class="project-detail-title">我的角色（Forward Deployed 视角）</div>
             <div class="project-points">
-              <div class="project-point"><strong>Discovery：</strong><span>驻场访谈客服与会员主管，3 周内梳理出高频咨询的 7 大场景与边界</span></div>
-              <div class="project-point"><strong>PoC → Pilot：</strong><span>72h 拉出可演示原型，4 周交付内部试点，LLM 三层记忆架构是我的核心设计</span></div>
-              <div class="project-point"><strong>Production：</strong><span>带 6 人团队推进上线，并把运营 Playbook 移交给客户内部团队</span></div>
+              <div class="project-point"><strong>Discovery：</strong><span>驻场访谈客服与会员主管，梳理高频场景边界，将模糊需求翻译为 7 类结构化意图，落地为 JSON 可配置规则</span></div>
+              <div class="project-point"><strong>端到端系统设计 & 实现：</strong><span>自研 Orchestrator（graph.ts）、三层记忆、Hybrid RAG Pipeline、双模型路由、HITL 全部独立设计并实现；Langfuse 接入完整 trace，每次 LLM 调用均可追溯</span></div>
+              <div class="project-point"><strong>Production 化：</strong><span>意图分类熔断器、护栏热加载、每日预算告警、HITL Redis 状态机——把 PoC 推进到可运维的生产标准，并将 Runbook 移交客户内部团队</span></div>
             </div>
           </div>
         </div>
@@ -804,7 +738,7 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
-    <div class="footer-links">
+    <div class="footer-links"><a href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">GitHub</a>
       <a href="index.html">首页</a>
       <a href="about.html">关于</a>
       <a href="projects.html">项目</a>

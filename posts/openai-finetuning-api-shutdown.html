@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="canonical" href="https://daofaziran163.github.io/personal-blog/posts/openai-finetuning-api-shutdown.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="邵炎炎 · Forward Deployed Engineer">
+  <meta property="og:title" content="OpenAI 微调 API 变化之后：FDE 的 RAG 转型实战指南 - 邵炎炎">
+  <meta property="og:description" content="OpenAI 微调 API 变化之后，FDE 如何评估客户影响，并规划 RAG、Prompt Engineering 与结构化输出迁移路径。">
+  <meta property="og:url" content="https://daofaziran163.github.io/personal-blog/posts/openai-finetuning-api-shutdown.html">
+  <meta property="og:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="OpenAI 微调 API 变化之后：FDE 的 RAG 转型实战指南 - 邵炎炎">
+  <meta name="twitter:description" content="OpenAI 微调 API 变化之后，FDE 如何评估客户影响，并规划 RAG、Prompt Engineering 与结构化输出迁移路径。">
+  <meta name="twitter:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="description" content="OpenAI 微调 API 变化之后，FDE 如何评估客户影响，并规划 RAG、Prompt Engineering 与结构化输出迁移路径。">
+  <title>OpenAI 微调 API 变化之后：FDE 的 RAG 转型实战指南 - 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="nav-links">
+      <a href="../index.html">首页</a>
+      <a href="../about.html">关于我</a>
+      <a href="../projects.html">项目</a>
+      <a href="../blog.html" class="active">博客</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
+    </div>
+  </div>
+</nav>
+<main>
+  <section class="post-header container">
+    <div class="post-meta-row">
+      <a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a>
+      <span style="color:var(--border);">|</span>
+      <span class="post-meta-tag">FDE 实践</span>
+      <time class="post-meta-date" datetime="2026-05-18">2026年5月18日 · 约 8 分钟阅读</time>
+    </div>
+    <h1>OpenAI 微调 API 变化之后：FDE 的 RAG 转型实战指南</h1>
+    <p class="post-lead">当平台策略、模型能力和成本结构一起变化时，FDE 最重要的工作不是追热点，而是帮客户判断：哪些系统受影响、什么路径可以迁移、以及迁移是否真的值得。</p>
+  </section>
+
+  <section class="post-layout container">
+    <article class="post-body">
+      <div class="prose">
+        <section class="post-source-note" aria-label="文章事实说明">
+          <div class="post-source-note-title">事实说明</div>
+          <dl>
+            <dt>参考来源</dt>
+            <dd><a href="https://platform.openai.com/docs/deprecations" target="_blank" rel="noopener">OpenAI API Deprecations</a>、<a href="https://platform.openai.com/docs/guides/fine-tuning" target="_blank" rel="noopener">OpenAI Fine-tuning Guide</a>，以及 OpenAI 开发者通知相关公开报道。</dd>
+            <dt>判断边界</dt>
+            <dd>本文讨论的是企业迁移决策框架，不等同于官方迁移公告。实际项目应以 OpenAI 最新官方文档、控制台通知和客户合同条款为准。</dd>
+          </dl>
+        </section>
+
+        <h2 id="what-changed">真正变化的不是一个 API</h2>
+        <p>微调曾经是企业客户定制模型行为的常见路径：准备数据集、训练模型、上线服务，然后用更稳定的语气、格式或领域术语服务业务。但在新模型指令遵循能力增强、结构化输出成熟、RAG 工程化成本下降之后，很多过去需要微调解决的问题，已经可以被更轻的架构覆盖。</p>
+        <p>这对 FDE 的影响很直接：我们要把讨论从“能不能微调”切换成“客户真正需要的是知识注入、格式控制、风格控制，还是复杂业务决策”。不同需求对应完全不同的迁移路径。</p>
+
+        <h2 id="impact">客户影响评估</h2>
+        <table class="post-table">
+          <thead><tr><th>客户状态</th><th>风险</th><th>建议动作</th></tr></thead>
+          <tbody>
+            <tr><td>生产环境依赖微调模型</td><td>高</td><td>立即梳理调用链、数据集、评估集和回滚方案。</td></tr>
+            <tr><td>PoC 阶段正在评估微调</td><td>中</td><td>优先用 RAG + Prompt baseline 复现实验指标。</td></tr>
+            <tr><td>只是想“让模型懂业务”</td><td>低</td><td>先做知识库、检索质量和引用可信度。</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="migration">三条迁移路径</h2>
+        <div class="post-panel">
+          <div class="panel-row"><div class="panel-label">RAG</div><div class="panel-desc">适合业务知识频繁变化的场景。优势是知识可更新、可引用、可审计，缺点是要认真处理 chunk、召回、重排和权限。</div></div>
+          <div class="panel-row"><div class="panel-label">Prompt + Schema</div><div class="panel-desc">适合格式、话术、分类标签等行为控制。把“训练出来的风格”转成显式规则、示例和结构化输出约束。</div></div>
+          <div class="panel-row"><div class="panel-label">Hybrid</div><div class="panel-desc">对高价值生产系统，保留旧路径一段时间，同时灰度新架构，用评估集和线上指标决定切换窗口。</div></div>
+        </div>
+
+        <h2 id="fde-checklist">FDE 现场检查清单</h2>
+        <ol>
+          <li>先确认微调模型到底解决了什么问题：知识、格式、语气、分类，还是推理链路。</li>
+          <li>用客户现有历史数据建立评估集，不要只看 demo 问题。</li>
+          <li>把迁移计划拆成 baseline、灰度、回滚、验收四段，不要一次性替换生产链路。</li>
+          <li>每一条回答都保留引用、trace 和错误分类，方便业务方参与验收。</li>
+        </ol>
+
+        <p>结论很简单：平台变化会逼着企业重新审视架构，但 FDE 的价值不在于宣布“旧方案过时”，而在于把迁移风险讲清楚，把第一条可验证路径跑出来。</p>
+        <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+      </div>
+    </article>
+
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#what-changed">真正变化的不是一个 API</a>
+          <a href="#impact">客户影响评估</a>
+          <a href="#migration">三条迁移路径</a>
+          <a href="#fde-checklist">FDE 现场检查清单</a>
+        </div>
+      </div>
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">关键词</div>
+        <div class="metric-line"><strong>迁移</strong><span>微调不再是定制模型的唯一路径</span></div>
+        <div class="metric-line"><strong>RAG</strong><span>知识可更新、可引用、可审计</span></div>
+        <div class="metric-line"><strong>评估集</strong><span>用客户历史数据做迁移基线</span></div>
+      </div>
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>Forward Deployed Engineer</span></div></div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="enterprise-ai-implementation-playbook.html"><div><div class="related-post-title">企业 AI 实施手册：斯坦福实证报告与一线落地经验</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.13</div></div></div></a>
+        <a class="related-post" href="build-mcp-server-from-scratch.html"><div><div class="related-post-title">从 0 到 1 构建 MCP Server：一个 FDE 的工程实践</div><div class="related-post-meta"><div class="related-post-cat">FDE 实践</div><div class="related-post-date">2026.05.18</div></div></div></a>
+      </div>
+    </aside>
+  </section>
+</main>
+<footer class="site-footer"><div class="footer-inner"><p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p><div class="footer-links"><a href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">GitHub</a><a href="../about.html">关于</a><a href="../projects.html">项目</a><a href="../blog.html">博客</a><a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a></div></div></footer>
+<script src="../nav.js"></script>
+<script src="../motion.js"></script>
+</body>
+</html>

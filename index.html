@@ -3,10 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="邵炎炎的个人博客 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验，专注把 AI 从 PoC 推到生产。">
-  <meta property="og:title" content="邵炎炎 — Forward Deployed Engineer · 把 AI 从 PoC 推到生产">
-  <meta property="og:description" content="13 年从工程师走到 CIO，跑过中/日/东南亚客户现场。72h PoC、4 周 Pilot、3 个月推进生产。">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="canonical" href="https://daofaziran163.github.io/personal-blog/index.html">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="邵炎炎 · Forward Deployed Engineer">
+  <meta property="og:title" content="邵炎炎 — Forward Deployed Engineer · 把 AI 从 PoC 推到生产">
+  <meta property="og:description" content="邵炎炎的个人博客 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验，专注把 AI 从 PoC 推到生产。">
+  <meta property="og:url" content="https://daofaziran163.github.io/personal-blog/index.html">
+  <meta property="og:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="邵炎炎 — Forward Deployed Engineer · 把 AI 从 PoC 推到生产">
+  <meta name="twitter:description" content="邵炎炎的个人博客 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验，专注把 AI 从 PoC 推到生产。">
+  <meta name="twitter:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="description" content="邵炎炎的个人博客 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验，专注把 AI 从 PoC 推到生产。">
   <title>邵炎炎 — Forward Deployed Engineer · 把 AI 从 PoC 推到生产</title>
   <link rel="stylesheet" href="styles.css">
   <style>
@@ -131,6 +140,82 @@
         transform: translateX(50%);
       }
     }
+    /* ── Target Roles (我适合的岗位) ── */
+    .roles-section { padding-top: 56px; padding-bottom: 8px; }
+    .roles-head { text-align: center; margin-bottom: 28px; }
+    .roles-head .eyebrow { color: var(--accent); }
+    .roles-head h2 {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -.4px;
+      margin: 6px 0 8px;
+    }
+    .roles-head p {
+      font-size: 14px;
+      color: var(--text-2);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .role-card {
+      border: 1.5px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      padding: 24px 22px;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .role-card:hover { box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+    .role-card.r2 { border-top-color: var(--purple); }
+    .role-card.r3 { border-top-color: var(--green); }
+    .role-card-en {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 5px;
+    }
+    .role-card-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.2px;
+      margin-bottom: 14px;
+    }
+    .role-points {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .role-points li {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.6;
+      padding-left: 18px;
+      position: relative;
+    }
+    .role-points li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .role-card.r2 .role-points li::before { color: var(--purple); }
+    .role-card.r3 .role-points li::before { color: var(--green); }
+    @media (max-width: 720px) {
+      .roles-section { padding-top: 36px; }
+      .roles-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -199,6 +284,43 @@
     </div>
   </div>
 </div>
+
+<section class="section container roles-section">
+  <div class="roles-head">
+    <p class="eyebrow">What I'm Hired As</p>
+    <h2>我适合的岗位</h2>
+    <p>同一套能力对应三种岗位 JD。每条都能对到我的实战经历——方便 HR 或猎头快速判断匹配度。</p>
+  </div>
+  <div class="roles-grid" data-reveal-stagger data-reveal-step="80">
+    <div class="role-card r1" data-reveal>
+      <div class="role-card-en">Forward Deployed Engineer</div>
+      <div class="role-card-name">前置交付工程师</div>
+      <ul class="role-points">
+        <li>进客户现场访谈业务，72 小时拉出可演示 PoC，3 个月推进生产上线</li>
+        <li>独立扛完"业务访谈 → 方案设计 → 原型交付 → 上线移交"全链路</li>
+        <li>跨国客户现场交付经验：中国 · 新加坡 · 日本</li>
+      </ul>
+    </div>
+    <div class="role-card r2" data-reveal>
+      <div class="role-card-en">AI Solutions Architect</div>
+      <div class="role-card-name">AI 解决方案架构师</div>
+      <ul class="role-points">
+        <li>设计 Multi-Agent 编排、RAG 检索、LLM 记忆分层等生产级 AI 架构</li>
+        <li>把 LLM 当有 SLA 的服务运维：评估、多模型路由、护栏、可观测性</li>
+        <li>13 年技术架构功底：.NET 9 微服务 · CQRS · 高并发系统</li>
+      </ul>
+    </div>
+    <div class="role-card r3" data-reveal>
+      <div class="role-card-en">Technical AI PM</div>
+      <div class="role-card-name">技术型 AI 产品经理</div>
+      <ul class="role-points">
+        <li>AI-native 产品设计：PRD 拆解、MVP 切分、竞品分析与合规边界</li>
+        <li>用业务语言度量 AI 价值：自助解决率 65% · 客服工单 ↓30%</li>
+        <li>工程师出身，能和研发对齐技术规格、上手验证可行性</li>
+      </ul>
+    </div>
+  </div>
+</section>
 
 <section class="section container flow-section">
   <div class="flow-head">
@@ -281,11 +403,11 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
-    <div class="footer-links">
+    <div class="footer-links"><a href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">GitHub</a>
       <a href="about.html">关于</a>
       <a href="projects.html">项目</a>
       <a href="blog.html">博客</a>
-      <a href="#" class="footer-cta">联系我</a>
+      <a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a>
     </div>
   </div>
 </footer>

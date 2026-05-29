@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="canonical" href="https://daofaziran163.github.io/personal-blog/posts/build-mcp-server-from-scratch.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="邵炎炎 · Forward Deployed Engineer">
+  <meta property="og:title" content="从 0 到 1 构建 MCP Server：一个 FDE 的工程实践 - 邵炎炎">
+  <meta property="og:description" content="从 FDE 视角拆解如何从 0 到 1 构建 MCP Server：概念、传输方式、工具设计、踩坑和生产接入边界。">
+  <meta property="og:url" content="https://daofaziran163.github.io/personal-blog/posts/build-mcp-server-from-scratch.html">
+  <meta property="og:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="从 0 到 1 构建 MCP Server：一个 FDE 的工程实践 - 邵炎炎">
+  <meta name="twitter:description" content="从 FDE 视角拆解如何从 0 到 1 构建 MCP Server：概念、传输方式、工具设计、踩坑和生产接入边界。">
+  <meta name="twitter:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="description" content="从 FDE 视角拆解如何从 0 到 1 构建 MCP Server：概念、传输方式、工具设计、踩坑和生产接入边界。">
+  <title>从 0 到 1 构建 MCP Server：一个 FDE 的工程实践 - 邵炎炎</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../post-shared.css">
+</head>
+<body>
+<nav class="site-nav"><div class="nav-inner"><a class="nav-brand" href="../index.html"><span class="dot"><img src="../avatar.jpg" alt="邵炎炎" onerror="this.style.display='none'"></span>邵炎炎</a><button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button><div class="nav-links"><a href="../index.html">首页</a><a href="../about.html">关于我</a><a href="../projects.html">项目</a><a href="../blog.html" class="active">博客</a><a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a></div></div></nav>
+<main>
+  <section class="post-header container">
+    <div class="post-meta-row"><a href="../blog.html" style="font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px;">← 所有文章</a><span style="color:var(--border);">|</span><span class="post-meta-tag">FDE 实践</span><time class="post-meta-date" datetime="2026-05-18">2026年5月18日 · 约 8 分钟阅读</time></div>
+    <h1>从 0 到 1 构建 MCP Server：一个 FDE 的工程实践</h1>
+    <p class="post-lead">MCP 的价值不是“又多了一个协议”，而是让企业已有系统能以标准方式暴露给 AI 客户端调用。对 FDE 来说，它是把客户内部能力接入 Agent 工作流的基础件。</p>
+  </section>
+  <section class="post-layout container">
+    <article class="post-body">
+      <div class="prose">
+        <section class="post-source-note" aria-label="文章事实说明">
+          <div class="post-source-note-title">事实说明</div>
+          <dl>
+            <dt>参考来源</dt>
+            <dd><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol 官方站点</a>、<a href="https://github.com/modelcontextprotocol" target="_blank" rel="noopener">MCP GitHub 组织</a>、<a href="https://www.npmjs.com/package/@modelcontextprotocol/sdk" target="_blank" rel="noopener">@modelcontextprotocol/sdk npm 页面</a>。</dd>
+            <dt>判断边界</dt>
+            <dd>MCP 生态和传输规范仍在快速演进。本文适合作为工程入门和选型参考，生产接入前应重新核对当前 SDK 版本、客户端支持范围和安全要求。</dd>
+          </dl>
+        </section>
+
+        <h2 id="why">为什么 FDE 要关心 MCP</h2>
+        <p>客户现场最常见的问题不是“AI 不会回答”，而是“AI 拿不到正确系统里的数据，也不能安全地执行动作”。MCP 把工具、资源和提示词模板用统一协议暴露出来，让 Claude、Cursor、内部 Agent 或其他客户端可以用一致的方式调用。</p>
+        <blockquote>MCP 对 AI 生态的意义，类似 USB-C 对硬件的意义：统一接口，降低集成成本，让能力可以自由流通。</blockquote>
+
+        <h2 id="concepts">先把概念搞清楚</h2>
+        <div class="post-panel">
+          <div class="panel-row"><div class="panel-label">Tools</div><div class="panel-desc">可被 AI 主动调用的函数，例如查询订单、创建工单、发送通知。多数业务集成从 Tools 开始。</div></div>
+          <div class="panel-row"><div class="panel-label">Resources</div><div class="panel-desc">可读取的数据源，例如文件、日志、知识库条目。适合提供上下文，不应产生副作用。</div></div>
+          <div class="panel-row"><div class="panel-label">Prompts</div><div class="panel-desc">预置提示词模板，用标准方式触发某类工作流。客户端支持度不同，生产前要验证。</div></div>
+        </div>
+
+        <h2 id="transport">Transport 选哪个</h2>
+        <table class="post-table">
+          <thead><tr><th>方式</th><th>适用场景</th><th>注意事项</th></tr></thead>
+          <tbody>
+            <tr><td>STDIO</td><td>本地工具、CLI、开发调试</td><td>stdout 是协议通道，日志请走 stderr 或文件。</td></tr>
+            <tr><td>Streamable HTTP</td><td>远程服务、团队共享、生产部署</td><td>要补齐鉴权、限流、审计和错误处理。</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="minimal">一个最小 TypeScript Server</h2>
+        <pre><code>import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const server = new McpServer({ name: "ticket-server", version: "1.0.0" });
+
+server.tool(
+  "get_ticket",
+  "根据工单 ID 查询标题、状态和负责人",
+  { ticketId: z.string().describe("工单唯一 ID，例如 TICKET-1234") },
+  async ({ ticketId }) => ({
+    content: [{ type: "text", text: JSON.stringify({ ticketId, status: "open" }) }]
+  })
+);
+
+await server.connect(new StdioServerTransport());</code></pre>
+
+        <h2 id="pitfalls">真实踩坑</h2>
+        <ol>
+          <li>工具描述含糊，AI 会误调用。描述要写清楚“什么时候用”和“参数格式”。</li>
+          <li>工具职责过宽，AI 很容易传错参数。一个工具最好只做一件事。</li>
+          <li>错误返回不清楚，Agent 会继续错误重试。错误也要结构化返回。</li>
+          <li>生产部署不能只跑通 demo，要补鉴权、审计、超时、限流和敏感字段脱敏。</li>
+        </ol>
+
+        <p>MCP 不难，难的是把已有系统的能力设计成 AI 能稳定理解、稳定调用、失败可恢复的工具。FDE 的价值就在这里：不是把协议跑起来，而是把业务能力接进可靠的工作流。</p>
+        <p>欢迎通过邮件和我交流：<a href="mailto:shaoyanyan91@163.com">shaoyanyan91@163.com</a></p>
+      </div>
+    </article>
+    <aside class="post-sidebar">
+      <div class="toc">
+        <div class="toc-title">目录</div>
+        <div class="toc-list">
+          <a href="#why">为什么 FDE 要关心 MCP</a>
+          <a href="#concepts">先把概念搞清楚</a>
+          <a href="#transport">Transport 选哪个</a>
+          <a href="#minimal">一个最小 TypeScript Server</a>
+          <a href="#pitfalls">真实踩坑</a>
+        </div>
+      </div>
+      <div class="sidebar-card results-card">
+        <div class="sidebar-card-title">关键词</div>
+        <div class="metric-line"><strong>MCP</strong><span>让系统能力以标准方式暴露给 AI</span></div>
+        <div class="metric-line"><strong>Tools</strong><span>业务集成最常见的起点</span></div>
+        <div class="metric-line"><strong>Transport</strong><span>STDIO 调试、Streamable HTTP 上生产</span></div>
+      </div>
+      <div class="sidebar-card author-card">
+        <div class="sidebar-card-title">作者</div>
+        <div class="author-mini"><img src="../avatar.jpg" alt="邵炎炎"><div><strong>邵炎炎</strong><span>Forward Deployed Engineer</span></div></div>
+        <a class="btn btn-secondary" href="../about.html" style="width:100%;justify-content:center;font-size:12px;padding:9px 12px;">查看完整经历 →</a>
+      </div>
+      <div class="sidebar-card related-card">
+        <div class="sidebar-card-title">相关文章</div>
+        <a class="related-post" href="ai-tool-to-ai-teammate.html"><div><div class="related-post-title">从「AI 工具」到「AI 队友」：企业工作流架构升级的 FDE 实战路径</div><div class="related-post-meta"><div class="related-post-cat">FDE 实践</div><div class="related-post-date">2026.05.18</div></div></div></a>
+        <a class="related-post" href="hermes-agent-harness.html"><div><div class="related-post-title">Hermes Agent：从“会聊天的工具”到“会长大的工作系统”</div><div class="related-post-meta"><div class="related-post-cat">AI 实践</div><div class="related-post-date">2026.05.14</div></div></div></a>
+      </div>
+    </aside>
+  </section>
+</main>
+<footer class="site-footer"><div class="footer-inner"><p>&copy; 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p><div class="footer-links"><a href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">GitHub</a><a href="../about.html">关于</a><a href="../projects.html">项目</a><a href="../blog.html">博客</a><a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a></div></div></footer>
+<script src="../nav.js"></script><script src="../motion.js"></script>
+</body>
+</html>

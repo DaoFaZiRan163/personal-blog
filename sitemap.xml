@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://daofaziran163.github.io/personal-blog/index.html</loc><lastmod>2026-05-21</lastmod><priority>1.0</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/about.html</loc><lastmod>2026-05-21</lastmod><priority>0.8</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/projects.html</loc><lastmod>2026-05-21</lastmod><priority>0.8</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/blog.html</loc><lastmod>2026-05-21</lastmod><priority>0.9</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/72h-rag-demo-for-client.html</loc><lastmod>2026-05-16</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/ai-product-manager-overview.html</loc><lastmod>2025-12-18</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/ai-quality-evaluation.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/ai-tool-to-ai-teammate.html</loc><lastmod>2026-05-18</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/build-knowledge-system-in-24h.html</loc><lastmod>2026-05-17</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/build-mcp-server-from-scratch.html</loc><lastmod>2026-05-18</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/dotnet9-cqrs-ai-microservice.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/enterprise-ai-implementation-playbook.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/enterprise-ai-orchestration-layer.html</loc><lastmod>2026-05-18</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/hermes-agent-harness.html</loc><lastmod>2026-05-14</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/high-concurrency-architecture.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/langgraph-ai-qa-system.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/llm-memory-architecture.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/multi-agent-product-design.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/obsidian-ai-second-brain.html</loc><lastmod>2026-05-14</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/obvious-awesome-positioning.html</loc><lastmod>2026-05-15</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/openai-finetuning-api-shutdown.html</loc><lastmod>2026-05-18</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/pm-from-engineer.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/prompt-engineering-practice.html</loc><lastmod>2026-05-21</lastmod><priority>0.6</priority></url>
+  <url><loc>https://daofaziran163.github.io/personal-blog/posts/user-value-formula-ai-product.html</loc><lastmod>2025-12-25</lastmod><priority>0.6</priority></url>
+</urlset>

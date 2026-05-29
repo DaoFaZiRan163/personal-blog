@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://daofaziran163.github.io/personal-blog/sitemap.xml

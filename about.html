@@ -3,6 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="canonical" href="https://daofaziran163.github.io/personal-blog/about.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="邵炎炎 · Forward Deployed Engineer">
+  <meta property="og:title" content="关于我 — 邵炎炎">
+  <meta property="og:description" content="邵炎炎 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验。技术出身，跑过中/日/东南亚客户现场，把 AI 从 PoC 推到生产。">
+  <meta property="og:url" content="https://daofaziran163.github.io/personal-blog/about.html">
+  <meta property="og:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="关于我 — 邵炎炎">
+  <meta name="twitter:description" content="邵炎炎 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验。技术出身，跑过中/日/东南亚客户现场，把 AI 从 PoC 推到生产。">
+  <meta name="twitter:image" content="https://daofaziran163.github.io/personal-blog/avatar.jpg">
   <meta name="description" content="邵炎炎 — Forward Deployed Engineer · 解决方案架构师 · 13 年互联网经验。技术出身，跑过中/日/东南亚客户现场，把 AI 从 PoC 推到生产。">
   <title>关于我 — 邵炎炎</title>
   <link rel="stylesheet" href="styles.css">
@@ -418,6 +430,47 @@
     .tag-orange { background: var(--orange-dim);  color: var(--orange);  border-color: #fde68a; }
     .tag-purple { background: var(--purple-dim);  color: var(--purple);  border-color: #ddd6fe; }
 
+    /* ── Timeline Structured Meta ───────────────────────────── */
+    .tm-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin: 8px 0 12px;
+      padding: 10px 14px;
+      background: var(--bg-subtle);
+      border-left: 3px solid var(--border);
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+    }
+    .tm-row { display: flex; gap: 6px; line-height: 1.65; }
+    .tm-label { font-weight: 700; color: var(--text-3); min-width: 56px; flex-shrink: 0; }
+    .tm-label::after { content: '：'; }
+    .tm-val { color: var(--text-2); }
+    .timeline-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .timeline-bullets li {
+      font-size: 13.5px;
+      color: var(--text-2);
+      line-height: 1.7;
+      padding-left: 18px;
+      position: relative;
+    }
+    .timeline-bullets li::before {
+      content: '˜';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
     /* Responsive */
     @media (max-width: 720px) {
       .about-hero-wrap { padding: 0 0 5px; }
@@ -465,7 +518,7 @@
       <a href="about.html" class="active">关于我</a>
       <a href="projects.html">项目</a>
       <a href="blog.html">博客</a>
-      <a href="/cdn-cgi/l/email-protection#eb98838a84928a85928a85d2daabdaddd8c5888486" class="nav-cta">联系我</a>
+      <a href="mailto:shaoyanyan91@163.com" class="nav-cta">联系我</a>
     </div>
   </div>
 </nav>
@@ -496,7 +549,7 @@
       <p class="about-bio">
         13 年前我以 C# 工程师入行，5 年后晋升部门副经理。
         此后主导跨国电商平台从零搭建，7 大微服务落地东南亚多国市场；
-        再到日本创业公司担任 CIO，把 AI 智能问答系统从想法做到上线——
+        再到日本创业公司担任 CIO，把电商平台会员个人助理系统从想法做到上线——
         会员自助解决率 65%，客服工单下降 30%。
         同期完成宝可梦卡牌 Web3 交易平台的产品规划与日本市场合规设计。
       </p>
@@ -506,7 +559,8 @@
         既会和客户的 CTO 讨论架构选型，也会跟客服主管一起标注问答数据。
       </p>
       <div class="about-links">
-        <a class="about-link" href="/cdn-cgi/l/email-protection#1c6f747d73657d72657d72252d5c2d2a2f327f7371">✉️ <span class="__cf_email__" data-cfemail="f5869d949a8c949b8c949bccc4b5c4c3c6db969a98">[email&#160;protected]</span></a>
+        <a class="about-link" href="mailto:shaoyanyan91@163.com">✉️ shaoyanyan91@163.com</a>
+        <a class="about-link" href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">🐙 GitHub</a>
         <a class="about-link" href="projects.html">🗂️ 项目案例</a>
       </div>
     </div>
@@ -567,20 +621,22 @@
       <div class="timeline-body">
         <div class="timeline-company">日本 PNYY 株式会社</div>
         <div class="timeline-title">CIO · 首席信息官</div>
-        <div class="timeline-desc">
-          远程管理 6 人技术团队，全面负责公司技术战略、AI 能力建设与多产品线技术规划。
-          主导企业级 AI 智能问答系统从 0 到 1 落地：基于 Multi-Agent 三层架构 + LLM 记忆分层设计，
-          上线后会员自助解决率达 65%，客服工单量降低 30%，用户满意度 87%。
-          主导宝可梦卡牌 Web3 交易平台产品规划：完成日本市场用户痛点分析、竞品研究、
-          三部法律合规设计（景品表示法 / 古物営業法 / 扭蛋禁令），制定 Web2 先行 + Web3 平滑迁移的渐进策略。
-          构建 Claude Code + Cursor + CodeX AI 辅助开发工作流，新模块开发效率提升约 40%。
+        <div class="tm-meta">
+          <div class="tm-row"><span class="tm-label">工作职责</span><span class="tm-val">全面负责公司技术战略、AI 能力建设与多产品线技术规划</span></div>
         </div>
+        <ul class="timeline-bullets">
+          <li>主导电商平台会员个人助理系统从 0 到 1 落地：基于 LangGraph StateGraph 构建 Multi-Agent 编排引擎（意图熔断器 → 4 类专业化 Agent → ReAct 循环），三层记忆（Redis 短期 / PostgreSQL 中期 / 长期）+ 6 步 Hybrid RAG（HyDE + RRF + 交叉编码器精排 + Sandwich 重排）+ Heartbeat 主动触达引擎 + LangGraph interrupt() HITL 人工兜底；上线后会员自助解决率 65%，客服工单量降低 30%，用户满意度 87%</li>
+          <li>设计双模型路由 + 三态熔断机制（Claude 高复杂度推理，MiniMax 常规回复，9 种任务角色按成本分配；Claude 熔断自动降级 MiniMax，高复杂度角色不降级直接 503），系统级成本监控（70% 告警 / 90% 熔断并暂停图片 TTS 队列）；Heartbeat 规则引擎（四类触发条件 + Redis 防骚扰去重）三通道下发，把 AI 助理从被动问答延伸至主动会员陪伴</li>
+          <li>主导宝可梦卡牌 Web3 交易平台产品规划：完成日本市场竞品研究与三部法律合规设计（景品表示法 / 古物営業法 / 扭蛋禁令），制定 Web2 先行 + Web3 平滑迁移的渐进策略；设计"平台回购 PSA10 卡牌 → 透明盲盒销售"业务闭环</li>
+          <li>构建 Claude Code + Cursor + CodeX AI 辅助开发工作流，新模块开发效率提升约 40%；接入 Langfuse 全链路追踪，每次 LLM 调用均可追溯，将 PoC 推进到可运维的生产标准</li>
+        </ul>
         <div class="timeline-tags">
-          <span class="tag tag-blue">Multi-Agent</span>
-          <span class="tag tag-purple">LLM 架构</span>
-          <span class="tag tag-green">RAG</span>
+          <span class="tag tag-blue">Multi-Agent Orchestrator</span>
+          <span class="tag tag-purple">三层记忆架构</span>
+          <span class="tag tag-green">Hybrid RAG · HyDE</span>
+          <span class="tag">TypeScript · Node.js</span>
+          <span class="tag">Langfuse 可观测性</span>
           <span class="tag tag-orange">Web3 产品</span>
-          <span class="tag">.NET 9 微服务</span>
           <span class="tag">日本市场合规</span>
         </div>
       </div>
@@ -589,18 +645,21 @@
     <div class="timeline-item" data-reveal>
       <div class="timeline-date">
         <span class="date-year">2018 — 25</span>
-        <span class="date-period">11月 — 6月</span>
+        <span class="date-period">11月 — 8月</span>
       </div>
       <div class="timeline-dot"></div>
       <div class="timeline-body">
         <div class="timeline-company">新加坡 JCS 集团</div>
         <div class="timeline-title">系统架构师 · 技术负责人</div>
-        <div class="timeline-desc">
-          作为 Forward Deployed 角色常驻新加坡客户现场，主导面向东南亚多国市场的私域电商平台从 0 到 1 落地。
-          在客户现场直接与各国业务团队访谈，把复杂的多套奖励制度翻译成可维护的引擎；
-          主导三端前台（Mall / Org / Hq）+ 七大微服务的架构拆分，设计自研分库路由与 USDT TRC-20 / ERC-20 双链支付，
-          一次性交付到客户 4 国市场并行上线，并带研发团队完成持续迭代与移交。
+        <div class="tm-meta">
+          <div class="tm-row"><span class="tm-label">工作职责</span><span class="tm-val">作为 Forward Deployed 角色常驻新加坡客户现场，主导面向东南亚多国市场的私域电商平台从 0 到 1 落地</span></div>
         </div>
+        <ul class="timeline-bullets">
+          <li>负责多个电商系统产品的全流程交付与迭代，具备 C 端用户产品设计与数据驱动产品迭代经验</li>
+          <li>电商平台 0→1 交付：主导新电商平台从用户场景分析、产品方案设计、架构选型到开发交付全流程，6 个月完成新平台上线，会员量突破 100 万，项目 100% 交付验收</li>
+          <li>用户增长与业务驱动：通过产品迭代识别客户增量需求，协同市场团队促成多个核心客户续签，推动单客户合同年度增长</li>
+          <li>国际化与支付体系：支持 6 种语言本地化与 4 种货币实时汇率，独立设计 USDT TRC-20 / ERC-20 双链支付服务，系统最终服务 7+ 国家并行运营</li>
+        </ul>
         <div class="timeline-tags">
           <span class="tag tag-blue">Forward Deployed</span>
           <span class="tag tag-purple">客户现场交付</span>
@@ -618,13 +677,16 @@
       </div>
       <div class="timeline-dot"></div>
       <div class="timeline-body">
-        <div class="timeline-company">北京中科北软</div>
+        <div class="timeline-company">北京中科北软科技有限公司</div>
         <div class="timeline-title">部门副经理 / 项目经理 / 开发工程师</div>
-        <div class="timeline-desc">
-          5 年内完成技术 → 管理的完整转型。从 C# 后端开发起步，逐步承担项目管理职责，
-          最终晋升为部门副经理，负责员工绩效、大客户关系维护与产品技术升级。
-          主导多个大型电商平台重点项目，推动推荐转化率提升 18%。
+        <div class="tm-meta">
+          <div class="tm-row"><span class="tm-label">工作职责</span><span class="tm-val">5 年内完成从 C# 后端开发到部门副经理的完整技术 → 管理转型</span></div>
         </div>
+        <ul class="timeline-bullets">
+          <li>从 C# 后端开发起步，逐步承担项目管理职责，晋升为部门副经理；组织团队技术培训提升整体研发能力，负责员工绩效、大客户关系维护与核心产品技术升级</li>
+          <li>主导多个大型 B2C 电商平台重点项目全流程：从需求确认、技术方案制定、开发监督，到系统部署上线与客户培训，确保客户能够熟练接管使用；交付后持续提供维护支持，推动公司服务费落地，推荐转化率提升 18%</li>
+          <li>完成从"把功能做出来"到"判断什么值得做"的产品思维转型，建立技术型 PM 工作框架：能更早识别高工程代价需求，用研发语言精准沟通需求边界与验收标准</li>
+        </ul>
         <div class="timeline-tags">
           <span class="tag">C# / .NET</span>
           <span class="tag">高并发架构</span>
@@ -817,7 +879,7 @@
         </p>
       </div>
       <div class="cta-actions">
-        <a class="btn btn-primary" href="/cdn-cgi/l/email-protection#73001b121c0a121d0a121d4a42334245405d101c1e">发送邮件 →</a>
+        <a class="btn btn-primary" href="mailto:shaoyanyan91@163.com">发送邮件 →</a>
         <a class="btn btn-ghost" href="projects.html">先看项目案例</a>
         <a class="btn btn-ghost" href="resume-shaoyanyan.pdf" download>下载简历 PDF ↓</a>
       </div>
@@ -831,15 +893,15 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <p>© 2026 邵炎炎 · 用写作整理思考，用代码验证想法</p>
-    <div class="footer-links">
+    <div class="footer-links"><a href="https://github.com/DaoFaZiRan163" target="_blank" rel="noopener">GitHub</a>
       <a href="index.html">首页</a>
       <a href="projects.html">项目</a>
-      <a href="#" class="footer-cta">联系我</a>
+      <a href="mailto:shaoyanyan91@163.com" class="footer-cta">联系我</a>
     </div>
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="nav.js"></script>
+<script src="nav.js"></script>
 <script src="motion.js"></script>
 </body>
 </html>
