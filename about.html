@@ -625,8 +625,8 @@
           <div class="tm-row"><span class="tm-label">工作职责</span><span class="tm-val">全面负责公司技术战略、AI 能力建设与多产品线技术规划</span></div>
         </div>
         <ul class="timeline-bullets">
-          <li>主导电商平台会员个人助理系统从 0 到 1 落地：基于 LangGraph StateGraph 构建 Multi-Agent 编排引擎（意图熔断器 → 4 类专业化 Agent → ReAct 循环），三层记忆（Redis 短期 / PostgreSQL 中期 / 长期）+ 6 步 Hybrid RAG（HyDE + RRF + 交叉编码器精排 + Sandwich 重排）+ Heartbeat 主动触达引擎 + LangGraph interrupt() HITL 人工兜底；上线后会员自助解决率 65%，客服工单量降低 30%，用户满意度 87%</li>
-          <li>设计双模型路由 + 三态熔断机制（Claude 高复杂度推理，MiniMax 常规回复，9 种任务角色按成本分配；Claude 熔断自动降级 MiniMax，高复杂度角色不降级直接 503），系统级成本监控（70% 告警 / 90% 熔断并暂停图片 TTS 队列）；Heartbeat 规则引擎（四类触发条件 + Redis 防骚扰去重）三通道下发，把 AI 助理从被动问答延伸至主动会员陪伴</li>
+          <li>主导电商平台会员个人助理系统从 0 到 1 落地：基于 LangGraph StateGraph 构建数据驱动的 Multi-Agent 编排引擎（意图熔断器 → 路由决策 → 单一通用 ReAct Runner，4 类内建 Agent 以数据库 AgentDefinition 种子记录存在、可经管理后台动态增改并热生效，并支持 Pipeline 多 Agent 串联编排），三层记忆（Redis 短期 / PostgreSQL 中期 / 长期）+ 6 步 Hybrid RAG（HyDE + RRF + 交叉编码器精排 + Sandwich 重排）+ Heartbeat 主动触达引擎 + LangGraph interrupt() HITL 人工兜底；上线后会员自助解决率 65%，客服工单量降低 30%，用户满意度 87%</li>
+          <li>设计双模型路由 + 三态熔断机制（Claude 高复杂度推理，MiniMax 常规回复，9 种任务角色按成本分配；Claude 熔断自动降级 MiniMax，高复杂度角色不降级直接 503，当前阶段先以 MiniMax 跑通逻辑、Claude 链路保留待启用），系统级成本监控（70% 告警 / 90% 熔断并暂停图片 TTS 队列）；Heartbeat 规则引擎（四类触发条件 + Redis 防骚扰去重）三通道下发，把 AI 助理从被动问答延伸至主动会员陪伴</li>
           <li>主导宝可梦卡牌 Web3 交易平台产品规划：完成日本市场竞品研究与三部法律合规设计（景品表示法 / 古物営業法 / 扭蛋禁令），制定 Web2 先行 + Web3 平滑迁移的渐进策略；设计"平台回购 PSA10 卡牌 → 透明盲盒销售"业务闭环</li>
           <li>构建 Claude Code + Cursor + CodeX AI 辅助开发工作流，新模块开发效率提升约 40%；接入 Langfuse 全链路追踪，每次 LLM 调用均可追溯，将 PoC 推进到可运维的生产标准</li>
         </ul>

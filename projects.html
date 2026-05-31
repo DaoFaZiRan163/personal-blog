@@ -434,8 +434,8 @@
             <h3>电商平台会员个人助理</h3>
             <p class="project-subtitle">
               为电商平台会员构建的 AI 个人助理——会员可用自然语言查询权益、管理关系、生成营销内容、寻求客服支持。
-              核心是一套<strong>自研多 Agent 编排引擎</strong>：意图分类熔断器 → 路由决策 → ReAct 循环，
-              配合三层记忆（Redis 短期 / Qdrant 中期 / PostgreSQL 长期）和 Hybrid RAG，
+              核心是一套<strong>数据驱动的多 Agent 编排引擎</strong>：意图分类熔断器 → 路由决策 → 单一通用 ReAct Runner（按数据库 AgentDefinition 配置执行）+ Pipeline 多 Agent 串联编排，
+              配合三层记忆（Redis 短期 / PostgreSQL 中期 / PostgreSQL 长期，Qdrant 仅用于知识库）和 Hybrid RAG，
               以及 Heartbeat 主动触达系统，从被动问答延伸到主动陪伴。
             </p>
             <div class="project-role-tags">
@@ -469,12 +469,12 @@
           <div class="project-detail-title">核心技术设计决策</div>
           <div class="project-points-grid">
             <span class="pp-role">编排引擎</span>
-            <strong class="pp-term">LangGraph StateGraph + 自研节点业务逻辑</strong>
-            <span class="pp-desc">基于 LangGraph StateGraph 搭建编排框架，定义 9 个节点（输入护栏 / 记忆加载 / RAG 检索 / 意图分类 / 路由决策 / 4 类 Agent 子图 / HITL / 输出护栏 / 记忆保存），4 类专业化 Agent（政策查询 / 客户 / 营销 / 支持）各为独立子图并行编译。自研部分是节点内的业务逻辑与路由决策：意图置信度 &gt;0.9 且为简单意图走单步路径（maxSteps=1，仍经 LLM，后台可关闭此路径强制全量进入 ReAct）；否则进入 ReAct 循环（政策类查询 maxSteps=8，其余 maxSteps=4）；步数超限自动触发 HITL。图状态通过 PostgresSaver 持久化，支持 HITL interrupt/resume 跨请求恢复。</span>
+            <strong class="pp-term">LangGraph StateGraph + 数据驱动 Agent Registry</strong>
+            <span class="pp-desc">基于 LangGraph StateGraph 搭建编排框架，定义 10 个节点（输入护栏 / 记忆加载 / RAG 检索 / 意图分类 / 路由决策 / dynamic_agent / pipeline_executor / HITL / 输出护栏 / 记忆保存）。<strong>Agent 层改为数据驱动</strong>：原 4 个硬编码 Agent 子图重构为「单一通用 ReAct Runner + 数据库 <code>AgentDefinition</code> 记录」，4 类内建 Agent（政策查询 / 客户 / 营销 / 支持）现为 <code>isBuiltin=true</code> 种子记录，可经管理后台（<code>/api/admin/agents</code>）增删改并热生效（子图按 agentKey 缓存，配置变更经 <code>evictSubgraph</code> 失效）。新增 <code>OrchestrationPipeline</code> 多 Agent 串联编排（<code>pipeline_executor</code> 节点，按 intent 触发，找不到 pipeline 时回落 dynamic_agent）。路由决策：意图置信度 &gt;0.9 且为简单意图走单步路径（maxSteps=1，仍经 LLM，后台可关闭此路径强制全量进入 ReAct）；否则进入 ReAct 循环（政策类查询 maxSteps=8，其余 maxSteps=4）；步数超限自动触发 HITL。图状态通过 PostgresSaver 持久化，支持 HITL interrupt/resume 跨请求恢复。</span>
 
             <span class="pp-role">意图分类</span>
             <strong class="pp-term">关键词规则 + LLM 兜底熔断器</strong>
-            <span class="pp-desc">8 类意图从 JSON 配置文件热加载（<code>fs.watch</code> 监听，无需重启）。关键词匹配置信度低于阈值时调 LLM 兜底分类（claude-haiku-4-5，超时 2.5s）；连续失败 3 次触发进程级熔断器，冷却 60s 不再调用，回落默认意图，避免 LLM 故障级联。LLM 分类时注入最近 4 条会话上下文，准确识别跨轮追问场景。</span>
+            <span class="pp-desc">10 类意图（含 <code>commission.team-report</code> 团队业绩报告、<code>support.deep-research</code> 深度多源研究）从 JSON 配置文件热加载（<code>fs.watch</code> 监听，无需重启）。关键词匹配置信度低于阈值时调 LLM 兜底分类（超时 2.5s）；连续失败 3 次触发进程级熔断器，冷却 60s 不再调用，回落默认意图，避免 LLM 故障级联。LLM 分类时注入最近 4 条会话上下文，准确识别跨轮追问场景。</span>
 
             <span class="pp-role">三层记忆</span>
             <strong class="pp-term">Redis · PostgreSQL 分层存储</strong>
@@ -486,7 +486,7 @@
 
             <span class="pp-role">双模型路由</span>
             <strong class="pp-term">9 种角色 · Claude + MiniMax + 三态熔断自动降级</strong>
-            <span class="pp-desc">定义 9 个模型角色（agent_high / agent_routine / agent_creative / intent / summary / proactive / hyde / vision / voice_script），Claude Sonnet 处理高复杂度推理（政策推理、Self-Consistency k=3），MiniMax M2.7 处理常规回复和中间步骤（成本约 1/6）。进程内三态熔断器（open → closed → degraded），Claude 熔断时非高复杂角色自动切 MiniMax fallback，half-open 单探针恢复；<code>agent_high</code> 不降级，直接 503。每小时按 provider 记录 API 成本，70% 告警、90% 熔断并暂停图片 / TTS 队列。</span>
+            <span class="pp-desc">定义 9 个模型角色（agent_high / agent_routine / agent_creative / intent / summary / proactive / hyde / vision / voice_script），架构上 Claude Sonnet 处理高复杂度推理（政策推理、Self-Consistency k=3），MiniMax M2.7 处理常规回复和中间步骤（成本约 1/6）。进程内三态熔断器（open → closed → degraded），Claude 熔断时非高复杂角色自动切 MiniMax fallback，half-open 单探针恢复；<code>agent_high</code> 不降级，直接 503。每小时按 provider 记录 API 成本，70% 告警、90% 熔断并暂停图片 / TTS 队列。（当前阶段 <code>.env</code> 将全部模型角色覆盖为 MiniMax-M2.7 先跑通逻辑，Claude 路由链路与熔断保留但暂未启用。）</span>
 
             <span class="pp-role">主动触达</span>
             <strong class="pp-term">Heartbeat 规则引擎 + AI 个性化消息</strong>
@@ -502,18 +502,18 @@
           <div>
             <div class="project-detail-title">技术栈</div>
             <div class="project-tech">
-              <span class="tag">TypeScript / Node.js</span>
+              <span class="tag">TypeScript / Node.js 22 · tsx</span>
               <span class="tag tag-purple">Claude API（Anthropic）</span>
               <span class="tag">MiniMax API</span>
               <span class="tag tag-blue">MCP SDK</span>
               <span class="tag tag-green">Qdrant 向量数据库</span>
               <span class="tag">Redis</span>
-              <span class="tag">Prisma + PostgreSQL</span>
+              <span class="tag">Prisma 7 + PostgreSQL</span>
               <span class="tag tag-orange">Langfuse 全链路追踪</span>
               <span class="tag">WebSocket</span>
               <span class="tag">Qwen3-Embedding-8B · SiliconFlow</span>
               <span class="tag">Hybrid RAG · RRF · HyDE</span>
-              <span class="tag">Vitest</span>
+              <span class="tag">Vitest · Playwright E2E</span>
             </div>
           </div>
           <div>
